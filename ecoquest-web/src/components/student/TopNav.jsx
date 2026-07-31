@@ -49,23 +49,52 @@ export default function TopNav({ onOpenUploadModal, onOpenMissionModal, onLogout
   ];
 
   return (
-    <header className="h-20 bg-[#051912]/85 backdrop-blur-xl border-b border-emerald-500/25 sticky top-0 z-20 px-6 lg:px-10 flex items-center justify-between shadow-lg shadow-emerald-950/30">
+    <header className="h-20 bg-[#092b1f]/90 backdrop-blur-xl border-b border-emerald-500/25 sticky top-0 z-20 px-6 lg:px-10 flex items-center justify-between shadow-lg shadow-emerald-950/30">
       
       {/* ADVENTURER RANK & LEVEL BADGE */}
       <div className="flex items-center gap-4">
-        <div className="flex items-center gap-3 bg-gradient-to-r from-[#0a2f22] via-[#0b261b] to-[#04160d] text-white border border-emerald-500/40 px-4 py-2 rounded-2xl shadow-lg relative overflow-hidden group">
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-500 via-teal-400 to-amber-400 text-slate-950 flex items-center justify-center font-black shadow-md ring-1 ring-emerald-300/40 group-hover:scale-105 transition-transform">
-            <ShieldCheck className="w-5 h-5 text-slate-950" />
+        <div className="flex items-center gap-3 bg-gradient-to-r from-[#0d3b2a] via-[#09291c] to-[#04160d] text-white border border-emerald-400/50 px-4 py-2 rounded-2xl shadow-[0_0_18px_rgba(16,185,129,0.2)] relative overflow-hidden group cursor-pointer hover:border-emerald-300 transition-all">
+          
+          {/* Glowing Shimmer Overlay */}
+          <div className="absolute top-0 right-0 w-16 h-16 bg-amber-400/10 rounded-full blur-md pointer-events-none group-hover:bg-amber-400/20 transition-all" />
+
+          {/* Level Crest Badge */}
+          <div className="relative flex-shrink-0">
+            <div className="w-10 h-10 rounded-2xl bg-[#051912] border-2 border-emerald-400/80 shadow-[0_0_12px_rgba(16,185,129,0.3)] flex flex-col items-center justify-center text-center group-hover:scale-105 group-hover:border-amber-400 transition-all">
+              <span className="text-[8px] font-black text-amber-400 uppercase leading-none tracking-tight">LVL</span>
+              <span className="text-sm font-black text-white leading-none font-heading">12</span>
+            </div>
+            <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-amber-400 rounded-full border-2 border-[#051912] flex items-center justify-center text-[7px] font-black text-slate-950 shadow-md">
+              ★
+            </span>
           </div>
-          <div>
-            <div className="text-[9px] uppercase font-black tracking-widest text-emerald-400">Adventurer HUD</div>
-            <div className="text-xs font-black text-white leading-none font-heading flex items-center gap-1.5 mt-0.5">
-              <span>Level 12</span>
-              <span className="text-amber-400 font-bold">• B-Rank Guardian</span>
+
+
+          {/* Level Info & Live Progress Meter */}
+          <div className="flex flex-col">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-1.5">
+                <Crown className="w-3.5 h-3.5 text-amber-400 fill-amber-400/20" />
+                <span className="text-xs font-black text-white font-heading tracking-tight">
+                  B-Rank Guardian
+                </span>
+              </div>
+              <span className="text-[10px] font-black text-emerald-300/90 font-mono">
+                3,450 / 5,000 XP
+              </span>
+            </div>
+
+            {/* Micro XP Progress Bar */}
+            <div className="w-36 sm:w-44 h-2 bg-[#04160d] rounded-full overflow-hidden p-0.5 border border-emerald-500/30 mt-1">
+              <div 
+                className="h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-amber-400 rounded-full shadow-[0_0_10px_#34d399] transition-all duration-1000 w-[69%]"
+              />
             </div>
           </div>
+
         </div>
       </div>
+
 
       {/* RIGHT SIDE STATS & USER PROFILE */}
       <div className="flex items-center gap-3 sm:gap-4">
