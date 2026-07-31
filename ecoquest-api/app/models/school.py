@@ -1,26 +1,32 @@
-"""EcoQuest API — School Model."""
-
 import uuid
+from typing import TYPE_CHECKING
 
-from sqlalchemy import Boolean, String, Text
+from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.dialects.postgresql import UUID
 
-from app.models.base import Base, TimestampMixin, UUIDPrimaryKeyMixin
+from app.models.base import Base, TimestampMixin
 
+if TYPE_CHECKING:
+    from app.models.user import User
+    from app.models.challenge import Challenge
+    from app.models.school_trust_score import SchoolTrustScore
+    from app.models.school_trust_factor import SchoolTrustFactor
+    from app.models.trust_score_history_school import TrustScoreHistorySchool
 
-class School(Base, UUIDPrimaryKeyMixin, TimestampMixin):
-    """Represents a school enrolled in the EcoQuest platform."""
-
+class School(Base, TimestampMixin):
     __tablename__ = "schools"
 
-    name: Mapped[str] = mapped_column(String(255), nullable=False)
-    code: Mapped[str] = mapped_column(String(20), unique=True, nullable=False)
-    address: Mapped[str | None] = mapped_column(Text, nullable=True)
-    city: Mapped[str | None] = mapped_column(String(100), nullable=True)
-    state: Mapped[str | None] = mapped_column(String(100), nullable=True)
-    country: Mapped[str] = mapped_column(String(100), default="India")
-    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    school_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    school_code: Mapped[str] = mapped_column(String, unique=True, index=True, nullable=False)
+    school_name: Mapped[str] = mapped_column(String, nullable=False)
+    address: Mapped[str | None] = mapped_column(String, nullable=True)
+    city: Mapped[str | None] = mapped_column(String, nullable=True)
+    state: Mapped[str | None] = mapped_column(String, nullable=True)
+    pincode: Mapped[str | None] = mapped_column(String, nullable=True)
 
-    # Relationships
-    users: Mapped[list["User"]] = relationship(back_populates="school")  # type: ignore[name-defined] # noqa: F821
-    challenges: Mapped[list["Challenge"]] = relationship(back_populates="school")  # type: ignore[name-defined] # noqa: F821
+    users: Mapped[list["User"]] = relationship("User", back_populates="school", cascade="all, delete-orphan")
+    challenges: Mapped[list["Challenge"]] = relationship("Challenge", back_populates="school", cascade="all, delete-orphan")
+    trust_score: Mapped["SchoolTrustScore"] = relationship("SchoolTrustScore", back_populates="school", uselist=False, cascade="all, delete-orphan")
+    trust_factors: Mapped[list["SchoolTrustFactor"]] = relationship("SchoolTrustFactor", back_populates="school", cascade="all, delete-orphan")
+    trust_score_history: Mapped[list["TrustScoreHistorySchool"]] = relationship("TrustScoreHistorySchool", back_populates="school", cascade="all, delete-orphan")

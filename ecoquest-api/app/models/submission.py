@@ -1,55 +1,35 @@
-"""EcoQuest API — Submission Model."""
-
-import enum
 import uuid
 from datetime import datetime
+from typing import TYPE_CHECKING
 
-from sqlalchemy import DateTime, Enum, ForeignKey, Integer, String, Text
-from sqlalchemy.dialects.postgresql import JSONB, UUID
+from sqlalchemy import DateTime, Enum as SQLEnum, Float, ForeignKey, Integer, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.dialects.postgresql import UUID
 
-from app.models.base import Base, TimestampMixin, UUIDPrimaryKeyMixin
+from app.models.base import Base
+from app.models.enums import SubmissionStatus
 
+if TYPE_CHECKING:
+    from app.models.user import User
+    from app.models.challenge import Challenge
+    from app.models.ai_verification import AIVerification
 
-class SubmissionStatus(str, enum.Enum):
-    """Enumeration of submission lifecycle states."""
-
-    PENDING_AI = "pending_ai"
-    AI_VERIFIED = "ai_verified"
-    AI_REJECTED = "ai_rejected"
-    APPROVED = "approved"
-    REJECTED = "rejected"
-    NEEDS_RESUBMISSION = "needs_resubmission"
-
-
-class Submission(Base, UUIDPrimaryKeyMixin, TimestampMixin):
-    """Represents a student's proof-of-completion for a challenge."""
-
+class Submission(Base):
     __tablename__ = "submissions"
 
-    student_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("users.id"), nullable=False, index=True
-    )
-    challenge_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("challenges.id"), nullable=False, index=True
-    )
-    image_url: Mapped[str] = mapped_column(String(500), nullable=False)
-    image_public_id: Mapped[str] = mapped_column(String(255), nullable=False)
+    submission_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.user_id", ondelete="CASCADE"), nullable=False)
+    challenge_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("challenges.challenge_id", ondelete="CASCADE"), nullable=False)
+    
+    title: Mapped[str] = mapped_column(String, nullable=False)
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
-    status: Mapped[SubmissionStatus] = mapped_column(
-        Enum(SubmissionStatus, name="submission_status", create_constraint=True),
-        default=SubmissionStatus.PENDING_AI,
-        index=True,
-    )
-    ai_result: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
-    points_awarded: Mapped[int] = mapped_column(Integer, default=0)
-    submitted_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        server_default="now()",
-        nullable=False,
-    )
+    image_url: Mapped[str] = mapped_column(String, nullable=False)
+    latitude: Mapped[float | None] = mapped_column(Float, nullable=True)
+    longitude: Mapped[float | None] = mapped_column(Float, nullable=True)
+    submitted_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    status: Mapped[SubmissionStatus] = mapped_column(SQLEnum(SubmissionStatus), nullable=False, default=SubmissionStatus.PENDING)
+    points_earned: Mapped[int] = mapped_column(Integer, default=0)
 
-    # Relationships
-    student: Mapped["User"] = relationship(back_populates="submissions")  # type: ignore[name-defined] # noqa: F821
-    challenge: Mapped["Challenge"] = relationship(back_populates="submissions")  # type: ignore[name-defined] # noqa: F821
-    reviews: Mapped[list["Review"]] = relationship(back_populates="submission")  # type: ignore[name-defined] # noqa: F821
+    user: Mapped["User"] = relationship("User", back_populates="submissions")
+    challenge: Mapped["Challenge"] = relationship("Challenge", back_populates="submissions")
+    ai_verification: Mapped["AIVerification"] = relationship("AIVerification", back_populates="submission", uselist=False, cascade="all, delete-orphan")

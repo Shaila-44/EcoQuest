@@ -1,49 +1,26 @@
-"""EcoQuest API — Badge & UserStats Models."""
-
 import uuid
-from datetime import date, datetime
-from decimal import Decimal
+from datetime import datetime
+from typing import TYPE_CHECKING
 
-from sqlalchemy import Boolean, Date, DateTime, ForeignKey, Integer, Numeric, String, Text, UniqueConstraint
+from sqlalchemy import DateTime, Integer, String, Text, func
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.models.base import Base, TimestampMixin, UUIDPrimaryKeyMixin
+from app.models.base import Base
 
+if TYPE_CHECKING:
+    from app.models.user_badge import UserBadge
 
-class Badge(Base, UUIDPrimaryKeyMixin, TimestampMixin):
-    """Represents an achievement badge that students can earn."""
-
+class Badge(Base):
     __tablename__ = "badges"
 
-    name: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
-    description: Mapped[str] = mapped_column(Text, nullable=False)
-    icon_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
-    category: Mapped[str | None] = mapped_column(String(50), nullable=True)
-    criteria: Mapped[dict] = mapped_column(JSONB, nullable=False)
-    points_bonus: Mapped[int] = mapped_column(Integer, default=0)
-    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    badge_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    
+    badge_name: Mapped[str] = mapped_column(String, nullable=False)
+    description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    criteria: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
+    points: Mapped[int] = mapped_column(Integer, default=0)
+    icon_url: Mapped[str | None] = mapped_column(String, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
-
-class UserStats(Base, TimestampMixin):
-    """Denormalized gamification statistics for a user."""
-
-    __tablename__ = "user_stats"
-
-    user_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("users.id"), primary_key=True
-    )
-    total_points: Mapped[int] = mapped_column(Integer, default=0)
-    level: Mapped[int] = mapped_column(Integer, default=1)
-    current_streak: Mapped[int] = mapped_column(Integer, default=0)
-    longest_streak: Mapped[int] = mapped_column(Integer, default=0)
-    last_submission_date: Mapped[date | None] = mapped_column(Date, nullable=True)
-    total_submissions: Mapped[int] = mapped_column(Integer, default=0)
-    approved_submissions: Mapped[int] = mapped_column(Integer, default=0)
-    trust_score: Mapped[Decimal] = mapped_column(Numeric(5, 2), default=50.00)
-    updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default="now()", nullable=False
-    )
-
-    # Relationships
-    user: Mapped["User"] = relationship(back_populates="stats")  # type: ignore[name-defined] # noqa: F821
+    user_badges: Mapped[list["UserBadge"]] = relationship("UserBadge", back_populates="badge", cascade="all, delete-orphan")

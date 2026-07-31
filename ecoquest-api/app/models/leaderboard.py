@@ -1,34 +1,26 @@
-"""EcoQuest API — Leaderboard Model.
-
-NOTE: In production, this is implemented as a PostgreSQL materialized view.
-This module provides a read-only ORM mapping for query convenience.
-The actual materialized view is created via an Alembic migration.
-"""
-
 import uuid
-from decimal import Decimal
+from datetime import datetime
+from typing import TYPE_CHECKING
 
-from sqlalchemy import Integer, Numeric, String
+from sqlalchemy import DateTime, ForeignKey, Integer, func
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import Mapped, mapped_column
 
 from app.models.base import Base
 
+if TYPE_CHECKING:
+    from app.models.user import User
 
-class LeaderboardEntry(Base):
-    """Read-only ORM mapping for the leaderboard_weekly materialized view."""
+class Leaderboard(Base):
+    """Cached Leaderboard entry per user."""
+    __tablename__ = "leaderboard"
 
-    __tablename__ = "leaderboard_weekly"
-    __table_args__ = {"info": {"is_view": True}}
+    leaderboard_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.user_id", ondelete="CASCADE"), unique=True, nullable=False)
+    
+    total_points: Mapped[int] = mapped_column(Integer, default=0)
+    global_rank: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    category_rank: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
 
-    user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True)
-    first_name: Mapped[str] = mapped_column(String(100))
-    last_name: Mapped[str] = mapped_column(String(100))
-    school_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True))
-    school_name: Mapped[str | None] = mapped_column(String(255))
-    total_points: Mapped[int] = mapped_column(Integer)
-    level: Mapped[int] = mapped_column(Integer)
-    current_streak: Mapped[int] = mapped_column(Integer)
-    trust_score: Mapped[Decimal] = mapped_column(Numeric(5, 2))
-    overall_rank: Mapped[int] = mapped_column(Integer)
-    school_rank: Mapped[int] = mapped_column(Integer)
+    user: Mapped["User"] = relationship("User", back_populates="leaderboard")

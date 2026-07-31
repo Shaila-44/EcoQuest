@@ -1,74 +1,32 @@
-"""EcoQuest API — Challenge Model."""
-
-import enum
 import uuid
 from datetime import datetime
+from typing import TYPE_CHECKING
 
-from sqlalchemy import CheckConstraint, Enum, ForeignKey, Integer, SmallInteger, String, Text, DateTime
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.dialects.postgresql import UUID
 
-from app.models.base import Base, TimestampMixin, UUIDPrimaryKeyMixin
+from app.models.base import Base, TimestampMixin
 
+if TYPE_CHECKING:
+    from app.models.school import School
+    from app.models.user import User
+    from app.models.submission import Submission
 
-class ChallengeStatus(str, enum.Enum):
-    """Enumeration of challenge lifecycle states."""
-
-    DRAFT = "draft"
-    ACTIVE = "active"
-    ARCHIVED = "archived"
-
-
-class ChallengeCategory(str, enum.Enum):
-    """Enumeration of eco-challenge categories."""
-
-    WASTE_REDUCTION = "waste_reduction"
-    ENERGY_SAVING = "energy_saving"
-    WATER_CONSERVATION = "water_conservation"
-    TREE_PLANTING = "tree_planting"
-    RECYCLING = "recycling"
-    COMPOSTING = "composting"
-    CLEAN_COMMUTE = "clean_commute"
-    BIODIVERSITY = "biodiversity"
-    AWARENESS = "awareness"
-    OTHER = "other"
-
-
-class Challenge(Base, UUIDPrimaryKeyMixin, TimestampMixin):
-    """Represents an eco-challenge created by a teacher or admin."""
-
+class Challenge(Base, TimestampMixin):
     __tablename__ = "challenges"
-    __table_args__ = (
-        CheckConstraint("ends_at IS NULL OR ends_at > starts_at", name="valid_date_range"),
-        CheckConstraint("difficulty BETWEEN 1 AND 5", name="valid_difficulty"),
-    )
 
-    title: Mapped[str] = mapped_column(String(255), nullable=False)
-    description: Mapped[str] = mapped_column(Text, nullable=False)
-    instructions: Mapped[str | None] = mapped_column(Text, nullable=True)
-    category: Mapped[ChallengeCategory] = mapped_column(
-        Enum(ChallengeCategory, name="challenge_category", create_constraint=True),
-        nullable=False,
-    )
-    status: Mapped[ChallengeStatus] = mapped_column(
-        Enum(ChallengeStatus, name="challenge_status", create_constraint=True),
-        default=ChallengeStatus.DRAFT,
-    )
-    points: Mapped[int] = mapped_column(Integer, default=10, nullable=False)
-    difficulty: Mapped[int | None] = mapped_column(SmallInteger, nullable=True)
-    created_by: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("users.id"), nullable=False
-    )
-    school_id: Mapped[uuid.UUID | None] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("schools.id"), nullable=True, index=True
-    )
-    starts_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
-    ends_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
-    max_submissions: Mapped[int] = mapped_column(Integer, default=1)
-    verification_prompt: Mapped[str | None] = mapped_column(Text, nullable=True)
-    image_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    challenge_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    school_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("schools.school_id", ondelete="CASCADE"), nullable=False)
+    created_by: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.user_id", ondelete="RESTRICT"), nullable=False)
+    
+    title: Mapped[str] = mapped_column(String, nullable=False)
+    description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    category: Mapped[str] = mapped_column(String, nullable=False)
+    points: Mapped[int] = mapped_column(Integer, default=0)
+    start_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    end_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
-    # Relationships
-    creator: Mapped["User"] = relationship(back_populates="created_challenges")  # type: ignore[name-defined] # noqa: F821
-    school: Mapped["School | None"] = relationship(back_populates="challenges")  # type: ignore[name-defined] # noqa: F821
-    submissions: Mapped[list["Submission"]] = relationship(back_populates="challenge")  # type: ignore[name-defined] # noqa: F821
+    school: Mapped["School"] = relationship("School", back_populates="challenges")
+    creator: Mapped["User"] = relationship("User", back_populates="created_challenges")
+    submissions: Mapped[list["Submission"]] = relationship("Submission", back_populates="challenge", cascade="all, delete-orphan")

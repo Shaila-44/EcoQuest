@@ -1,51 +1,51 @@
-"""EcoQuest API — User Model."""
-
-import enum
 import uuid
-from datetime import datetime
+from typing import TYPE_CHECKING
 
-from sqlalchemy import Boolean, DateTime, Enum, ForeignKey, String
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Enum as SQLEnum, ForeignKey, String, Float
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.dialects.postgresql import UUID
 
-from app.models.base import Base, TimestampMixin, UUIDPrimaryKeyMixin
+from app.models.base import Base, TimestampMixin
+from app.models.enums import UserStatus
 
+if TYPE_CHECKING:
+    from app.models.school import School
+    from app.models.role import Role
+    from app.models.device import Device
+    from app.models.login_audit import LoginAudit
+    from app.models.user_badge import UserBadge
+    from app.models.submission import Submission
+    from app.models.challenge import Challenge
+    from app.models.leaderboard import Leaderboard
+    from app.models.trust_score_history_user import TrustScoreHistoryUser
+    from app.models.ai_verification import AIVerification
+    from app.models.security_event import SecurityEvent
 
-class UserRole(str, enum.Enum):
-    """Enumeration of user roles."""
-
-    STUDENT = "student"
-    TEACHER = "teacher"
-    ADMIN = "admin"
-
-
-class User(Base, UUIDPrimaryKeyMixin, TimestampMixin):
-    """Represents a user (student, teacher, or admin) on the platform."""
-
+class User(Base, TimestampMixin):
     __tablename__ = "users"
 
-    email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False, index=True)
-    password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
-    first_name: Mapped[str] = mapped_column(String(100), nullable=False)
-    last_name: Mapped[str] = mapped_column(String(100), nullable=False)
-    role: Mapped[UserRole] = mapped_column(
-        Enum(UserRole, name="user_role", create_constraint=True),
-        default=UserRole.STUDENT,
-        nullable=False,
-        index=True,
-    )
-    school_id: Mapped[uuid.UUID | None] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("schools.id", ondelete="SET NULL"), nullable=True, index=True
-    )
-    avatar_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
-    grade: Mapped[str | None] = mapped_column(String(20), nullable=True)
-    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
-    last_login_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    school_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("schools.school_id", ondelete="CASCADE"), nullable=False)
+    role_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("roles.role_id", ondelete="RESTRICT"), nullable=False)
+    
+    name: Mapped[str] = mapped_column(String, nullable=False)
+    email_encrypted: Mapped[str] = mapped_column(String, unique=True, index=True, nullable=False)
+    email_hash: Mapped[str] = mapped_column(String, unique=True, index=True, nullable=False)
+    phone_encrypted: Mapped[str | None] = mapped_column(String, unique=True, index=True, nullable=True)
+    phone_hash: Mapped[str | None] = mapped_column(String, unique=True, index=True, nullable=True)
+    password_hash: Mapped[str] = mapped_column(String, nullable=False)
+    profile_image: Mapped[str | None] = mapped_column(String, nullable=True)
+    status: Mapped[UserStatus] = mapped_column(SQLEnum(UserStatus), nullable=False, default=UserStatus.ACTIVE)
+    trust_score: Mapped[float] = mapped_column(Float, default=100.0)
 
-    # Relationships
-    school: Mapped["School | None"] = relationship(back_populates="users")  # type: ignore[name-defined] # noqa: F821
-    submissions: Mapped[list["Submission"]] = relationship(back_populates="student")  # type: ignore[name-defined] # noqa: F821
-    created_challenges: Mapped[list["Challenge"]] = relationship(back_populates="creator")  # type: ignore[name-defined] # noqa: F821
-    reviews: Mapped[list["Review"]] = relationship(back_populates="reviewer")  # type: ignore[name-defined] # noqa: F821
-    badges: Mapped[list["UserBadge"]] = relationship(back_populates="user")  # type: ignore[name-defined] # noqa: F821
-    stats: Mapped["UserStats | None"] = relationship(back_populates="user")  # type: ignore[name-defined] # noqa: F821
+    school: Mapped["School"] = relationship("School", back_populates="users")
+    role: Mapped["Role"] = relationship("Role", back_populates="users")
+    devices: Mapped[list["Device"]] = relationship("Device", back_populates="user", cascade="all, delete-orphan")
+    login_audits: Mapped[list["LoginAudit"]] = relationship("LoginAudit", back_populates="user", cascade="all, delete-orphan")
+    user_badges: Mapped[list["UserBadge"]] = relationship("UserBadge", back_populates="user", cascade="all, delete-orphan")
+    submissions: Mapped[list["Submission"]] = relationship("Submission", back_populates="user", cascade="all, delete-orphan")
+    created_challenges: Mapped[list["Challenge"]] = relationship("Challenge", back_populates="creator", cascade="all, delete-orphan")
+    leaderboard: Mapped["Leaderboard"] = relationship("Leaderboard", back_populates="user", uselist=False, cascade="all, delete-orphan")
+    trust_score_history: Mapped[list["TrustScoreHistoryUser"]] = relationship("TrustScoreHistoryUser", back_populates="user", cascade="all, delete-orphan")
+    ai_verifications_done: Mapped[list["AIVerification"]] = relationship("AIVerification", back_populates="verifier")
+    security_events_resolved: Mapped[list["SecurityEvent"]] = relationship("SecurityEvent", back_populates="resolver")
