@@ -14,67 +14,75 @@ import {
   ChevronRight,
   Flame,
   Zap,
-  Sparkles
+  Sparkles,
+  ShieldCheck,
+  Compass
 } from 'lucide-react';
 
 export default function Sidebar({ activeTab, setActiveTab, onLogout, userStats }) {
   const navItems = [
-    { id: 'home', label: 'Home Page', icon: Home, badge: 'Daily Hub', highlight: true },
-    { id: 'island', label: 'My Island', icon: Palmtree, badge: 'Progression', separate: true },
-    { id: 'missions', label: 'Missions & Quests', icon: Target, count: '15 Active' },
-    { id: 'leaderboard', label: 'Leaderboard', icon: Trophy, rank: '#4 Class' },
-    { id: 'community', label: 'Eco Community', icon: Users, alert: true },
-    { id: 'store', label: 'Eco Store', icon: ShoppingBag, coins: '1,280' },
-    { id: 'achievements', label: 'Achievements', icon: Award, count: '24/32' },
+    { id: 'home', label: 'Command Center', icon: Home, badge: 'Active Hub', highlight: true },
+    { id: 'island', label: 'Island Realm', icon: Palmtree, badge: 'Sanctuary', separate: true },
+    { id: 'missions', label: 'Quest Board', icon: Target, count: '15 Active' },
+    { id: 'leaderboard', label: 'Hall of Champions', icon: Trophy, rank: '#4 Rank' },
+    { id: 'community', label: 'Eco Chronicles', icon: Users, alert: true },
+    { id: 'store', label: 'Explorer Shop', icon: ShoppingBag, coins: '1,280' },
+    { id: 'achievements', label: 'Unlock Collection', icon: Award, count: '24/32' },
   ];
 
   return (
-    <aside className="fixed top-0 left-0 h-screen w-64 lg:w-72 bg-white/90 backdrop-blur-2xl border-r border-emerald-100 flex flex-col justify-between z-30 shadow-xl shadow-emerald-900/5 select-none overflow-y-auto">
+    <aside className="fixed top-0 left-0 h-screen w-64 lg:w-72 bg-[#061912]/92 backdrop-blur-2xl border-r border-emerald-500/20 flex flex-col justify-between z-30 shadow-2xl shadow-emerald-950/40 select-none overflow-y-auto text-slate-100">
       
-      {/* SIDEBAR HEADER & LOGO */}
+      {/* SIDEBAR HEADER & RPG EMBLEM LOGO */}
       <div>
-        <div className="p-6 border-b border-emerald-100/80 flex items-center justify-between">
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setActiveTab('home')}>
-            <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white shadow-lg shadow-emerald-500/30">
-              <Leaf className="w-6 h-6 text-emerald-100 fill-emerald-200/30" />
+        <div className="p-6 border-b border-emerald-500/20 flex items-center justify-between">
+          <div className="flex items-center gap-3.5 cursor-pointer group" onClick={() => setActiveTab('home')}>
+            <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-emerald-600 via-teal-500 to-amber-400 flex items-center justify-center text-slate-950 shadow-lg shadow-emerald-500/30 ring-1 ring-emerald-300/40 group-hover:scale-105 transition-transform">
+              <Leaf className="w-6 h-6 text-slate-950 fill-emerald-100/40" />
             </div>
             <div>
-              <span className="font-extrabold text-2xl tracking-tight text-slate-900 font-heading block leading-none">
-                Eco<span className="text-emerald-600">Quest</span>
+              <span className="font-black text-2xl tracking-tight text-white font-heading block leading-none">
+                Eco<span className="text-emerald-400">Quest</span>
               </span>
-              <span className="text-[10px] font-bold tracking-widest text-emerald-700 uppercase mt-0.5 block">
-                Student Command Center
+              <span className="text-[9px] font-black tracking-widest text-emerald-400 uppercase mt-1 block">
+                Neo Nature RPG
               </span>
             </div>
           </div>
         </div>
 
-        {/* STUDENT LEVEL QUICK STATUS */}
-        <div className="mx-4 my-4 p-3.5 rounded-2xl bg-gradient-to-r from-emerald-900 via-teal-900 to-emerald-950 text-white shadow-md relative overflow-hidden">
-          <div className="absolute -right-4 -bottom-4 w-20 h-20 bg-emerald-500/20 rounded-full blur-xl pointer-events-none" />
-          
-          <div className="flex items-center justify-between mb-2">
+        {/* ADVENTURER CARD STATUS & RANK CREST */}
+        <div className="mx-4 my-4 p-4 rounded-2xl bg-gradient-to-br from-[#0c2e21] via-[#092218] to-[#04160d] text-white border border-emerald-500/30 shadow-xl relative overflow-hidden group">
+          <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-emerald-500/15 rounded-full blur-xl pointer-events-none group-hover:bg-emerald-400/25 transition-all" />
+          <div className="absolute top-0 right-0 w-16 h-16 bg-amber-400/10 rounded-full blur-lg pointer-events-none" />
+
+          <div className="flex items-center justify-between mb-2.5">
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-              <span className="text-xs font-bold text-emerald-200 uppercase tracking-wider">Level 12 Eco Master</span>
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
+              <span className="text-[11px] font-black text-emerald-300 uppercase tracking-wider font-heading">
+                B-Rank Guardian
+              </span>
             </div>
-            <div className="flex items-center gap-1 bg-amber-500/20 px-2 py-0.5 rounded-full border border-amber-400/30 text-amber-300 text-[11px] font-extrabold">
+            <div className="flex items-center gap-1 bg-amber-500/20 px-2.5 py-0.5 rounded-full border border-amber-400/40 text-amber-300 text-[11px] font-black">
               <Flame className="w-3 h-3 text-amber-400 fill-amber-400" />
               <span>7D Streak</span>
             </div>
           </div>
 
-          <div className="space-y-1">
-            <div className="flex justify-between text-[11px] font-semibold text-slate-200">
-              <span>XP Progress</span>
-              <span className="text-emerald-300 font-bold">3,450 / 5,000</span>
+          <div className="space-y-1.5">
+            <div className="flex justify-between text-[11px] font-bold text-slate-300">
+              <span className="flex items-center gap-1">
+                <Sparkles className="w-3 h-3 text-amber-400" />
+                <span>Level 12 XP</span>
+              </span>
+              <span className="text-emerald-400 font-black">3,450 / 5,000</span>
             </div>
-            <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden p-0.5 border border-white/10">
+            <div className="w-full h-2.5 bg-slate-950/80 rounded-full overflow-hidden p-0.5 border border-emerald-500/25">
               <motion.div 
                 initial={{ width: 0 }}
                 animate={{ width: '69%' }}
                 transition={{ duration: 1, ease: 'easeOut' }}
-                className="h-full bg-gradient-to-r from-emerald-400 to-teal-300 rounded-full"
+                className="h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-amber-400 rounded-full shadow-[0_0_10px_#10b981]"
               />
             </div>
           </div>
@@ -90,49 +98,49 @@ export default function Sidebar({ activeTab, setActiveTab, onLogout, userStats }
               <button
                 key={item.id}
                 onClick={() => setActiveTab(item.id)}
-                className={`w-full flex items-center justify-between px-3.5 py-3 rounded-2xl text-xs font-bold transition-all duration-200 cursor-pointer group relative ${
+                className={`w-full flex items-center justify-between px-3.5 py-3 rounded-2xl text-xs font-bold transition-all duration-250 cursor-pointer group relative ${
                   isActive
-                    ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/30 translate-x-1'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-emerald-50/80'
+                    ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-600/35 border border-emerald-400/50 translate-x-1.5'
+                    : 'text-slate-300 hover:text-white hover:bg-emerald-950/50 border border-transparent'
                 }`}
               >
                 <div className="flex items-center gap-3">
                   <div className={`p-1.5 rounded-xl transition-colors ${
                     isActive 
                       ? 'bg-white/20 text-white' 
-                      : 'bg-slate-100 text-slate-500 group-hover:bg-emerald-100 group-hover:text-emerald-700'
+                      : 'bg-emerald-950/70 text-emerald-400 group-hover:bg-emerald-800/50 group-hover:text-emerald-200 border border-emerald-500/20'
                   }`}>
                     <Icon className="w-4 h-4" />
                   </div>
-                  <span className="font-semibold text-sm">{item.label}</span>
+                  <span className="font-extrabold text-sm tracking-tight">{item.label}</span>
                 </div>
 
                 {item.badge && (
-                  <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider ${
+                  <span className={`text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider ${
                     isActive
                       ? 'bg-white/20 text-white'
                       : item.separate
-                        ? 'bg-teal-100 text-teal-800 border border-teal-200'
-                        : 'bg-emerald-100 text-emerald-800'
+                        ? 'bg-teal-900/60 text-teal-300 border border-teal-500/40'
+                        : 'bg-emerald-900/60 text-emerald-300 border border-emerald-500/30'
                   }`}>
                     {item.badge}
                   </span>
                 )}
 
                 {item.count && !isActive && (
-                  <span className="text-[11px] font-bold text-slate-400 group-hover:text-slate-600">
+                  <span className="text-[11px] font-bold text-slate-400 group-hover:text-emerald-300">
                     {item.count}
                   </span>
                 )}
 
                 {item.rank && !isActive && (
-                  <span className="text-[11px] font-extrabold text-amber-600 bg-amber-50 border border-amber-200/80 px-2 py-0.5 rounded-full">
+                  <span className="text-[11px] font-black text-amber-300 bg-amber-500/20 border border-amber-400/40 px-2 py-0.5 rounded-full">
                     {item.rank}
                   </span>
                 )}
 
                 {item.coins && !isActive && (
-                  <span className="text-[11px] font-extrabold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                  <span className="text-[11px] font-black text-emerald-300 bg-emerald-950 border border-emerald-500/30 px-2 py-0.5 rounded-full">
                     🪙 {item.coins}
                   </span>
                 )}
@@ -143,12 +151,13 @@ export default function Sidebar({ activeTab, setActiveTab, onLogout, userStats }
       </div>
 
       {/* SIDEBAR FOOTER */}
-      <div className="p-4 border-t border-emerald-100/80 text-center">
-        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-          EcoQuest v2.4 • Active
+      <div className="p-4 border-t border-emerald-500/20 text-center">
+        <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest block">
+          EcoQuest RPG v3.0 • Active Realm
         </span>
       </div>
 
     </aside>
   );
 }
+

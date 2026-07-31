@@ -19,10 +19,10 @@ export default function CommunityFeed() {
     {
       id: 1,
       author: 'Priya Patel',
-      class: 'Class 8-B',
+      class: 'Guild 8-B',
       avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80',
-      action: 'Planted 3 Neem Saplings 🌳',
-      desc: 'Planted 3 neem saplings in the school herbal garden today with my eco club team! Excited to watch them grow! #EcoQuest #GreenSchool',
+      action: 'Planted 3 Neem Saplings in Botanical Sanctuary 🌳',
+      desc: 'Planted 3 neem saplings in the school herbal sanctuary today with my guild team! Excited to watch them grow! #EcoQuest #GreenSanctuary',
       image: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=800&q=80',
       likes: 142,
       isLiked: false,
@@ -35,9 +35,9 @@ export default function CommunityFeed() {
     {
       id: 2,
       author: 'Aarav Sharma',
-      class: 'Class 9-A',
+      class: 'Guild 9-A',
       avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80',
-      action: 'Neighborhood Cleanup Drive 🌊',
+      action: 'Coastal Cleanup Drive 🌊',
       desc: 'Organized a neighborhood beach cleanup drive this morning! Collected 12kg of single-use plastic waste and segregated recyclables.',
       image: 'https://images.unsplash.com/photo-1618477461853-cf6ed80faba5?auto=format&fit=crop&w=800&q=80',
       likes: 210,
@@ -69,18 +69,18 @@ export default function CommunityFeed() {
     setPosts(posts.map(p => p.id === post.id ? { ...p, seedsGifted: p.seedsGifted + 10 } : p));
     
     confetti({
-      particleCount: 50,
-      spread: 60,
+      particleCount: 60,
+      spread: 70,
       origin: { y: 0.7 },
-      colors: ['#10b981', '#34d399', '#f59e0b']
+      colors: ['#10b981', '#34d399', '#fbbf24']
     });
 
-    setGiftToast(`You gifted 10 Eco Seeds 🌱 to ${post.author}!`);
+    setGiftToast(`You gifted 10 Mana Seeds 🌱 to ${post.author}!`);
     setTimeout(() => setGiftToast(null), 3000);
   };
 
   return (
-    <div className="glass-card p-6 rounded-3xl border border-emerald-100/90 shadow-xl space-y-6 relative hover-card-lift">
+    <div className="glass-card p-6 rounded-3xl border border-emerald-500/30 shadow-2xl space-y-6 relative hover-card-lift text-slate-100">
       
       {/* GIFT TOAST NOTIFICATION */}
       <AnimatePresence>
@@ -89,9 +89,9 @@ export default function CommunityFeed() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="absolute top-4 right-6 z-50 bg-emerald-600 text-white font-black text-xs px-4 py-2.5 rounded-2xl shadow-xl flex items-center gap-2"
+            className="absolute top-4 right-6 z-50 bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 font-black text-xs px-4 py-2.5 rounded-2xl shadow-2xl flex items-center gap-2 border border-emerald-300/40"
           >
-            <Sprout className="w-4 h-4 fill-emerald-200" />
+            <Sprout className="w-4 h-4 fill-slate-950 text-slate-950" />
             <span>{giftToast}</span>
           </motion.div>
         )}
@@ -100,16 +100,16 @@ export default function CommunityFeed() {
       {/* HEADER */}
       <div className="flex items-center justify-between">
         <div>
-          <div className="inline-flex items-center gap-1 text-emerald-700 text-xs font-black uppercase tracking-wider mb-1">
-            <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-            <span>STUDENT ECO ACTIVITY FEED</span>
+          <div className="inline-flex items-center gap-1.5 text-emerald-400 text-xs font-black uppercase tracking-wider mb-1">
+            <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-spin-slow" />
+            <span>GUILD DISPATCH FEED</span>
           </div>
-          <h3 className="text-xl font-black text-slate-900 font-heading">Eco Community Activity</h3>
+          <h3 className="text-xl font-black text-white font-heading">Eco Chronicles</h3>
         </div>
 
-        <button className="flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs shadow-md shadow-emerald-600/20 hover:scale-105 active:scale-95 transition-all cursor-pointer">
-          <PlusCircle className="w-4 h-4" />
-          <span>New Post</span>
+        <button className="flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-400 to-amber-300 text-slate-950 font-black text-xs shadow-lg shadow-emerald-500/30 hover:scale-105 active:scale-95 transition-all cursor-pointer border border-emerald-300/40">
+          <PlusCircle className="w-4 h-4 stroke-[2.5]" />
+          <span>Post Quest Proof</span>
         </button>
       </div>
 
@@ -118,42 +118,42 @@ export default function CommunityFeed() {
         {posts.map((post) => (
           <div
             key={post.id}
-            className="rounded-3xl border border-slate-200/80 bg-white/90 shadow-sm overflow-hidden space-y-4 hover:shadow-md transition-shadow"
+            className="rounded-3xl border border-emerald-500/20 bg-[#062016]/90 shadow-xl overflow-hidden space-y-4 hover:border-emerald-500/40 transition-all"
           >
             {/* POST AUTHOR HEADER */}
-            <div className="p-4 flex items-center justify-between border-b border-slate-100">
+            <div className="p-4 flex items-center justify-between border-b border-emerald-500/20">
               <div className="flex items-center gap-3">
                 <img
                   src={post.avatar}
                   alt={post.author}
-                  className="w-11 h-11 rounded-2xl object-cover ring-2 ring-emerald-500/40"
+                  className="w-11 h-11 rounded-2xl object-cover ring-2 ring-emerald-400/60"
                 />
                 <div>
                   <div className="flex items-center gap-1.5">
-                    <h4 className="text-xs font-black text-slate-900 font-heading">{post.author}</h4>
+                    <h4 className="text-xs font-black text-white font-heading">{post.author}</h4>
                     {post.verified && (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-black text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full border border-emerald-200">
-                        <CheckCircle2 className="w-3 h-3 text-emerald-600" /> Verified Eco Action
+                      <span className="inline-flex items-center gap-1 text-[10px] font-black text-emerald-300 bg-emerald-950 px-2 py-0.5 rounded-full border border-emerald-500/30">
+                        <CheckCircle2 className="w-3 h-3 text-emerald-400" /> Verified Quest
                       </span>
                     )}
                   </div>
-                  <p className="text-[11px] font-bold text-slate-500">{post.class} • {post.time}</p>
+                  <p className="text-[11px] font-bold text-emerald-400/70">{post.class} • {post.time}</p>
                 </div>
               </div>
 
-              <span className="text-xs font-black text-emerald-900 bg-emerald-100 border border-emerald-300 px-3 py-1 rounded-full shadow-xs">
+              <span className="text-xs font-black text-amber-300 bg-amber-500/20 border border-amber-400/40 px-3 py-1 rounded-full shadow-sm">
                 {post.xpEarned}
               </span>
             </div>
 
             {/* POST CAPTION */}
-            <div className="px-4 text-xs sm:text-sm text-slate-800 font-medium leading-relaxed">
-              <div className="font-extrabold text-emerald-800 mb-1">{post.action}</div>
+            <div className="px-4 text-xs sm:text-sm text-slate-200 font-medium leading-relaxed">
+              <div className="font-black text-emerald-300 mb-1 text-sm">{post.action}</div>
               {post.desc}
             </div>
 
             {/* POST IMAGE */}
-            <div className="relative aspect-video w-full overflow-hidden bg-slate-100 rounded-2xl mx-4 max-w-[calc(100%-2rem)]">
+            <div className="relative aspect-video w-full overflow-hidden bg-slate-950 rounded-2xl mx-4 max-w-[calc(100%-2rem)] border border-emerald-500/20">
               <img
                 src={post.image}
                 alt={post.action}
@@ -162,23 +162,23 @@ export default function CommunityFeed() {
             </div>
 
             {/* POST FOOTER ACTIONS */}
-            <div className="p-4 flex items-center justify-between border-t border-slate-100">
+            <div className="p-4 flex items-center justify-between border-t border-emerald-500/20">
               <div className="flex items-center gap-4">
                 
                 {/* LIKE BUTTON */}
                 <button
                   onClick={() => handleLike(post.id)}
                   className={`flex items-center gap-1.5 text-xs font-black transition-colors cursor-pointer ${
-                    post.isLiked ? 'text-red-500' : 'text-slate-600 hover:text-red-500'
+                    post.isLiked ? 'text-rose-400' : 'text-slate-300 hover:text-rose-400'
                   }`}
                 >
-                  <Heart className={`w-4 h-4 ${post.isLiked ? 'fill-red-500' : ''}`} />
+                  <Heart className={`w-4 h-4 ${post.isLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
                   <span>{post.likes}</span>
                 </button>
 
                 {/* COMMENTS */}
-                <button className="flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-slate-900 transition-colors cursor-pointer">
-                  <MessageCircle className="w-4 h-4" />
+                <button className="flex items-center gap-1.5 text-xs font-bold text-slate-300 hover:text-white transition-colors cursor-pointer">
+                  <MessageCircle className="w-4 h-4 text-emerald-400" />
                   <span>{post.comments} Comments</span>
                 </button>
 
@@ -187,9 +187,9 @@ export default function CommunityFeed() {
               {/* GIFT SEEDS BUTTON */}
               <button
                 onClick={() => handleGiftSeeds(post)}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-black text-xs shadow-md shadow-emerald-500/20 hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                className="flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-400 to-amber-300 text-slate-950 font-black text-xs shadow-md shadow-emerald-500/30 hover:scale-105 active:scale-95 transition-all cursor-pointer border border-emerald-200/50"
               >
-                <Sprout className="w-3.5 h-3.5 fill-emerald-200" />
+                <Sprout className="w-3.5 h-3.5 fill-slate-950 text-slate-950" />
                 <span>Gift Seeds ({post.seedsGifted})</span>
               </button>
 
@@ -202,3 +202,4 @@ export default function CommunityFeed() {
     </div>
   );
 }
+
