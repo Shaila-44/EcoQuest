@@ -1,32 +1,24 @@
 """EcoQuest API — AI Pipeline Orchestrator.
 
-Coordinates the image preparation → Gemini verification pipeline.
+Coordinates the Gemini Vision verification pipeline.
 """
 
-from app.pipeline.preprocessor import ImagePreprocessor
 from app.pipeline.verifier import GeminiVerifier
 from app.pipeline.schemas import PipelineResult
 
 
 class PipelineOrchestrator:
-    """Orchestrates the AI verification pipeline.
-
-    Pipeline stages:
-    1. Pillow image preparation (EXIF orientation, resize, compress)
-    2. Gemini Vision verification (image understanding)
-    """
+    """Orchestrates the AI verification pipeline using Gemini Vision."""
 
     def __init__(
         self,
-        preprocessor: ImagePreprocessor,
         verifier: GeminiVerifier,
     ):
-        self.preprocessor = preprocessor
         self.verifier = verifier
 
     async def run(
         self,
-        image_bytes: bytes,
+        image_url: str,
         challenge_title: str,
         challenge_description: str,
         verification_prompt: str | None = None,
@@ -34,9 +26,9 @@ class PipelineOrchestrator:
         """Execute the AI verification pipeline.
 
         TODO: Implement:
-        1. Prepare image
+        1. Download image from Cloudinary URL
         2. Send to Gemini for verification
         3. Assemble PipelineResult
-        4. Handle errors at each stage gracefully
+        4. Handle errors gracefully
         """
         return PipelineResult()

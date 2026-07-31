@@ -1,17 +1,11 @@
-"""EcoQuest API — Common Schemas."""
+"""EcoQuest API — Common Response Schemas."""
 
-from datetime import datetime
 from pydantic import BaseModel
-
-
-class TimestampSchema(BaseModel):
-    """Mixin for timestamps."""
-    created_at: datetime
-    updated_at: datetime
 
 
 class ErrorDetail(BaseModel):
     """Structured error detail."""
+
     code: str
     message: str
     details: dict = {}
@@ -20,11 +14,13 @@ class ErrorDetail(BaseModel):
 
 class ErrorResponse(BaseModel):
     """Standard error response envelope."""
+
     error: ErrorDetail
 
 
 class PaginatedMeta(BaseModel):
     """Pagination metadata."""
+
     page: int = 1
     per_page: int = 20
     total: int = 0
@@ -33,10 +29,12 @@ class PaginatedMeta(BaseModel):
 
 class PaginatedResponse(BaseModel):
     """Paginated response envelope."""
+
     data: list = []
     meta: PaginatedMeta = PaginatedMeta()
 
 
 class MessageResponse(BaseModel):
     """Simple success message response."""
+
     message: str

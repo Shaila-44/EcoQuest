@@ -1,29 +1,24 @@
 """EcoQuest API — Leaderboard Schemas."""
 
 import uuid
-from datetime import datetime
-from pydantic import BaseModel, ConfigDict, Field
+from decimal import Decimal
+
+from pydantic import BaseModel
 
 
-class LeaderboardBase(BaseModel):
-    total_points: int = Field(default=0, ge=0)
-    challenges_completed: int = Field(default=0, ge=0)
-    rank: int | None = Field(None, ge=1)
+class LeaderboardEntryRead(BaseModel):
+    """Schema for a single leaderboard entry."""
 
-
-class LeaderboardCreate(LeaderboardBase):
     user_id: uuid.UUID
+    first_name: str
+    last_name: str
+    school_id: uuid.UUID | None = None
+    school_name: str | None = None
+    total_points: int
+    level: int
+    current_streak: int
+    trust_score: Decimal
+    overall_rank: int
+    school_rank: int
 
-
-class LeaderboardUpdate(BaseModel):
-    total_points: int | None = Field(None, ge=0)
-    challenges_completed: int | None = Field(None, ge=0)
-    rank: int | None = Field(None, ge=1)
-
-
-class LeaderboardResponse(LeaderboardBase):
-    id: uuid.UUID
-    user_id: uuid.UUID
-    last_updated: datetime
-
-    model_config = ConfigDict(from_attributes=True)
+    model_config = {"from_attributes": True}
