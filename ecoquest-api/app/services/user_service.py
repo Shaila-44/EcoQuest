@@ -13,7 +13,7 @@ class UserService:
         self.session = session
 
     # TODO: Implement:
-    # - get_profile(user_id) -> UserRead
-    # - update_profile(user_id, data) -> UserRead
+    # - get_profile(user_id) -> UserResponse
+    # - update_profile(user_id, data) -> UserResponse
     # - list_users(filters, pagination) -> PaginatedResponse
     # - deactivate_user(user_id) -> None

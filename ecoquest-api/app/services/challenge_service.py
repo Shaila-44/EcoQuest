@@ -13,8 +13,8 @@ class ChallengeService:
         self.session = session
 
     # TODO: Implement:
-    # - create_challenge(data, created_by) -> ChallengeRead
-    # - update_challenge(challenge_id, data, user) -> ChallengeRead
+    # - create_challenge(data, created_by) -> ChallengeResponse
+    # - update_challenge(challenge_id, data, user) -> ChallengeResponse
     # - delete_challenge(challenge_id, user) -> None
-    # - get_daily_challenge(school_id) -> ChallengeRead
+    # - get_daily_challenge(school_id) -> ChallengeResponse
     # - list_challenges(filters, pagination) -> PaginatedResponse

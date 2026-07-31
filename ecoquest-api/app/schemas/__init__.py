@@ -24,3 +24,5 @@ from .school_trust_factor import SchoolTrustFactorBase, SchoolTrustFactorCreate,
 from .trust_score_history_user import TrustScoreHistoryUserBase, TrustScoreHistoryUserCreate, TrustScoreHistoryUserResponse
 from .trust_score_history_school import TrustScoreHistorySchoolBase, TrustScoreHistorySchoolCreate, TrustScoreHistorySchoolResponse
 from .security_event import SecurityEventBase, SecurityEventCreate, SecurityEventUpdate, SecurityEventResponse
+from .review import ReviewBase, ReviewCreate, ReviewUpdate, ReviewResponse
+from .auth import LoginRequest, RegisterRequest, TokenResponse, RefreshRequest

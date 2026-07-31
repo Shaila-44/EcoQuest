@@ -13,6 +13,6 @@ class ReviewService:
         self.session = session
 
     # TODO: Implement:
-    # - create_review(data, reviewer_id) -> ReviewRead
+    # - create_review(data, reviewer_id) -> ReviewResponse
     # - get_pending_reviews(school_id, pagination) -> PaginatedResponse
-    # - get_review_history(submission_id) -> list[ReviewRead]
+    # - get_review_history(submission_id) -> list[ReviewResponse]
