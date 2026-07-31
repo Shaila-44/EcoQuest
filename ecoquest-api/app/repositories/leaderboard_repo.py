@@ -17,6 +17,7 @@ class LeaderboardRepository(BaseRepository[Leaderboard]):
 
     async def get_by_school(self, school_id: uuid.UUID, limit: int = 100) -> list[Leaderboard]:
         """Fetch the leaderboard for a specific school by joining User."""
+
         stmt = (
             select(Leaderboard)
             .join(Leaderboard.user)

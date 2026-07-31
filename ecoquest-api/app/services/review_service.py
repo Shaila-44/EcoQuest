@@ -4,6 +4,7 @@ Handles teacher review workflow: approve, reject, or request resubmission.
 """
 
 import uuid
+
 from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -13,9 +14,10 @@ from app.models.submission import Submission
 from app.models.user import User
 from app.repositories.review_repo import ReviewRepository
 from app.repositories.submission_repo import SubmissionRepository
-from app.schemas.review import ReviewCreate
+from app.schemas.review import ReviewCreate, ReviewRead
 from app.services.gamification_service import GamificationService
 from app.services.leaderboard_service import LeaderboardService
+
 
 
 class ReviewService:
@@ -62,6 +64,29 @@ class ReviewService:
         """Fetch all submissions awaiting teacher review for a school."""
         return await self.submission_repo.get_pending_for_school(school_id)
 
-    async def get_review_history(self, submission_id: uuid.UUID) -> list[Review]:
-        """Get review history for a submission."""
-        return await self.review_repo.get_by_submission(submission_id)
+async def create_review(
+    self,
+    data: ReviewCreate,
+    reviewer_id: uuid.UUID,
+) -> ReviewRead:
+    """Create a new review (teacher decision)."""
+    repo = ReviewRepository(self.session)
+
+    review = Review(
+        submission_id=data.submission_id,
+        reviewer_id=reviewer_id,
+        decision=data.decision,
+        comment=data.comment,
+        points_override=data.points_override,
+    )
+
+    created_review = await repo.create(review)
+    return ReviewRead.model_validate(created_review)
+
+
+async def get_review_history(
+    self,
+    submission_id: uuid.UUID,
+) -> list[Review]:
+    """Get review history for a submission."""
+    return await self.review_repo.get_by_submission(submission_id)

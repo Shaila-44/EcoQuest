@@ -4,6 +4,7 @@ Handles leaderboard queries and score aggregation updates.
 """
 
 import uuid
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -18,17 +19,30 @@ class LeaderboardService:
         self.session = session
         self.leaderboard_repo = LeaderboardRepository(session)
 
-    async def get_overall_leaderboard(self, limit: int = 50) -> list[LeaderboardEntry]:
+    async def get_overall_leaderboard(
+        self, limit: int = 50
+    ) -> list[LeaderboardEntry]:
         """Fetch the overall top student leaderboard."""
-        stmt = select(LeaderboardEntry).order_by(LeaderboardEntry.total_points.desc()).limit(limit)
+        stmt = (
+            select(LeaderboardEntry)
+            .order_by(LeaderboardEntry.total_points.desc())
+            .limit(limit)
+        )
         result = await self.session.execute(stmt)
         return list(result.scalars().all())
 
-    async def get_school_leaderboard(self, school_id: uuid.UUID, limit: int = 50) -> list[LeaderboardEntry]:
+    async def get_school_leaderboard(
+        self,
+        school_id: uuid.UUID,
+        limit: int = 50,
+    ) -> list[LeaderboardEntry]:
         """Fetch the leaderboard for a specific school."""
         return await self.leaderboard_repo.get_by_school(school_id, limit=limit)
 
-    async def get_user_rank(self, user_id: uuid.UUID) -> LeaderboardEntry | None:
+    async def get_user_rank(
+        self,
+        user_id: uuid.UUID,
+    ) -> LeaderboardEntry | None:
         """Get the leaderboard entry for a user."""
         return await self.leaderboard_repo.get_rank_for_user(user_id)
 
@@ -38,11 +52,15 @@ class LeaderboardService:
         school_id: uuid.UUID,
         points_awarded: int,
     ) -> None:
-        """Increment student leaderboard points balance."""
+        """Increment a user's leaderboard points."""
         entry = await self.leaderboard_repo.get_rank_for_user(user_id)
+
         if entry:
             entry.total_points += points_awarded
-            await self.leaderboard_repo.update(entry, {"total_points": entry.total_points})
+            await self.leaderboard_repo.update(
+                entry,
+                {"total_points": entry.total_points},
+            )
         else:
             new_entry = LeaderboardEntry(
                 user_id=user_id,

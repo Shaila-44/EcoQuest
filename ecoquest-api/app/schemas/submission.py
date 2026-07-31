@@ -6,27 +6,33 @@ from datetime import datetime
 from pydantic import BaseModel
 
 
+from app.models.enums import SubmissionStatus
+
+
 class SubmissionCreate(BaseModel):
     """Schema for creating a new submission."""
 
     challenge_id: uuid.UUID
-    image_url: str
-    image_public_id: str
+    title: str
     description: str | None = None
+    image_url: str
+    latitude: float | None = None
+    longitude: float | None = None
 
 
 class SubmissionRead(BaseModel):
     """Schema for reading a submission (public response)."""
 
-    id: uuid.UUID
-    student_id: uuid.UUID
+    submission_id: uuid.UUID
+    user_id: uuid.UUID
     challenge_id: uuid.UUID
-    image_url: str
+    title: str
     description: str | None = None
-    status: str
-    ai_result: dict | None = None
-    points_awarded: int
+    image_url: str
+    latitude: float | None = None
+    longitude: float | None = None
+    status: SubmissionStatus
+    points_earned: int
     submitted_at: datetime
-    created_at: datetime
 
     model_config = {"from_attributes": True}
