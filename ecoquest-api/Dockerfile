@@ -39,8 +39,7 @@ WORKDIR /app
 # Install runtime system libraries (libpq for Postgres and OpenCV/EasyOCR dependencies)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq5 \
-    libgl1-mesa-glx \
-    libglib2.0-0 \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy Python packages installed in builder
@@ -56,11 +55,12 @@ COPY scripts/ ./scripts/
 RUN useradd -u 10001 --create-home appuser \
     && chown -R appuser:appuser /app
 
+COPY start.sh .
+RUN chmod +x start.sh
+
+RUN useradd --create-home appuser && chown -R appuser /app
 USER appuser
 
 EXPOSE 8000
 
-ENV PYTHONUNBUFFERED=1
-ENV PORT=8000
-
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["./start.sh"]

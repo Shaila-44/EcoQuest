@@ -11,7 +11,8 @@ from alembic import context
 from sqlalchemy.ext.asyncio import create_async_engine
 
 from app.config import settings
-from app.models import Base  # Import Base from app.models to ensure all models are loaded
+from app.models.base import Base
+import app.models  # This ensures all models in __init__.py are registered with Base.metadata
 
 config = context.config
 if config.config_file_name is not None:

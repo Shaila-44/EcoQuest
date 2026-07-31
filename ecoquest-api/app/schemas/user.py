@@ -2,44 +2,36 @@
 
 import uuid
 from datetime import datetime
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
+from app.models.enums import UserStatus
+from app.schemas.common import TimestampSchema
 
-from pydantic import BaseModel, EmailStr
+
+class UserBase(BaseModel):
+    name: str = Field(..., min_length=2, max_length=100)
+    profile_image: str | None = None
+    status: UserStatus = UserStatus.ACTIVE
 
 
-class UserCreate(BaseModel):
-    """Schema for creating a user (internal use)."""
-
+class UserCreate(UserBase):
     email: EmailStr
-    password_hash: str
-    first_name: str
-    last_name: str
-    role: str = "student"
-    school_id: uuid.UUID | None = None
-    grade: str | None = None
-
-
-class UserRead(BaseModel):
-    """Schema for reading a user (public response)."""
-
-    id: uuid.UUID
-    email: EmailStr
-    first_name: str
-    last_name: str
-    role: str
-    school_id: uuid.UUID | None = None
-    avatar_url: str | None = None
-    grade: str | None = None
-    is_active: bool
-    last_login_at: datetime | None = None
-    created_at: datetime
-
-    model_config = {"from_attributes": True}
+    password: str = Field(..., min_length=8, description="Raw password, hashed internally")
+    role_id: uuid.UUID
+    school_id: uuid.UUID
+    phone: str | None = None
 
 
 class UserUpdate(BaseModel):
-    """Schema for updating a user profile."""
+    name: str | None = Field(None, min_length=2, max_length=100)
+    profile_image: str | None = None
+    status: UserStatus | None = None
+    password: str | None = Field(None, min_length=8)
 
-    first_name: str | None = None
-    last_name: str | None = None
-    avatar_url: str | None = None
-    grade: str | None = None
+
+class UserResponse(UserBase, TimestampSchema):
+    user_id: uuid.UUID
+    school_id: uuid.UUID
+    role_id: uuid.UUID
+    trust_score: float
+
+    model_config = ConfigDict(from_attributes=True)

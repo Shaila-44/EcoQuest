@@ -1,12 +1,36 @@
 version: "3.9"
 
 services:
+  api:
+    build:
+      context: ./ecoquest-api
+      dockerfile: Dockerfile
+    container_name: ecoquest-api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./ecoquest-api/.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      # Use curl to hit the healthcheck endpoint; fail on non-200
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
   postgres:
     image: postgres:16-alpine
     container_name: ecoquest-postgres
     restart: unless-stopped
     ports:
       - "5432:5432"
+    env_file:
+      - ./ecoquest-api/.env
+    # Variables POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB 
+    # are loaded from env_file to avoid hardcoding secrets
     environment:
       POSTGRES_USER: ecoquest
       POSTGRES_PASSWORD: ecoquest

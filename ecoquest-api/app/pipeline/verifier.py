@@ -1,6 +1,6 @@
 """EcoQuest API — Gemini Vision Verifier.
 
-Sends preprocessed images + prompt to Gemini Vision API
+Sends prepared images + prompt to Gemini Vision API
 for eco-activity verification.
 """
 
@@ -20,15 +20,13 @@ class GeminiVerifier:
         challenge_title: str,
         challenge_description: str,
         verification_prompt: str | None,
-        ocr_text: str | None,
     ) -> VerificationResult:
         """Verify an eco-activity image using Gemini Vision.
 
         TODO: Implement:
         1. Construct structured prompt from template
-        2. Include OCR context if text was extracted
-        3. Send image + prompt to Gemini API
-        4. Parse structured JSON response
-        5. Return verification result
+        2. Send image + prompt to Gemini API
+        3. Parse structured JSON response
+        4. Return verification result
         """
         return VerificationResult()
