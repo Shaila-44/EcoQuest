@@ -15,5 +15,5 @@ class LeaderboardService:
     # TODO: Implement:
     # - get_overall_leaderboard(pagination) -> PaginatedResponse
     # - get_school_leaderboard(school_id, pagination) -> PaginatedResponse
-    # - get_user_rank(user_id) -> LeaderboardEntryRead
+    # - get_user_rank(user_id) -> LeaderboardEntryResponse
     # - refresh_leaderboard() -> None

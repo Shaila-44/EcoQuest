@@ -13,8 +13,8 @@ class SubmissionService:
         self.session = session
 
     # TODO: Implement:
-    # - create_submission(data, student_id) -> SubmissionRead
-    # - get_submission(submission_id, user) -> SubmissionRead
+    # - create_submission(data, student_id) -> SubmissionResponse
+    # - get_submission(submission_id, user) -> SubmissionResponse
     # - list_submissions(filters, pagination, user) -> PaginatedResponse
     # - generate_upload_url(challenge_id, file_type) -> UploadUrlResponse
     # - cancel_submission(submission_id, user) -> None

@@ -1,7 +1,6 @@
 """EcoQuest API — User Schemas."""
 
 import uuid
-from datetime import datetime
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 from app.models.enums import UserStatus
 from app.schemas.common import TimestampSchema
