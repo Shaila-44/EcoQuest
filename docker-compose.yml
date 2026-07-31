@@ -31,14 +31,44 @@ services:
       - ./ecoquest-api/.env
     # Variables POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB 
     # are loaded from env_file to avoid hardcoding secrets
+    environment:
+      POSTGRES_USER: ecoquest
+      POSTGRES_PASSWORD: ecoquest
+      POSTGRES_DB: ecoquest
     volumes:
       - pgdata:/var/lib/postgresql/data
+    networks:
+      - ecoquest-network
     healthcheck:
-      # Verifies postgres is accepting connections
-      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-ecoquest} -d $${POSTGRES_DB:-ecoquest}"]
+      test: ["CMD-SHELL", "pg_isready -U ecoquest"]
       interval: 5s
       timeout: 5s
       retries: 5
 
+  backend:
+    build:
+      context: ./ecoquest-api
+      dockerfile: Dockerfile
+    container_name: ecoquest-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - POSTGRES_USER=ecoquest
+      - POSTGRES_PASSWORD=ecoquest
+      - POSTGRES_DB=ecoquest
+      - DATABASE_URL=postgresql+asyncpg://ecoquest:ecoquest@postgres:5432/ecoquest
+      - ENVIRONMENT=development
+      - LOG_LEVEL=DEBUG
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - ecoquest-network
+
 volumes:
   pgdata:
+
+networks:
+  ecoquest-network:
+    driver: bridge
