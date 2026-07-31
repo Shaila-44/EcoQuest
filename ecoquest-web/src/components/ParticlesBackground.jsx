@@ -18,50 +18,64 @@ export default function ParticlesBackground() {
     setSize();
     window.addEventListener('resize', setSize);
 
-    // Create leaf / particle objects
-    const particleCount = 28;
+    // Bioluminescent spores, golden XP motes, drifting leaves
+    const particleCount = 42;
     const particles = Array.from({ length: particleCount }, () => ({
       x: Math.random() * canvas.width,
       y: Math.random() * canvas.height,
-      size: Math.random() * 14 + 6,
-      speedX: Math.random() * 0.6 - 0.3,
-      speedY: Math.random() * 0.6 + 0.3,
+      size: Math.random() * 12 + 4,
+      speedX: (Math.random() - 0.5) * 0.4,
+      speedY: Math.random() * 0.5 + 0.2,
       rotation: Math.random() * 360,
-      rotSpeed: (Math.random() - 0.5) * 1.5,
-      opacity: Math.random() * 0.4 + 0.15,
-      type: Math.random() > 0.4 ? 'leaf' : 'orb',
-      color: Math.random() > 0.5 ? '#10b981' : '#6ee7b7'
+      rotSpeed: (Math.random() - 0.5) * 1.2,
+      opacity: Math.random() * 0.6 + 0.2,
+      type: Math.random() > 0.6 ? 'leaf' : Math.random() > 0.3 ? 'xp_mote' : 'spore',
+      color: Math.random() > 0.6 ? '#10b981' : Math.random() > 0.3 ? '#fbbf24' : '#6ee7b7',
+      pulse: Math.random() * Math.PI
     }));
 
-    const drawLeaf = (ctx, particle) => {
+    const drawParticle = (ctx, p) => {
       ctx.save();
-      ctx.translate(particle.x, particle.y);
-      ctx.rotate((particle.rotation * Math.PI) / 180);
-      ctx.globalAlpha = particle.opacity;
+      ctx.translate(p.x, p.y);
+      ctx.rotate((p.rotation * Math.PI) / 180);
+      
+      const currentOpacity = p.opacity * (0.8 + 0.2 * Math.sin(p.pulse));
+      ctx.globalAlpha = Math.max(0.1, currentOpacity);
 
-      if (particle.type === 'orb') {
-        // Soft glowing particle orb
-        const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, particle.size);
-        gradient.addColorStop(0, particle.color);
-        gradient.addColorStop(1, 'rgba(16, 185, 129, 0)');
-        ctx.fillStyle = gradient;
+      if (p.type === 'xp_mote') {
+        // Golden XP Sparkle Mote
+        const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, p.size * 1.5);
+        grad.addColorStop(0, '#fef08a');
+        grad.addColorStop(0.5, '#fbbf24');
+        grad.addColorStop(1, 'rgba(245, 158, 11, 0)');
+        ctx.fillStyle = grad;
         ctx.beginPath();
-        ctx.arc(0, 0, particle.size, 0, Math.PI * 2);
+        ctx.arc(0, 0, p.size * 1.5, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (p.type === 'spore') {
+        // Bioluminescent Emerald Spore
+        const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, p.size * 1.8);
+        grad.addColorStop(0, '#a7f3d0');
+        grad.addColorStop(0.4, '#10b981');
+        grad.addColorStop(1, 'rgba(16, 185, 129, 0)');
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(0, 0, p.size * 1.8, 0, Math.PI * 2);
         ctx.fill();
       } else {
-        // Vector leaf outline fill
-        ctx.fillStyle = particle.color;
+        // Drifting Fantasy Leaf Silhouette
+        ctx.fillStyle = p.color;
         ctx.beginPath();
-        ctx.moveTo(0, -particle.size);
+        ctx.moveTo(0, -p.size);
         ctx.bezierCurveTo(
-          particle.size * 0.8, -particle.size * 0.5,
-          particle.size * 0.8, particle.size * 0.5,
-          0, particle.size
+          p.size * 0.9, -p.size * 0.4,
+          p.size * 0.9, p.size * 0.6,
+          0, p.size
         );
         ctx.bezierCurveTo(
-          -particle.size * 0.8, particle.size * 0.5,
-          -particle.size * 0.8, -particle.size * 0.5,
-          0, -particle.size
+          -p.size * 0.9, p.size * 0.6,
+          -p.size * 0.9, -p.size * 0.4,
+          0, -p.size
         );
         ctx.fill();
       }
@@ -76,6 +90,7 @@ export default function ParticlesBackground() {
         p.x += p.speedX;
         p.y += p.speedY;
         p.rotation += p.rotSpeed;
+        p.pulse += 0.03;
 
         if (p.y > canvas.height + 20) {
           p.y = -20;
@@ -84,7 +99,7 @@ export default function ParticlesBackground() {
         if (p.x > canvas.width + 20) p.x = -20;
         if (p.x < -20) p.x = canvas.width + 20;
 
-        drawLeaf(ctx, p);
+        drawParticle(ctx, p);
       });
 
       animationFrameId = requestAnimationFrame(render);
@@ -102,7 +117,8 @@ export default function ParticlesBackground() {
     <canvas
       ref={canvasRef}
       className="fixed inset-0 pointer-events-none z-0"
-      style={{ opacity: 0.85 }}
+      style={{ opacity: 0.9 }}
     />
   );
 }
+

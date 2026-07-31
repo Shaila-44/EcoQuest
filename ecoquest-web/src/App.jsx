@@ -15,7 +15,7 @@ import StudentHome from './pages/StudentHome';
 import MyIsland from './pages/MyIsland';
 
 export default function App() {
-  const [currentView, setCurrentView] = useState('student_home'); // Default directly to 'student_home' for instant preview!
+  const [currentView, setCurrentView] = useState('landing'); // Default to landing page
   const [demoModalOpen, setDemoModalOpen] = useState(false);
   const [leaderboardModalOpen, setLeaderboardModalOpen] = useState(false);
   const [getStartedModalOpen, setGetStartedModalOpen] = useState(false);
@@ -90,14 +90,15 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f7faf8] text-slate-800 font-body relative overflow-x-hidden selection:bg-emerald-500 selection:text-white">
+    <div className="min-h-screen bg-[#05130d] text-slate-100 font-body relative overflow-x-hidden selection:bg-emerald-500 selection:text-white">
+
       
       {/* Dynamic ambient leaf & particle canvas background */}
       <ParticlesBackground />
 
       {/* Sticky Glass Navbar */}
       <Navbar
-        onOpenGetStarted={navigateToStudentHome}
+        onOpenGetStarted={navigateToLogin}
         onOpenDemo={() => setDemoModalOpen(true)}
       />
 
@@ -105,7 +106,7 @@ export default function App() {
       <main className="relative z-10">
         {/* Hero Section */}
         <Hero
-          onOpenGetStarted={navigateToStudentHome}
+          onOpenGetStarted={navigateToLogin}
           onOpenDemo={() => setDemoModalOpen(true)}
         />
 
@@ -128,8 +129,9 @@ export default function App() {
 
       {/* Footer */}
       <Footer
-        onOpenGetStarted={navigateToStudentHome}
+        onOpenGetStarted={navigateToLogin}
       />
+
 
       {/* Interactive Modals */}
       <ChallengeModal

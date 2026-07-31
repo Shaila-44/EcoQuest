@@ -51,8 +51,8 @@ export default function StudentLogin({ onLoginSuccess }) {
     >
       {/* STUDENT ID INPUT */}
       <div>
-        <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
-          <GraduationCap className="w-4 h-4 text-emerald-600" />
+        <label className="block text-xs font-black text-emerald-300 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+          <GraduationCap className="w-4 h-4 text-emerald-400" />
           Student ID
         </label>
         <div className="relative">
@@ -62,15 +62,15 @@ export default function StudentLogin({ onLoginSuccess }) {
             placeholder="e.g. STU-84920"
             value={studentId}
             onChange={(e) => setStudentId(e.target.value)}
-            className="w-full pl-4 pr-4 py-3 rounded-2xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 bg-white transition-all shadow-xs"
+            className="w-full pl-4 pr-4 py-3 rounded-2xl border border-emerald-500/40 text-xs font-bold text-white placeholder-emerald-400/50 focus:outline-none focus:border-emerald-400 bg-[#04160d] transition-all shadow-inner"
           />
         </div>
       </div>
 
       {/* SCHOOL ID INPUT */}
       <div>
-        <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
-          <Building2 className="w-4 h-4 text-emerald-600" />
+        <label className="block text-xs font-black text-emerald-300 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+          <Building2 className="w-4 h-4 text-emerald-400" />
           School ID / Code
         </label>
         <div className="relative">
@@ -80,15 +80,15 @@ export default function StudentLogin({ onLoginSuccess }) {
             placeholder="e.g. DPS-RK-PURAM-2026"
             value={schoolId}
             onChange={(e) => setSchoolId(e.target.value)}
-            className="w-full pl-4 pr-4 py-3 rounded-2xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 bg-white transition-all shadow-xs"
+            className="w-full pl-4 pr-4 py-3 rounded-2xl border border-emerald-500/40 text-xs font-bold text-white placeholder-emerald-400/50 focus:outline-none focus:border-emerald-400 bg-[#04160d] transition-all shadow-inner"
           />
         </div>
       </div>
 
       {/* PASSWORD INPUT */}
       <div>
-        <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
-          <Lock className="w-4 h-4 text-emerald-600" />
+        <label className="block text-xs font-black text-emerald-300 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+          <Lock className="w-4 h-4 text-emerald-400" />
           Password
         </label>
         <div className="relative">
@@ -98,12 +98,12 @@ export default function StudentLogin({ onLoginSuccess }) {
             placeholder="••••••••••••"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full pl-4 pr-11 py-3 rounded-2xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 bg-white transition-all shadow-xs"
+            className="w-full pl-4 pr-11 py-3 rounded-2xl border border-emerald-500/40 text-xs font-bold text-white placeholder-emerald-400/50 focus:outline-none focus:border-emerald-400 bg-[#04160d] transition-all shadow-inner"
           />
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors p-1"
+            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-emerald-400/70 hover:text-emerald-300 transition-colors p-1 cursor-pointer"
           >
             {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
           </button>
@@ -117,15 +117,15 @@ export default function StudentLogin({ onLoginSuccess }) {
             type="checkbox"
             checked={rememberMe}
             onChange={(e) => setRememberMe(e.target.checked)}
-            className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300 accent-emerald-600 cursor-pointer"
+            className="w-4 h-4 rounded text-emerald-400 focus:ring-emerald-400 border-emerald-500/40 accent-emerald-500 cursor-pointer bg-[#04160d]"
           />
-          <span className="text-xs font-semibold text-slate-600">Remember Me</span>
+          <span className="text-xs font-bold text-slate-200">Remember Me</span>
         </label>
 
         <a
           href="#"
           onClick={(e) => e.preventDefault()}
-          className="text-xs font-bold text-emerald-700 hover:text-emerald-800 transition-colors hover:underline"
+          className="text-xs font-black text-amber-300 hover:text-amber-200 transition-colors hover:underline"
         >
           Forgot Password?
         </a>
@@ -135,19 +135,19 @@ export default function StudentLogin({ onLoginSuccess }) {
       <button
         type="submit"
         disabled={loading}
-        className="w-full py-4 rounded-2xl bg-gradient-to-r from-emerald-600 to-emerald-500 text-white font-extrabold text-sm shadow-xl shadow-emerald-600/30 hover:shadow-emerald-600/40 hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 flex items-center justify-center gap-2 group mt-2 cursor-pointer"
+        className="w-full py-4 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-400 to-amber-300 text-slate-950 font-black text-sm shadow-xl shadow-emerald-500/30 hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 flex items-center justify-center gap-2 group mt-2 cursor-pointer border border-emerald-300/40"
       >
         {loading ? (
           <>
-            <Loader2 className="w-4 h-4 animate-spin text-white" />
-            <span>Authenticating Student Account...</span>
+            <Loader2 className="w-4 h-4 animate-spin text-slate-950 stroke-[3]" />
+            <span>Authenticating Adventurer...</span>
           </>
         ) : success ? (
-          <span>Welcome Back! Redirecting... 🎉</span>
+          <span>Welcome Back, Adventurer! Redirecting... 🎉</span>
         ) : (
           <>
             <span>Login as Student</span>
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform stroke-[2.5]" />
           </>
         )}
       </button>
@@ -155,3 +155,4 @@ export default function StudentLogin({ onLoginSuccess }) {
     </motion.form>
   );
 }
+

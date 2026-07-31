@@ -9,6 +9,7 @@ import UploadProofModal from '../components/student/UploadProofModal';
 import StartMissionModal from '../components/student/StartMissionModal';
 import ParticlesBackground from '../components/ParticlesBackground';
 
+
 export default function StudentHome({ onNavigateIsland, onLogout }) {
   const [activeTab, setActiveTab] = useState('home');
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
@@ -24,14 +25,15 @@ export default function StudentHome({ onNavigateIsland, onLogout }) {
   };
 
   return (
-    <div className="min-h-screen bg-[#F4FAF6] text-slate-800 font-body relative overflow-x-hidden flex selection:bg-emerald-500 selection:text-white">
+    <div className="min-h-screen bg-[#05130d] text-slate-100 font-body relative overflow-x-hidden flex selection:bg-emerald-500 selection:text-white">
       
-      {/* DYNAMIC AMBIENT LEAF & PARTICLES BACKGROUND CANVAS */}
+      {/* DYNAMIC AMBIENT BIOLUMINESCENT PARTICLES CANVAS */}
       <ParticlesBackground />
 
-      {/* AMBIENT BACKGROUND LIGHTING BLOBS */}
-      <div className="fixed top-1/4 left-64 w-[600px] h-[600px] bg-gradient-to-tr from-emerald-300/20 to-teal-200/10 rounded-full blur-3xl pointer-events-none -z-10 animate-pulse-glow" />
-      <div className="fixed bottom-10 right-10 w-[500px] h-[500px] bg-emerald-200/30 rounded-full blur-3xl pointer-events-none -z-10" />
+      {/* AMBIENT DEEP FOREST LIGHTING BLOBS */}
+      <div className="fixed top-1/4 left-64 w-[650px] h-[650px] bg-emerald-600/15 rounded-full blur-[140px] pointer-events-none -z-10 animate-pulse-glow" />
+      <div className="fixed bottom-10 right-10 w-[550px] h-[550px] bg-teal-500/10 rounded-full blur-[120px] pointer-events-none -z-10" />
+      <div className="fixed top-10 right-1/3 w-[450px] h-[450px] bg-amber-500/10 rounded-full blur-[100px] pointer-events-none -z-10" />
 
       {/* LEFT SIDEBAR NAVIGATION (FIXED POSITION) */}
       <Sidebar
@@ -58,7 +60,7 @@ export default function StudentHome({ onNavigateIsland, onLogout }) {
             onStartFeaturedMission={() => setMissionModalOpen(true)}
           />
 
-          {/* 2. TODAY'S FEATURED MISSION (PRIORITY GAME QUEST CARD) */}
+          {/* 2. TODAY'S FEATURED MISSION (PRIORITY RPG QUEST CARD) */}
           <FeaturedMission
             onStartMission={() => setMissionModalOpen(true)}
           />
@@ -66,14 +68,14 @@ export default function StudentHome({ onNavigateIsland, onLogout }) {
           {/* 3. DAILY METRICS & STREAK SECTION */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
             
-            {/* DAILY PROGRESS RING & STATS (6 COLUMNS) */}
+            {/* ADVENTURE PROGRESS RING & STATS (6 COLUMNS) */}
             <div className="lg:col-span-6 flex">
               <div className="w-full">
                 <DailyProgress />
               </div>
             </div>
 
-            {/* STREAK CARD & CALENDAR (6 COLUMNS) */}
+            {/* FLAME STREAK CARD & CALENDAR (6 COLUMNS) */}
             <div className="lg:col-span-6 flex">
               <div className="w-full">
                 <StreakCard />
@@ -84,21 +86,22 @@ export default function StudentHome({ onNavigateIsland, onLogout }) {
 
         </main>
 
+
         {/* FOOTER */}
-        <footer className="py-6 px-6 lg:px-10 border-t border-emerald-100/80 bg-white/50 backdrop-blur-md relative z-10">
-          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 font-bold">
+        <footer className="py-6 px-6 lg:px-10 border-t border-emerald-500/20 bg-[#04160d]/80 backdrop-blur-md relative z-10 text-slate-300">
+          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-bold">
             <div>
-              © {new Date().getFullYear()} EcoQuest Inc. • Student Command Center
+              © {new Date().getFullYear()} EcoQuest • Neo Nature RPG Adventure
             </div>
             <div className="flex items-center gap-6">
-              <a href="#" onClick={(e) => e.preventDefault()} className="hover:text-emerald-700 transition-colors">
-                Privacy Policy
+              <a href="#" onClick={(e) => e.preventDefault()} className="hover:text-emerald-400 transition-colors">
+                Privacy Codex
               </a>
-              <a href="#" onClick={(e) => e.preventDefault()} className="hover:text-emerald-700 transition-colors">
-                Student Guidelines
+              <a href="#" onClick={(e) => e.preventDefault()} className="hover:text-emerald-400 transition-colors">
+                Adventurer Rules
               </a>
-              <a href="#" onClick={(e) => e.preventDefault()} className="hover:text-emerald-700 transition-colors">
-                Help & Support
+              <a href="#" onClick={(e) => e.preventDefault()} className="hover:text-emerald-400 transition-colors">
+                Support & Lore
               </a>
             </div>
           </div>
@@ -121,3 +124,4 @@ export default function StudentHome({ onNavigateIsland, onLogout }) {
     </div>
   );
 }
+
