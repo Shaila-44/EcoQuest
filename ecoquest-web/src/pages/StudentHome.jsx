@@ -25,7 +25,7 @@ export default function StudentHome({ onNavigateIsland, onLogout }) {
   };
 
   return (
-    <div className="min-h-screen bg-[#05130d] text-slate-100 font-body relative overflow-x-hidden flex selection:bg-emerald-500 selection:text-white">
+    <div className="min-h-screen bg-[#092017] text-slate-100 font-body relative overflow-x-hidden flex selection:bg-emerald-500 selection:text-white">
       
       {/* DYNAMIC AMBIENT BIOLUMINESCENT PARTICLES CANVAS */}
       <ParticlesBackground />

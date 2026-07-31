@@ -11,15 +11,53 @@ import {
   ShieldCheck,
   TrendingUp,
   Sprout,
-  Compass
+  Compass,
+  Crown,
+  Heart
 } from 'lucide-react';
+
+const MascotCompanion = ({ message }) => (
+  <div className="flex items-center gap-3 bg-[#082b1d]/90 backdrop-blur-xl border border-emerald-400/50 p-2.5 pr-4 rounded-2xl shadow-xl shadow-emerald-950/40 relative group">
+    {/* Mascot Character Avatar */}
+    <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-emerald-400 via-teal-300 to-amber-300 p-0.5 shadow-md flex-shrink-0 animate-mascot-bob">
+      <div className="w-full h-full bg-[#051912] rounded-[14px] flex items-center justify-center relative overflow-hidden">
+        <svg viewBox="0 0 40 40" className="w-8 h-8">
+          {/* Nature Spirit Fox/Owl Leaf Head */}
+          <path d="M20 6C12 12 8 20 12 30C16 36 24 36 28 30C32 20 28 12 20 6Z" fill="#10b981" />
+          <path d="M20 6C20 16 26 22 28 30" stroke="#6ee7b7" strokeWidth="2" fill="none" />
+          {/* Eyes */}
+          <circle cx="16" cy="20" r="2.5" fill="#04271b" />
+          <circle cx="24" cy="20" r="2.5" fill="#04271b" />
+          <circle cx="17" cy="19" r="0.8" fill="#ffffff" />
+          <circle cx="25" cy="19" r="0.8" fill="#ffffff" />
+          {/* Cute Cheeks */}
+          <circle cx="13" cy="23" r="1.5" fill="#f43f5e" opacity="0.6" />
+          <circle cx="27" cy="23" r="1.5" fill="#f43f5e" opacity="0.6" />
+          {/* Smile */}
+          <path d="M18 24Q20 27 22 24" stroke="#04271b" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+        </svg>
+      </div>
+    </div>
+
+    {/* Mascot Dialogue Bubble */}
+    <div>
+      <div className="flex items-center gap-1.5 text-[10px] font-black text-amber-300 uppercase tracking-wider mb-0.5">
+        <Sparkles className="w-3 h-3 text-amber-400" />
+        <span>LEAFY • MASCOT GUIDANCE</span>
+      </div>
+      <p className="text-xs font-black text-white font-heading leading-snug">
+        {message}
+      </p>
+    </div>
+  </div>
+);
 
 export default function WelcomeHero({ onStartFeaturedMission }) {
   const motivationalMessages = [
-    "🌱 Complete today's B-Rank Quest and earn +350 XP & 150 Coins",
-    "🔥 Your 7-day flame streak unlocks a 1.5x XP multiplier",
-    "🏆 Only 180 XP needed to reach Rank #3 in Hall of Champions",
-    "🌍 Guild 8-A is currently ranked #2 in the Realm"
+    "Complete today's B-Rank Quest to earn +350 XP & 150 Coins!",
+    "Your 7-day flame streak unlocks a 1.5x XP multiplier bonus!",
+    "Only 180 XP needed to reach Rank #3 in Hall of Champions!",
+    "Your Sanctuary Class 8-A is currently ranked #2 in the Realm!"
   ];
 
   const [messageIndex, setMessageIndex] = useState(0);
@@ -27,18 +65,23 @@ export default function WelcomeHero({ onStartFeaturedMission }) {
   useEffect(() => {
     const interval = setInterval(() => {
       setMessageIndex((prev) => (prev + 1) % motivationalMessages.length);
-    }, 4000);
+    }, 4500);
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <section className="relative rounded-[36px] overflow-hidden bg-gradient-to-br from-[#062419] via-[#093223] to-[#04140d] text-white p-6 sm:p-8 lg:p-10 shadow-2xl shadow-emerald-950/50 border border-emerald-500/40">
+    <section className="relative rounded-[36px] overflow-hidden bg-gradient-to-br from-[#062419] via-[#093223] to-[#04140d] text-white p-6 sm:p-8 lg:p-10 shadow-2xl shadow-emerald-950/50 border border-emerald-500/40 selection:bg-emerald-500 selection:text-white">
       
       {/* AMBIENT BACKGROUND GLOWS & BIOLUMINESCENT LIGHT RAYS */}
       <div className="absolute top-0 right-0 w-[550px] h-[550px] bg-emerald-500/20 rounded-full blur-3xl pointer-events-none -z-0 animate-pulse-glow" />
       <div className="absolute -bottom-10 left-1/4 w-96 h-96 bg-teal-400/15 rounded-full blur-3xl pointer-events-none -z-0" />
       <div className="absolute top-1/2 left-10 w-72 h-72 bg-amber-400/10 rounded-full blur-2xl pointer-events-none -z-0" />
       
+      {/* FLOATING AMBIENT FIREFLIES */}
+      <div className="absolute top-12 left-20 w-2.5 h-2.5 rounded-full bg-amber-300 shadow-[0_0_10px_#fbbf24] animate-firefly pointer-events-none" />
+      <div className="absolute top-1/3 right-1/4 w-2 h-2 rounded-full bg-emerald-300 shadow-[0_0_8px_#34d399] animate-firefly pointer-events-none" style={{ animationDelay: '1.5s' }} />
+      <div className="absolute bottom-12 right-20 w-3 h-3 rounded-full bg-amber-400 shadow-[0_0_12px_#fbbf24] animate-firefly pointer-events-none" style={{ animationDelay: '3s' }} />
+
       {/* RPG FRAME OVERLAY LINE */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
 
@@ -54,23 +97,22 @@ export default function WelcomeHero({ onStartFeaturedMission }) {
           </div>
 
           {/* MAIN HEADING */}
-          <div className="space-y-2.5">
+          <div className="space-y-3">
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white leading-[1.12] font-heading tracking-tight">
               Welcome Back, <span className="bg-gradient-to-r from-emerald-300 via-teal-200 to-amber-300 bg-clip-text text-transparent">Rahul</span> 👋
             </h1>
             
-            {/* ROTATING DYNAMIC MOTIVATIONAL QUEST INTEL */}
-            <div className="h-8 flex items-center">
+            {/* ECOQUEST MASCOT DIALOGUE COMPANION */}
+            <div className="pt-1">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={messageIndex}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.4 }}
-                  className="inline-flex items-center gap-2 text-xs sm:text-sm font-extrabold text-emerald-200 bg-emerald-950/80 border border-emerald-400/40 px-3.5 py-1.5 rounded-xl backdrop-blur-md shadow-sm"
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 10 }}
+                  transition={{ duration: 0.35 }}
                 >
-                  <span>{motivationalMessages[messageIndex]}</span>
+                  <MascotCompanion message={motivationalMessages[messageIndex]} />
                 </motion.div>
               </AnimatePresence>
             </div>
@@ -137,7 +179,7 @@ export default function WelcomeHero({ onStartFeaturedMission }) {
             >
               <Target className="w-5 h-5 text-slate-950 group-hover:rotate-45 transition-transform" />
               <span>Start Today's Quest</span>
-              <ArrowUpRight className="w-5 h-5 text-slate-950 group-hover:translate-x-1 transition-transform" />
+              <ArrowUpRight className="w-5 h-5 text-slate-950 group-hover:translate-x-1 transition-transform stroke-[2.5]" />
             </button>
 
             <div className="text-xs text-emerald-200 font-bold flex items-center gap-2.5 bg-emerald-950/80 border border-emerald-400/30 px-4 py-3 rounded-2xl shadow-sm">
@@ -148,11 +190,11 @@ export default function WelcomeHero({ onStartFeaturedMission }) {
 
         </div>
 
-        {/* RIGHT COLUMN: ENCHANTER VECTOR ARTWORK ILLUSTRATION (5 COLUMNS) */}
+        {/* RIGHT COLUMN: RICH ECO-ACTION STORY ILLUSTRATION (5 COLUMNS) */}
         <div className="lg:col-span-5 flex justify-center items-center">
           <div className="relative w-full max-w-md aspect-square flex items-center justify-center">
             
-            {/* RICH ECO VECTOR ILLUSTRATION SVG */}
+            {/* RICH ECO VECTOR STORY ILLUSTRATION SVG */}
             <svg viewBox="0 0 440 440" className="w-full h-full drop-shadow-2xl animate-float-slow">
               <defs>
                 <linearGradient id="heroTreeGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -173,19 +215,19 @@ export default function WelcomeHero({ onStartFeaturedMission }) {
                 </linearGradient>
               </defs>
 
-              {/* LIGHT RAYS */}
-              <g opacity="0.2">
+              {/* SUN LIGHT RAYS */}
+              <g opacity="0.25">
                 <line x1="220" y1="80" x2="100" y2="350" stroke="#fef08a" strokeWidth="20" strokeLinecap="round" />
                 <line x1="220" y1="80" x2="220" y2="380" stroke="#fef08a" strokeWidth="25" strokeLinecap="round" />
                 <line x1="220" y1="80" x2="340" y2="350" stroke="#fef08a" strokeWidth="20" strokeLinecap="round" />
               </g>
 
-              {/* SUN RADIANCE */}
+              {/* RADIANT SUN */}
               <circle cx="220" cy="85" r="34" fill="url(#heroSunGrad2)" opacity="0.95" />
               <circle cx="220" cy="85" r="44" fill="none" stroke="rgba(251, 191, 36, 0.4)" strokeWidth="3" strokeDasharray="4 4" />
 
-              {/* BIRDS FLYING */}
-              <g fill="none" stroke="#fef08a" strokeWidth="2" opacity="0.8">
+              {/* BIRDS FLYING TOWARDS SUN */}
+              <g fill="none" stroke="#fef08a" strokeWidth="2.5" strokeLinecap="round" opacity="0.85">
                 <path d="M 120 110 Q 130 100 140 110 Q 150 100 160 110" />
                 <path d="M 280 125 Q 288 117 296 125 Q 304 117 312 125" />
               </g>
@@ -194,7 +236,7 @@ export default function WelcomeHero({ onStartFeaturedMission }) {
               <path d="M 40 340 Q 220 250 400 340 Z" fill="url(#heroHillGrad)" />
               <path d="M 80 340 Q 220 280 360 340 Z" fill="#10b981" opacity="0.3" />
 
-              {/* CENTRAL GROWING SAPLING & ADULT TREE */}
+              {/* TREE TRUNK & ROOT SYSTEM */}
               <path d="M 214 300 L 214 180 L 226 180 L 226 300 Z" fill="#78350f" />
               
               {/* TREE FOLIAGE CANOPY */}
@@ -206,27 +248,31 @@ export default function WelcomeHero({ onStartFeaturedMission }) {
               <circle cx="140" cy="305" r="6" fill="#f43f5e" />
               <circle cx="300" cy="310" r="6" fill="#fbbf24" />
 
-              {/* ADVENTURER 1 PLANTING SAPLING */}
-              <g transform="translate(140, 240)">
-                <circle cx="25" cy="20" r="10" fill="#f8fafc" />
-                <path d="M 25 30 Q 35 45 45 55 L 15 55 Z" fill="#34d399" />
-                <path d="M 25 35 L 45 50" stroke="#f8fafc" strokeWidth="3" strokeLinecap="round" />
+              {/* STUDENT 1: PLANTING TREE SAPLING */}
+              <g transform="translate(130, 240)">
+                <circle cx="25" cy="18" r="9" fill="#fcd34d" />
+                <path d="M 25 27 Q 35 42 45 52 L 15 52 Z" fill="#10b981" />
+                <path d="M 25 32 L 42 48" stroke="#fcd34d" strokeWidth="3" strokeLinecap="round" />
+                {/* Sapling Tool */}
+                <rect x="42" y="44" width="8" height="12" rx="2" fill="#78350f" />
               </g>
 
-              {/* ADVENTURER 2 WATERING SAPLING */}
+              {/* STUDENT 2: WATERING FLORA WITH CAN */}
               <g transform="translate(250, 235)">
-                <circle cx="25" cy="20" r="10" fill="#f8fafc" />
-                <path d="M 25 30 L 15 60 L 35 60 Z" fill="#38bdf8" />
-                <rect x="0" y="38" width="16" height="12" rx="3" fill="#fbbf24" />
-                <path d="M -5 40 L 0 44" stroke="#fbbf24" strokeWidth="2" />
-                <circle cx="-10" cy="50" r="2" fill="#38bdf8" />
-                <circle cx="-14" cy="55" r="2" fill="#38bdf8" />
+                <circle cx="25" cy="18" r="9" fill="#fcd34d" />
+                <path d="M 25 27 L 15 58 L 35 58 Z" fill="#14b8a6" />
+                {/* Golden Watering Can */}
+                <rect x="2" y="36" width="16" height="12" rx="3" fill="#fbbf24" />
+                <path d="M -3 38 L 2 42" stroke="#fbbf24" strokeWidth="2.5" />
+                {/* Water Droplets */}
+                <circle cx="-8" cy="48" r="2" fill="#38bdf8" />
+                <circle cx="-12" cy="54" r="2" fill="#38bdf8" />
               </g>
 
-              {/* FLOATING BIOLUMINESCENT LEAVES */}
-              <g className="animate-float-reverse">
-                <path d="M 100 160 Q 120 140 130 170 Q 110 180 100 160 Z" fill="#34d399" />
-                <path d="M 330 150 Q 350 130 360 160 Q 340 170 330 150 Z" fill="#6ee7b7" />
+              {/* FLOATING BUTTERFLY */}
+              <g transform="translate(320, 180)" className="animate-float-reverse">
+                <path d="M0 0 Q-10 -10 -15 0 Q-10 10 0 0" fill="#fbbf24" />
+                <path d="M0 0 Q10 -10 15 0 Q10 10 0 0" fill="#f43f5e" />
               </g>
 
               {/* LOOT BADGE ORBITS */}
@@ -249,4 +295,5 @@ export default function WelcomeHero({ onStartFeaturedMission }) {
     </section>
   );
 }
+
 

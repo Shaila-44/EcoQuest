@@ -95,7 +95,7 @@ export default function FeaturedMission({ onStartMission }) {
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-w-xl">
               
               {/* XP REWARD */}
-              <div className="bg-[#051c14]/90 border border-emerald-400/40 p-3.5 rounded-2xl flex items-center gap-3 shadow-md">
+              <div className="bg-[#051c14]/90 border border-emerald-400/40 p-3.5 rounded-2xl flex items-center gap-3 shadow-md hover:border-emerald-300 transition-colors">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-400 to-teal-300 text-slate-950 flex items-center justify-center font-black shadow-md">
                   <Zap className="w-5 h-5 fill-slate-950" />
                 </div>
@@ -106,7 +106,7 @@ export default function FeaturedMission({ onStartMission }) {
               </div>
 
               {/* LOOT COIN REWARD */}
-              <div className="bg-[#1c1705]/90 border border-amber-400/40 p-3.5 rounded-2xl flex items-center gap-3 shadow-md">
+              <div className="bg-[#1c1705]/90 border border-amber-400/40 p-3.5 rounded-2xl flex items-center gap-3 shadow-md hover:border-amber-300 transition-colors">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-400 to-yellow-300 text-slate-950 flex items-center justify-center font-black shadow-md">
                   <Coins className="w-5 h-5 fill-slate-950" />
                 </div>
@@ -117,7 +117,7 @@ export default function FeaturedMission({ onStartMission }) {
               </div>
 
               {/* SPECIAL TROPHY BADGE */}
-              <div className="col-span-2 sm:col-span-1 bg-[#1a0e2e]/90 border border-purple-400/40 p-3.5 rounded-2xl flex items-center gap-3 shadow-md">
+              <div className="col-span-2 sm:col-span-1 bg-[#1a0e2e]/90 border border-purple-400/40 p-3.5 rounded-2xl flex items-center gap-3 shadow-md hover:border-purple-300 transition-colors">
                 <div className="w-10 h-10 rounded-xl bg-purple-500 text-white flex items-center justify-center font-black text-lg shadow-md">
                   ♻️
                 </div>
@@ -150,7 +150,7 @@ export default function FeaturedMission({ onStartMission }) {
               >
                 <Target className="w-5 h-5 text-slate-950 group-hover/btn:rotate-45 transition-transform" />
                 <span>ACCEPT QUEST & CLAIM LOOT</span>
-                <ArrowRight className="w-5 h-5 text-slate-950 group-hover/btn:translate-x-1.5 transition-transform" />
+                <ArrowRight className="w-5 h-5 text-slate-950 group-hover/btn:translate-x-1.5 transition-transform stroke-[2.5]" />
               </button>
             </div>
 
@@ -187,4 +187,5 @@ export default function FeaturedMission({ onStartMission }) {
     </section>
   );
 }
+
 
