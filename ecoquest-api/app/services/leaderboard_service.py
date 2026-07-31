@@ -1,13 +1,15 @@
 """EcoQuest API — Leaderboard Service.
 
-Handles leaderboard queries and materialized view refresh.
+Handles leaderboard queries and score aggregation updates.
 """
 
 import uuid
+
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.models.leaderboard import LeaderboardEntry
 from app.repositories.leaderboard_repo import LeaderboardRepository
-from app.schemas.leaderboard import LeaderboardRead
 
 
 class LeaderboardService:
@@ -15,27 +17,54 @@ class LeaderboardService:
 
     def __init__(self, session: AsyncSession):
         self.session = session
+        self.leaderboard_repo = LeaderboardRepository(session)
 
-    async def get_overall_leaderboard(self, limit: int = 100) -> list[LeaderboardRead]:
-        """Fetch the overall leaderboard."""
-        repo = LeaderboardRepository(self.session)
-        # Assuming list() returns everything, or we might need a custom query for global limit
-        # For simplicity, we just use the list() method ordered if available, or write a quick global query in repo
-        entries = await repo.list()
-        # Sort by points locally for now, since it's just scaffolding. In prod, repo should handle this.
-        entries.sort(key=lambda x: x.total_points, reverse=True)
-        return [LeaderboardRead.model_validate(e) for e in entries[:limit]]
+    async def get_overall_leaderboard(
+        self, limit: int = 50
+    ) -> list[LeaderboardEntry]:
+        """Fetch the overall top student leaderboard."""
+        stmt = (
+            select(LeaderboardEntry)
+            .order_by(LeaderboardEntry.total_points.desc())
+            .limit(limit)
+        )
+        result = await self.session.execute(stmt)
+        return list(result.scalars().all())
 
-    async def get_school_leaderboard(self, school_id: uuid.UUID, limit: int = 100) -> list[LeaderboardRead]:
+    async def get_school_leaderboard(
+        self,
+        school_id: uuid.UUID,
+        limit: int = 50,
+    ) -> list[LeaderboardEntry]:
         """Fetch the leaderboard for a specific school."""
-        repo = LeaderboardRepository(self.session)
-        entries = await repo.get_by_school(school_id, limit)
-        return [LeaderboardRead.model_validate(e) for e in entries]
+        return await self.leaderboard_repo.get_by_school(school_id, limit=limit)
 
-    async def get_user_rank(self, user_id: uuid.UUID) -> LeaderboardRead | None:
-        """Fetch the rank for a specific user."""
-        repo = LeaderboardRepository(self.session)
-        entry = await repo.get_rank_for_user(user_id)
-        if not entry:
-            return None
-        return LeaderboardRead.model_validate(entry)
+    async def get_user_rank(
+        self,
+        user_id: uuid.UUID,
+    ) -> LeaderboardEntry | None:
+        """Get the leaderboard entry for a user."""
+        return await self.leaderboard_repo.get_rank_for_user(user_id)
+
+    async def update_leaderboard_entry(
+        self,
+        user_id: uuid.UUID,
+        school_id: uuid.UUID,
+        points_awarded: int,
+    ) -> None:
+        """Increment a user's leaderboard points."""
+        entry = await self.leaderboard_repo.get_rank_for_user(user_id)
+
+        if entry:
+            entry.total_points += points_awarded
+            await self.leaderboard_repo.update(
+                entry,
+                {"total_points": entry.total_points},
+            )
+        else:
+            new_entry = LeaderboardEntry(
+                user_id=user_id,
+                school_id=school_id,
+                total_points=points_awarded,
+            )
+            await self.leaderboard_repo.create(new_entry)

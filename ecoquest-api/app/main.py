@@ -1,7 +1,7 @@
 """EcoQuest API — Application Factory.
 
 Creates and configures the FastAPI application with all middleware,
-exception handlers, and route registrations.
+exception handlers, rate limiting, and route registrations.
 """
 
 from contextlib import asynccontextmanager
@@ -9,19 +9,22 @@ from collections.abc import AsyncGenerator
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.util import get_remote_address
 
 from app.config import settings
 from app.api.v1.router import api_v1_router
 from app.core.exception_handlers import register_exception_handlers
 from app.core.middleware import RequestIdMiddleware
 
+limiter = Limiter(key_func=get_remote_address, default_limits=[f"{settings.RATE_LIMIT_PER_MINUTE}/minute"])
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
     """Application lifespan — startup and shutdown events."""
-    # Startup
     yield
-    # Shutdown
 
 
 def create_app() -> FastAPI:
@@ -34,6 +37,9 @@ def create_app() -> FastAPI:
         redoc_url="/redoc" if settings.ENVIRONMENT == "development" else None,
         lifespan=lifespan,
     )
+
+    application.state.limiter = limiter
+    application.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
     # --- Middleware (order matters: last added = first executed) ---
     application.add_middleware(

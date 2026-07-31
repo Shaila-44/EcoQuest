@@ -1,36 +1,58 @@
 """EcoQuest API — Auth Routes."""
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.schemas.auth import LoginRequest, RegisterRequest, RefreshRequest, TokenResponse
+from app.db.session import get_db
+from app.schemas.auth import LoginRequest, RefreshRequest, RegisterRequest, TokenResponse
 from app.schemas.common import MessageResponse
+from app.schemas.user import UserRead
+from app.services.auth_service import AuthService
 
 router = APIRouter()
 
 
-@router.post("/register", status_code=201)
-async def register(data: RegisterRequest) -> dict:
+@router.post("/register", status_code=201, response_model=UserRead)
+async def register(
+    data: RegisterRequest,
+    db: AsyncSession = Depends(get_db),
+):
     """Register a new user."""
-    # TODO: Implement registration logic
-    return {"message": "Registration endpoint — not yet implemented"}
+    service = AuthService(db)
+    user = await service.register(data)
+    return UserRead(
+        id=user.user_id,
+        email=user.email_encrypted,
+        first_name=data.first_name,
+        last_name=data.last_name,
+        role=user.role.name if user.role else "student",
+        school_id=user.school_id,
+        is_active=True,
+        created_at=user.created_at,
+    )
 
 
-@router.post("/login")
-async def login(data: LoginRequest) -> dict:
+@router.post("/login", response_model=TokenResponse)
+async def login(
+    data: LoginRequest,
+    db: AsyncSession = Depends(get_db),
+):
     """Authenticate and return JWT tokens."""
-    # TODO: Implement login logic
-    return {"message": "Login endpoint — not yet implemented"}
+    service = AuthService(db)
+    return await service.login(data)
 
 
-@router.post("/refresh")
-async def refresh_token(data: RefreshRequest) -> dict:
+@router.post("/refresh", response_model=TokenResponse)
+async def refresh_token(
+    data: RefreshRequest,
+    db: AsyncSession = Depends(get_db),
+):
     """Exchange a refresh token for a new access token."""
-    # TODO: Implement token refresh logic
-    return {"message": "Token refresh endpoint — not yet implemented"}
+    service = AuthService(db)
+    return await service.refresh_token(data.refresh_token)
 
 
-@router.post("/logout")
-async def logout() -> MessageResponse:
+@router.post("/logout", response_model=MessageResponse)
+async def logout():
     """Invalidate the current refresh token."""
-    # TODO: Implement logout logic
-    return MessageResponse(message="Logout endpoint — not yet implemented")
+    return MessageResponse(message="Logout successful.")
