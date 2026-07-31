@@ -2,30 +2,29 @@
 
 import uuid
 from datetime import datetime
-from pydantic import BaseModel, ConfigDict, Field
-from app.schemas.common import TimestampSchema
+
+from pydantic import BaseModel
 
 
-class ReviewBase(BaseModel):
-    decision: str = Field(..., max_length=20)
-    comment: str | None = None
-    points_override: int | None = None
+class ReviewCreate(BaseModel):
+    """Schema for creating a review (teacher decision)."""
 
-
-class ReviewCreate(ReviewBase):
     submission_id: uuid.UUID
-
-
-class ReviewUpdate(BaseModel):
-    decision: str | None = Field(None, max_length=20)
+    decision: str  # 'approved', 'rejected', 'needs_resubmission'
     comment: str | None = None
     points_override: int | None = None
 
 
-class ReviewResponse(ReviewBase, TimestampSchema):
+class ReviewRead(BaseModel):
+    """Schema for reading a review."""
+
     id: uuid.UUID
     submission_id: uuid.UUID
     reviewer_id: uuid.UUID
+    decision: str
+    comment: str | None = None
+    points_override: int | None = None
     reviewed_at: datetime
+    created_at: datetime
 
-    model_config = ConfigDict(from_attributes=True)
+    model_config = {"from_attributes": True}

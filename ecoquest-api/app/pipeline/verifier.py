@@ -1,6 +1,6 @@
 """EcoQuest API — Gemini Vision Verifier.
 
-Sends prepared images + prompt to Gemini Vision API
+Sends preprocessed images + prompt to Gemini Vision API
 for eco-activity verification.
 """
 

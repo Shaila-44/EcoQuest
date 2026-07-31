@@ -8,15 +8,6 @@ from datetime import datetime
 
 
 @dataclass
-class PreprocessingResult:
-    """Result from the Pillow image preparation stage."""
-
-    original_size: tuple[int, int] = (0, 0)
-    processed_size: tuple[int, int] = (0, 0)
-    processed_image_bytes: bytes = b""
-
-
-@dataclass
 class VerificationResult:
     """Result from the Gemini Vision verification stage."""
 
@@ -31,9 +22,8 @@ class VerificationResult:
 
 @dataclass
 class PipelineResult:
-    """Combined result from all pipeline stages."""
+    """Result from the AI Verification pipeline."""
 
-    preprocessing: PreprocessingResult = field(default_factory=PreprocessingResult)
     verification: VerificationResult = field(default_factory=VerificationResult)
     processed_at: datetime = field(default_factory=datetime.now)
     success: bool = False
