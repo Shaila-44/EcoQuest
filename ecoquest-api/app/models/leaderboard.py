@@ -24,3 +24,6 @@ class Leaderboard(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
 
     user: Mapped["User"] = relationship("User", back_populates="leaderboard")
+
+
+LeaderboardEntry = Leaderboard
