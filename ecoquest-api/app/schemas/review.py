@@ -18,7 +18,7 @@ class ReviewCreate(BaseModel):
 class ReviewRead(BaseModel):
     """Schema for reading a review."""
 
-    id: uuid.UUID
+    review_id: uuid.UUID
     submission_id: uuid.UUID
     reviewer_id: uuid.UUID
     decision: str

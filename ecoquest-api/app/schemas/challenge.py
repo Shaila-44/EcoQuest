@@ -10,37 +10,27 @@ class ChallengeCreate(BaseModel):
     """Schema for creating a new challenge."""
 
     title: str
-    description: str
-    instructions: str | None = None
+    description: str | None = None
     category: str
-    points: int = 10
-    difficulty: int | None = None
-    school_id: uuid.UUID | None = None
-    starts_at: datetime | None = None
-    ends_at: datetime | None = None
-    max_submissions: int = 1
-    verification_prompt: str | None = None
-    image_url: str | None = None
+    points: int = 0
+    start_date: datetime | None = None
+    end_date: datetime | None = None
 
 
 class ChallengeRead(BaseModel):
     """Schema for reading a challenge (public response)."""
 
-    id: uuid.UUID
-    title: str
-    description: str
-    instructions: str | None = None
-    category: str
-    status: str
-    points: int
-    difficulty: int | None = None
+    challenge_id: uuid.UUID
+    school_id: uuid.UUID
     created_by: uuid.UUID
-    school_id: uuid.UUID | None = None
-    starts_at: datetime | None = None
-    ends_at: datetime | None = None
-    max_submissions: int
-    image_url: str | None = None
+    title: str
+    description: str | None = None
+    category: str
+    points: int
+    start_date: datetime | None = None
+    end_date: datetime | None = None
     created_at: datetime
+    updated_at: datetime | None = None
 
     model_config = {"from_attributes": True}
 
@@ -50,13 +40,7 @@ class ChallengeUpdate(BaseModel):
 
     title: str | None = None
     description: str | None = None
-    instructions: str | None = None
     category: str | None = None
-    status: str | None = None
     points: int | None = None
-    difficulty: int | None = None
-    starts_at: datetime | None = None
-    ends_at: datetime | None = None
-    max_submissions: int | None = None
-    verification_prompt: str | None = None
-    image_url: str | None = None
+    start_date: datetime | None = None
+    end_date: datetime | None = None
