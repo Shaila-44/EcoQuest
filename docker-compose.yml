@@ -9,27 +9,42 @@ services:
       - "5432:5432"
     environment:
       POSTGRES_USER: ecoquest
-      POSTGRES_PASSWORD: ecoquest_dev
+      POSTGRES_PASSWORD: ecoquest
       POSTGRES_DB: ecoquest
     volumes:
       - pgdata:/var/lib/postgresql/data
+    networks:
+      - ecoquest-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ecoquest"]
       interval: 5s
       timeout: 5s
       retries: 5
 
-  redis:
-    image: redis:7-alpine
-    container_name: ecoquest-redis
+  backend:
+    build:
+      context: ./ecoquest-api
+      dockerfile: Dockerfile
+    container_name: ecoquest-backend
     restart: unless-stopped
     ports:
-      - "6379:6379"
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+      - "8000:8000"
+    environment:
+      - POSTGRES_USER=ecoquest
+      - POSTGRES_PASSWORD=ecoquest
+      - POSTGRES_DB=ecoquest
+      - DATABASE_URL=postgresql+asyncpg://ecoquest:ecoquest@postgres:5432/ecoquest
+      - ENVIRONMENT=development
+      - LOG_LEVEL=DEBUG
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - ecoquest-network
 
 volumes:
   pgdata:
+
+networks:
+  ecoquest-network:
+    driver: bridge
