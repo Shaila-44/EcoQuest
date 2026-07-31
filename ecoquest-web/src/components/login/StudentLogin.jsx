@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
-export default function StudentLogin() {
+export default function StudentLogin({ onLoginSuccess }) {
   const [studentId, setStudentId] = useState('');
   const [schoolId, setSchoolId] = useState('');
   const [password, setPassword] = useState('');
@@ -32,7 +32,12 @@ export default function StudentLogin() {
         spread: 70,
         origin: { y: 0.6 }
       });
-    }, 1800);
+      setTimeout(() => {
+        if (onLoginSuccess) {
+          onLoginSuccess();
+        }
+      }, 1000);
+    }, 1200);
   };
 
   return (

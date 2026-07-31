@@ -11,19 +11,26 @@ import ChallengeModal from './components/ChallengeModal';
 import LeaderboardModal from './components/LeaderboardModal';
 import GetStartedModal from './components/GetStartedModal';
 import Login from './pages/Login';
+import StudentHome from './pages/StudentHome';
+import MyIsland from './pages/MyIsland';
 
 export default function App() {
-  const [currentView, setCurrentView] = useState('landing'); // 'landing' | 'login'
+  const [currentView, setCurrentView] = useState('student_home'); // Default directly to 'student_home' for instant preview!
   const [demoModalOpen, setDemoModalOpen] = useState(false);
   const [leaderboardModalOpen, setLeaderboardModalOpen] = useState(false);
   const [getStartedModalOpen, setGetStartedModalOpen] = useState(false);
 
   useEffect(() => {
     const handleHash = () => {
-      if (window.location.hash === '#/login' || window.location.hash === '#login') {
+      const hash = window.location.hash;
+      if (hash === '#/login' || hash === '#login') {
         setCurrentView('login');
-      } else {
+      } else if (hash === '#/island' || hash === '#island') {
+        setCurrentView('my_island');
+      } else if (hash === '#/landing' || hash === '#landing') {
         setCurrentView('landing');
+      } else if (hash === '#/home' || hash === '#home') {
+        setCurrentView('student_home');
       }
     };
 
@@ -38,14 +45,48 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const navigateToHome = () => {
-    window.location.hash = '';
+  const navigateToLanding = () => {
+    window.location.hash = '/landing';
     setCurrentView('landing');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const navigateToStudentHome = () => {
+    window.location.hash = '/home';
+    setCurrentView('student_home');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const navigateToMyIsland = () => {
+    window.location.hash = '/island';
+    setCurrentView('my_island');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   if (currentView === 'login') {
-    return <Login onNavigateHome={navigateToHome} />;
+    return (
+      <Login
+        onNavigateHome={navigateToLanding}
+        onLoginSuccess={navigateToStudentHome}
+      />
+    );
+  }
+
+  if (currentView === 'my_island') {
+    return (
+      <MyIsland
+        onNavigateHome={navigateToStudentHome}
+      />
+    );
+  }
+
+  if (currentView === 'student_home') {
+    return (
+      <StudentHome
+        onNavigateIsland={navigateToMyIsland}
+        onLogout={navigateToLogin}
+      />
+    );
   }
 
   return (
@@ -56,7 +97,7 @@ export default function App() {
 
       {/* Sticky Glass Navbar */}
       <Navbar
-        onOpenGetStarted={navigateToLogin}
+        onOpenGetStarted={navigateToStudentHome}
         onOpenDemo={() => setDemoModalOpen(true)}
       />
 
@@ -64,7 +105,7 @@ export default function App() {
       <main className="relative z-10">
         {/* Hero Section */}
         <Hero
-          onOpenGetStarted={navigateToLogin}
+          onOpenGetStarted={navigateToStudentHome}
           onOpenDemo={() => setDemoModalOpen(true)}
         />
 
@@ -87,7 +128,7 @@ export default function App() {
 
       {/* Footer */}
       <Footer
-        onOpenGetStarted={navigateToLogin}
+        onOpenGetStarted={navigateToStudentHome}
       />
 
       {/* Interactive Modals */}

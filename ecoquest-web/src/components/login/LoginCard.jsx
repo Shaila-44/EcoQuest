@@ -5,7 +5,7 @@ import LoginSwitcher from './LoginSwitcher';
 import StudentLogin from './StudentLogin';
 import TeacherLogin from './TeacherLogin';
 
-export default function LoginCard({ onNavigateHome }) {
+export default function LoginCard({ onNavigateHome, onLoginSuccess }) {
   const [role, setRole] = useState('student'); // 'student' | 'teacher'
 
   return (
@@ -47,7 +47,7 @@ export default function LoginCard({ onNavigateHome }) {
       <div className="relative min-h-[340px]">
         <AnimatePresence mode="wait">
           {role === 'student' ? (
-            <StudentLogin key="student" />
+            <StudentLogin key="student" onLoginSuccess={onLoginSuccess} />
           ) : (
             <TeacherLogin key="teacher" />
           )}

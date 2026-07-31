@@ -6,7 +6,7 @@ import RewardCard from '../components/login/RewardCard';
 import LoginCard from '../components/login/LoginCard';
 import { Sparkles } from 'lucide-react';
 
-export default function Login({ onNavigateHome }) {
+export default function Login({ onNavigateHome, onLoginSuccess }) {
   return (
     <div className="min-h-screen bg-[#F8FFFA] text-slate-800 font-body relative overflow-x-hidden flex flex-col justify-between selection:bg-emerald-500 selection:text-white">
       
@@ -60,7 +60,7 @@ export default function Login({ onNavigateHome }) {
 
           {/* RIGHT SIDE: LOGIN CARD (45% ON DESKTOP) */}
           <div className="lg:col-span-5 flex justify-center lg:justify-end">
-            <LoginCard onNavigateHome={onNavigateHome} />
+            <LoginCard onNavigateHome={onNavigateHome} onLoginSuccess={onLoginSuccess} />
           </div>
 
         </div>
