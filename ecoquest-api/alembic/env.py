@@ -12,9 +12,7 @@ from sqlalchemy.ext.asyncio import create_async_engine
 
 from app.config import settings
 from app.models.base import Base
-
-# Import all models so Alembic can detect them for autogenerate
-from app.models import user, school, challenge, submission, review, badge, user_badge  # noqa: F401
+import app.models  # This ensures all models in __init__.py are registered with Base.metadata
 
 config = context.config
 if config.config_file_name is not None:

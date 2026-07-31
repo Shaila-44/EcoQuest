@@ -1,28 +1,29 @@
-"""EcoQuest API — Image Preprocessor (OpenCV).
+"""EcoQuest API — Image Preprocessor (Pillow).
 
-Handles blur detection, resize, EXIF orientation correction,
-and compression.
+Handles lightweight image preparation: EXIF orientation correction,
+resizing oversized images, and optional JPEG compression.
 """
 
+import io
+from PIL import Image, ImageOps
 from app.pipeline.schemas import PreprocessingResult
 
 
 class ImagePreprocessor:
-    """OpenCV-based image preprocessing for the AI pipeline."""
+    """Pillow-based image preparation for the AI pipeline."""
 
-    def __init__(self, blur_threshold: float = 50.0, max_width: int = 800):
-        self.blur_threshold = blur_threshold
-        self.max_width = max_width
+    def __init__(self, max_dimension: int = 1600, quality: int = 85):
+        self.max_dimension = max_dimension
+        self.quality = quality
 
-    async def process(self, image_url: str) -> PreprocessingResult:
-        """Preprocess an image for AI verification.
+    async def process(self, image_bytes: bytes) -> PreprocessingResult:
+        """Prepare an image for AI verification.
 
         TODO: Implement:
-        1. Download image from Cloudinary URL
-        2. Detect blur (Laplacian variance)
-        3. Fix EXIF orientation
-        4. Resize to max_width
-        5. Compress (JPEG quality=85)
-        6. Return result with processed image bytes
+        1. Open image from bytes using Pillow
+        2. Correct EXIF orientation using ImageOps.exif_transpose
+        3. Resize preserving aspect ratio if longest edge > max_dimension
+        4. Compress as JPEG with defined quality
+        5. Return processed bytes and size metadata
         """
         return PreprocessingResult()

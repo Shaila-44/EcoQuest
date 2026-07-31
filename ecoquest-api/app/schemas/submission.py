@@ -2,31 +2,36 @@
 
 import uuid
 from datetime import datetime
+from pydantic import BaseModel, ConfigDict, Field
+from app.models.enums import SubmissionStatus
 
-from pydantic import BaseModel
 
-
-class SubmissionCreate(BaseModel):
-    """Schema for creating a new submission."""
-
-    challenge_id: uuid.UUID
-    image_url: str
-    image_public_id: str
+class SubmissionBase(BaseModel):
+    title: str = Field(..., min_length=2, max_length=150)
     description: str | None = None
+    image_url: str = Field(..., description="Cloudinary or Storage URL")
+    latitude: float | None = Field(None, ge=-90.0, le=90.0)
+    longitude: float | None = Field(None, ge=-180.0, le=180.0)
 
 
-class SubmissionRead(BaseModel):
-    """Schema for reading a submission (public response)."""
-
-    id: uuid.UUID
-    student_id: uuid.UUID
+class SubmissionCreate(SubmissionBase):
+    user_id: uuid.UUID
     challenge_id: uuid.UUID
-    image_url: str
+
+
+class SubmissionUpdate(BaseModel):
+    title: str | None = Field(None, min_length=2, max_length=150)
     description: str | None = None
-    status: str
-    ai_result: dict | None = None
-    points_awarded: int
+    status: SubmissionStatus | None = None
+    points_earned: int | None = Field(None, ge=0)
+
+
+class SubmissionResponse(SubmissionBase):
+    submission_id: uuid.UUID
+    user_id: uuid.UUID
+    challenge_id: uuid.UUID
+    status: SubmissionStatus
+    points_earned: int
     submitted_at: datetime
-    created_at: datetime
 
-    model_config = {"from_attributes": True}
+    model_config = ConfigDict(from_attributes=True)
