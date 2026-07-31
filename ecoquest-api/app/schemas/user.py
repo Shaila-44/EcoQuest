@@ -6,32 +6,32 @@ from datetime import datetime
 from pydantic import BaseModel, EmailStr
 
 
+from app.models.enums import UserStatus
+
+
 class UserCreate(BaseModel):
     """Schema for creating a user (internal use)."""
 
     email: EmailStr
     password_hash: str
-    first_name: str
-    last_name: str
-    role: str = "student"
-    school_id: uuid.UUID | None = None
-    grade: str | None = None
+    name: str
+    role_id: uuid.UUID
+    school_id: uuid.UUID
 
 
 class UserRead(BaseModel):
     """Schema for reading a user (public response)."""
 
-    id: uuid.UUID
-    email: EmailStr
-    first_name: str
-    last_name: str
-    role: str
-    school_id: uuid.UUID | None = None
-    avatar_url: str | None = None
-    grade: str | None = None
-    is_active: bool
-    last_login_at: datetime | None = None
+    user_id: uuid.UUID
+    school_id: uuid.UUID
+    role_id: uuid.UUID
+    name: str
+    # Do not expose encrypted emails or hashes directly in public read unless strictly needed
+    profile_image: str | None = None
+    status: UserStatus
+    trust_score: float
     created_at: datetime
+    updated_at: datetime | None = None
 
     model_config = {"from_attributes": True}
 
@@ -39,7 +39,5 @@ class UserRead(BaseModel):
 class UserUpdate(BaseModel):
     """Schema for updating a user profile."""
 
-    first_name: str | None = None
-    last_name: str | None = None
-    avatar_url: str | None = None
-    grade: str | None = None
+    name: str | None = None
+    profile_image: str | None = None

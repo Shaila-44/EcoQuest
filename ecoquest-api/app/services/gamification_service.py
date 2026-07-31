@@ -3,6 +3,7 @@
 Handles points, levels, streaks, badges, and trust score calculations.
 """
 
+import uuid
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
@@ -12,11 +13,17 @@ class GamificationService:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    # TODO: Implement:
-    # - award_points(user_id, points) -> UserStatsResponse
-    # - update_streak(user_id) -> int
-    # - calculate_level(total_points) -> int
-    # - check_badge_criteria(user_id) -> list[Badge]
-    # - update_trust_score(user_id) -> Decimal
-    # - get_user_stats(user_id) -> UserStatsResponse
-    # - get_user_badges(user_id) -> list[UserBadgeResponse]
+    async def award_points(self, user_id: uuid.UUID, points: int) -> None:
+        """Award points to a user and update their leaderboard entry."""
+        from app.repositories.leaderboard_repo import LeaderboardRepository
+        repo = LeaderboardRepository(self.session)
+        
+        # Get or create leaderboard entry
+        entry = await repo.get_rank_for_user(user_id)
+        if entry:
+            entry.total_points += points
+            await repo.update(entry, {"total_points": entry.total_points})
+        else:
+            from app.models.leaderboard import Leaderboard
+            new_entry = Leaderboard(user_id=user_id, total_points=points)
+            await repo.create(new_entry)
