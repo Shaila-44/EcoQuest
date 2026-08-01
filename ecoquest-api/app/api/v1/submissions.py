@@ -5,46 +5,58 @@ import uuid
 from fastapi import APIRouter, Depends
 
 from app.api.deps import get_current_user
+from app.db.session import get_db
 from app.models.user import User
-from app.schemas.submission import SubmissionCreate
+from app.schemas.submission import SubmissionCreate, SubmissionRead
+from app.services.submission_service import SubmissionService
+from app.pipeline.orchestrator import PipelineOrchestrator
+from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import HTTPException
 
 router = APIRouter()
 
 
-@router.post("", status_code=201)
+@router.post("", response_model=SubmissionRead, status_code=201)
 async def create_submission(
     data: SubmissionCreate,
     current_user: User = Depends(get_current_user),
-) -> dict:
+    db: AsyncSession = Depends(get_db),
+) -> SubmissionRead:
     """Create a new submission (student only)."""
-    # TODO: Implement with RBAC check + AI pipeline trigger
-    return {"message": "Submission create endpoint — not yet implemented"}
+    service = SubmissionService(db)
+    # Using a simple instance of PipelineOrchestrator here.
+    return await service.create_submission(data, current_user.id, PipelineOrchestrator())
 
 
-@router.get("")
+@router.get("", response_model=list[SubmissionRead], status_code=200)
 async def list_submissions(
     current_user: User = Depends(get_current_user),
-) -> dict:
+) -> list[SubmissionRead]:
     """List submissions (scoped by role)."""
-    # TODO: Implement with role-based scoping
-    return {"message": "Submission list endpoint — not yet implemented"}
+    raise HTTPException(status_code=501, detail="Not Implemented")
 
 
-@router.get("/{submission_id}")
+@router.get("/{submission_id}", response_model=SubmissionRead, status_code=200)
 async def get_submission(
     submission_id: uuid.UUID,
     current_user: User = Depends(get_current_user),
-) -> dict:
+    db: AsyncSession = Depends(get_db),
+) -> SubmissionRead:
     """Get a specific submission's details + AI result."""
-    # TODO: Implement with access check
-    return {"message": "Submission detail endpoint — not yet implemented"}
+    service = SubmissionService(db)
+    submission = await service.get_submission(submission_id)
+    if not submission:
+        from app.core.exceptions import NotFoundError
+        raise NotFoundError("Submission", str(submission_id))
+    return submission
 
 
 @router.delete("/{submission_id}", status_code=204)
 async def cancel_submission(
     submission_id: uuid.UUID,
     current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ) -> None:
     """Cancel a pending submission."""
-    # TODO: Implement with ownership check
-    pass
+    service = SubmissionService(db)
+    await service.cancel_submission(submission_id, current_user.id)

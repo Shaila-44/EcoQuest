@@ -26,6 +26,12 @@ class UserService:
             raise NotFoundError("User", str(user_id))
         return UserRead.model_validate(user)
 
+    async def list_users(self) -> list[UserRead]:
+        """List all users."""
+        repo = UserRepository(self.session)
+        users = await repo.list()
+        return [UserRead.model_validate(u) for u in users]
+
     async def update_profile(self, user_id: uuid.UUID, data: UserUpdate) -> UserRead:
         """Update a user's profile."""
         repo = UserRepository(self.session)

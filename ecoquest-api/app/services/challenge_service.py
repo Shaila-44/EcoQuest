@@ -51,12 +51,20 @@ class ChallengeService:
             raise NotFoundError("Challenge", str(challenge_id))
         await repo.delete(challenge)
 
-    async def get_daily_challenge(self, school_id: uuid.UUID) -> ChallengeRead | None:
+    async def get_challenge(self, challenge_id: uuid.UUID) -> ChallengeRead:
+        """Get a specific challenge by ID."""
+        repo = ChallengeRepository(self.session)
+        challenge = await repo.get_by_id(challenge_id)
+        if not challenge:
+            raise NotFoundError("Challenge", str(challenge_id))
+        return ChallengeRead.model_validate(challenge)
+
+    async def get_daily_challenge(self, school_id: uuid.UUID) -> ChallengeRead:
         """Get the daily challenge for a school."""
         repo = ChallengeRepository(self.session)
         challenge = await repo.get_daily_challenge(school_id)
         if not challenge:
-            return None
+            raise NotFoundError("Daily Challenge", "today")
         return ChallengeRead.model_validate(challenge)
 
     async def list_active_challenges(self, school_id: uuid.UUID) -> list[ChallengeRead]:

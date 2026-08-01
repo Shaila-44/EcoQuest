@@ -96,3 +96,17 @@ class SubmissionService:
         repo = SubmissionRepository(self.session)
         submissions = await repo.get_by_student_and_challenge(user_id, challenge_id)
         return [SubmissionRead.model_validate(s) for s in submissions]
+
+    async def cancel_submission(self, submission_id: uuid.UUID, user_id: uuid.UUID) -> None:
+        """Cancel a pending submission."""
+        from app.core.exceptions import AuthorizationError
+        repo = SubmissionRepository(self.session)
+        submission = await repo.get_by_id(submission_id)
+        if not submission:
+            raise NotFoundError("Submission", str(submission_id))
+        if submission.user_id != user_id:
+            raise AuthorizationError("You do not own this submission")
+        if submission.status != SubmissionStatus.PENDING:
+            raise ValueError("Only PENDING submissions can be cancelled")
+        
+        await repo.delete(submission)
