@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.repositories.challenge_repo import ChallengeRepository
 from app.schemas.challenge import ChallengeCreate, ChallengeRead, ChallengeUpdate
 from app.models.challenge import Challenge
+from app.core.exceptions import NotFoundError
 
 
 class ChallengeService:
@@ -38,7 +39,7 @@ class ChallengeService:
         repo = ChallengeRepository(self.session)
         challenge = await repo.get_by_id(challenge_id)
         if not challenge:
-            raise ValueError("Challenge not found")
+            raise NotFoundError("Challenge", str(challenge_id))
         updated_challenge = await repo.update(challenge, data.model_dump(exclude_unset=True))
         return ChallengeRead.model_validate(updated_challenge)
 
@@ -47,7 +48,7 @@ class ChallengeService:
         repo = ChallengeRepository(self.session)
         challenge = await repo.get_by_id(challenge_id)
         if not challenge:
-            raise ValueError("Challenge not found")
+            raise NotFoundError("Challenge", str(challenge_id))
         await repo.delete(challenge)
 
     async def get_daily_challenge(self, school_id: uuid.UUID) -> ChallengeRead | None:

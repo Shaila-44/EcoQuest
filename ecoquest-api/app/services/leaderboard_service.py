@@ -19,12 +19,8 @@ class LeaderboardService:
     async def get_overall_leaderboard(self, limit: int = 100) -> list[LeaderboardRead]:
         """Fetch the overall leaderboard."""
         repo = LeaderboardRepository(self.session)
-        # Assuming list() returns everything, or we might need a custom query for global limit
-        # For simplicity, we just use the list() method ordered if available, or write a quick global query in repo
-        entries = await repo.list()
-        # Sort by points locally for now, since it's just scaffolding. In prod, repo should handle this.
-        entries.sort(key=lambda x: x.total_points, reverse=True)
-        return [LeaderboardRead.model_validate(e) for e in entries[:limit]]
+        entries = await repo.get_global(limit)
+        return [LeaderboardRead.model_validate(e) for e in entries]
 
     async def get_school_leaderboard(self, school_id: uuid.UUID, limit: int = 100) -> list[LeaderboardRead]:
         """Fetch the leaderboard for a specific school."""

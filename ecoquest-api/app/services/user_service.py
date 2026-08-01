@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.repositories.user_repo import UserRepository
 from app.schemas.user import UserRead, UserUpdate
 from app.models.enums import UserStatus
+from app.core.exceptions import NotFoundError
 
 
 class UserService:
@@ -22,7 +23,7 @@ class UserService:
         repo = UserRepository(self.session)
         user = await repo.get_by_id(user_id)
         if not user:
-            raise ValueError("User not found")
+            raise NotFoundError("User", str(user_id))
         return UserRead.model_validate(user)
 
     async def update_profile(self, user_id: uuid.UUID, data: UserUpdate) -> UserRead:
@@ -30,7 +31,7 @@ class UserService:
         repo = UserRepository(self.session)
         user = await repo.get_by_id(user_id)
         if not user:
-            raise ValueError("User not found")
+            raise NotFoundError("User", str(user_id))
         
         updated_user = await repo.update(user, data.model_dump(exclude_unset=True))
         return UserRead.model_validate(updated_user)
@@ -40,6 +41,6 @@ class UserService:
         repo = UserRepository(self.session)
         user = await repo.get_by_id(user_id)
         if not user:
-            raise ValueError("User not found")
+            raise NotFoundError("User", str(user_id))
         
         await repo.update(user, {"status": UserStatus.SUSPENDED})

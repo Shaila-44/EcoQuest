@@ -12,6 +12,7 @@ from app.pipeline.orchestrator import PipelineOrchestrator
 from app.repositories.challenge_repo import ChallengeRepository
 from app.repositories.submission_repo import SubmissionRepository
 from app.schemas.submission import SubmissionCreate, SubmissionRead
+from app.core.exceptions import NotFoundError
 
 
 class SubmissionService:
@@ -47,7 +48,7 @@ class SubmissionService:
             challenge_repo = ChallengeRepository(self.session)
             challenge = await challenge_repo.get_by_id(data.challenge_id)
             if not challenge:
-                raise ValueError("Challenge not found")
+                raise NotFoundError("Challenge", str(data.challenge_id))
 
             pipeline_result = await orchestrator.run(
                 image_url=data.image_url,
@@ -74,9 +75,9 @@ class SubmissionService:
             })
             return SubmissionRead.model_validate(updated_submission)
 
-        except ValueError:
-            # Business rule violations (challenge not found, etc.) — leave as PENDING
-            return SubmissionRead.model_validate(created_submission)
+        except NotFoundError:
+            # Re-raise NotFoundError so the API returns 404
+            raise
         except Exception:
             # Pipeline failures (network, AI API) — leave as PENDING for retry
             return SubmissionRead.model_validate(created_submission)

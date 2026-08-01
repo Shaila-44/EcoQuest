@@ -14,6 +14,16 @@ class LeaderboardRepository(BaseRepository[Leaderboard]):
     def __init__(self, session: AsyncSession):
         super().__init__(Leaderboard, session)
 
+    async def get_global(self, limit: int = 100) -> list[Leaderboard]:
+        """Fetch the overall global leaderboard."""
+        stmt = (
+            select(Leaderboard)
+            .order_by(Leaderboard.total_points.desc())
+            .limit(limit)
+        )
+        result = await self.session.execute(stmt)
+        return list(result.scalars().all())
+
     async def get_by_school(self, school_id: uuid.UUID, limit: int = 100) -> list[Leaderboard]:
         """Fetch the leaderboard for a specific school."""
         from app.models.user import User
