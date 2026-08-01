@@ -49,7 +49,7 @@ export default function TopNav({ onOpenUploadModal, onOpenMissionModal, onLogout
   ];
 
   return (
-    <header className="h-20 bg-[#092b1f]/90 backdrop-blur-xl border-b border-emerald-500/25 sticky top-0 z-20 px-6 lg:px-10 flex items-center justify-between shadow-lg shadow-emerald-950/30">
+    <header className="h-20 bg-[#051912]/85 backdrop-blur-xl border-b border-emerald-500/25 sticky top-0 z-20 px-6 lg:px-10 flex items-center justify-between shadow-lg shadow-emerald-950/30">
       
       {/* ADVENTURER RANK & LEVEL BADGE */}
       <div className="flex items-center gap-4">

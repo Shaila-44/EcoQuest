@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Sidebar from '../components/student/Sidebar';
 import TopNav from '../components/student/TopNav';
 import WelcomeHero from '../components/student/WelcomeHero';
@@ -9,6 +10,11 @@ import UploadProofModal from '../components/student/UploadProofModal';
 import StartMissionModal from '../components/student/StartMissionModal';
 import ParticlesBackground from '../components/ParticlesBackground';
 
+import QuestBoard from '../components/student/QuestBoard';
+import HallOfChampions from '../components/student/HallOfChampions';
+import EcoChronicles from '../components/student/EcoChronicles';
+import UnlockCollection from '../components/student/UnlockCollection';
+import ExplorerShop from '../components/student/ExplorerShop';
 
 export default function StudentHome({ onNavigateIsland, onLogout }) {
   const [activeTab, setActiveTab] = useState('home');
@@ -25,7 +31,7 @@ export default function StudentHome({ onNavigateIsland, onLogout }) {
   };
 
   return (
-    <div className="min-h-screen bg-[#092017] text-slate-100 font-body relative overflow-x-hidden flex selection:bg-emerald-500 selection:text-white">
+    <div className="min-h-screen bg-[#05130d] text-slate-100 font-body relative overflow-x-hidden flex selection:bg-emerald-500 selection:text-white">
       
       {/* DYNAMIC AMBIENT BIOLUMINESCENT PARTICLES CANVAS */}
       <ParticlesBackground />
@@ -52,40 +58,72 @@ export default function StudentHome({ onNavigateIsland, onLogout }) {
           onLogout={onLogout}
         />
 
-        {/* MAIN HOME COMMAND CENTER CONTENT */}
-        <main className="flex-1 p-6 lg:p-10 space-y-10 max-w-7xl mx-auto w-full relative z-10">
-          
-          {/* 1. WELCOME HERO SECTION WITH DYNAMIC MESSAGE ROTATOR & RICH VECTOR ARTWORK */}
-          <WelcomeHero
-            onStartFeaturedMission={() => setMissionModalOpen(true)}
-          />
+        {/* MAIN CONTENT AREA WITH SMOOTH PAGE TRANSITIONS */}
+        <main className="flex-1 p-6 lg:p-10 max-w-7xl mx-auto w-full relative z-10">
+          <AnimatePresence mode="popLayout">
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.15, ease: 'easeOut' }}
+            >
 
-          {/* 2. TODAY'S FEATURED MISSION (PRIORITY RPG QUEST CARD) */}
-          <FeaturedMission
-            onStartMission={() => setMissionModalOpen(true)}
-          />
+              {activeTab === 'missions' ? (
+                /* QUEST BOARD PAGE */
+                <QuestBoard
+                  onStartMission={() => setMissionModalOpen(true)}
+                  onOpenUploadProof={() => setUploadProofModal(true)}
+                />
+              ) : activeTab === 'leaderboard' ? (
+                /* HALL OF CHAMPIONS PAGE */
+                <HallOfChampions />
+              ) : activeTab === 'community' ? (
+                /* ECO CHRONICLES PAGE */
+                <EcoChronicles />
+              ) : activeTab === 'achievements' ? (
+                /* UNLOCK COLLECTION PAGE */
+                <UnlockCollection />
+              ) : activeTab === 'store' ? (
+                /* EXPLORER SHOP PAGE */
+                <ExplorerShop />
+              ) : (
+                /* HOME COMMAND CENTER CONTENT */
+                <div className="space-y-10">
 
-          {/* 3. DAILY METRICS & STREAK SECTION */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-            
-            {/* ADVENTURE PROGRESS RING & STATS (6 COLUMNS) */}
-            <div className="lg:col-span-6 flex">
-              <div className="w-full">
-                <DailyProgress />
-              </div>
-            </div>
+                  {/* 1. WELCOME HERO SECTION WITH DYNAMIC MESSAGE ROTATOR & RICH VECTOR ARTWORK */}
+                  <WelcomeHero
+                    onStartFeaturedMission={() => setMissionModalOpen(true)}
+                  />
 
-            {/* FLAME STREAK CARD & CALENDAR (6 COLUMNS) */}
-            <div className="lg:col-span-6 flex">
-              <div className="w-full">
-                <StreakCard />
-              </div>
-            </div>
+                  {/* 2. TODAY'S FEATURED MISSION (PRIORITY RPG QUEST CARD) */}
+                  <FeaturedMission
+                    onStartMission={() => setMissionModalOpen(true)}
+                  />
 
-          </div>
+                  {/* 3. DAILY METRICS & STREAK SECTION */}
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+                    
+                    {/* ADVENTURE PROGRESS RING & STATS (6 COLUMNS) */}
+                    <div className="lg:col-span-6 flex">
+                      <div className="w-full">
+                        <DailyProgress />
+                      </div>
+                    </div>
 
+                    {/* STREAK CARD (6 COLUMNS) */}
+                    <div className="lg:col-span-6 flex">
+                      <div className="w-full">
+                        <StreakCard />
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              )}
+            </motion.div>
+          </AnimatePresence>
         </main>
-
 
         {/* FOOTER */}
         <footer className="py-6 px-6 lg:px-10 border-t border-emerald-500/20 bg-[#04160d]/80 backdrop-blur-md relative z-10 text-slate-300">

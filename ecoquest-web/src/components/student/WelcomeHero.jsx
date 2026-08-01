@@ -194,96 +194,95 @@ export default function WelcomeHero({ onStartFeaturedMission }) {
         <div className="lg:col-span-5 flex justify-center items-center">
           <div className="relative w-full max-w-md aspect-square flex items-center justify-center">
             
-            {/* RICH ECO VECTOR STORY ILLUSTRATION SVG */}
+            {/* GRAND WORLD TREE OF LIFE SVG */}
             <svg viewBox="0 0 440 440" className="w-full h-full drop-shadow-2xl animate-float-slow">
               <defs>
-                <linearGradient id="heroTreeGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#34d399" />
+                <linearGradient id="worldTreeGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#6ee7b7" />
                   <stop offset="50%" stopColor="#10b981" />
+                  <stop offset="100%" stopColor="#064e3b" />
+                </linearGradient>
+
+                <linearGradient id="worldTreeGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#34d399" />
                   <stop offset="100%" stopColor="#047857" />
                 </linearGradient>
 
-                <linearGradient id="heroSunGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                <linearGradient id="worldSunGrad" x1="0%" y1="0%" x2="100%" y2="100%">
                   <stop offset="0%" stopColor="#fef08a" />
-                  <stop offset="50%" stopColor="#f59e0b" />
+                  <stop offset="50%" stopColor="#fbbf24" />
                   <stop offset="100%" stopColor="#d97706" />
                 </linearGradient>
 
-                <linearGradient id="heroHillGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="#0d9488" />
-                  <stop offset="100%" stopColor="#064e3b" />
+                <linearGradient id="worldHillGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stopColor="#059669" />
+                  <stop offset="100%" stopColor="#022c22" />
+                </linearGradient>
+
+                <linearGradient id="trunkGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#92400e" />
+                  <stop offset="50%" stopColor="#78350f" />
+                  <stop offset="100%" stopColor="#451a03" />
                 </linearGradient>
               </defs>
 
-              {/* SUN LIGHT RAYS */}
-              <g opacity="0.25">
-                <line x1="220" y1="80" x2="100" y2="350" stroke="#fef08a" strokeWidth="20" strokeLinecap="round" />
-                <line x1="220" y1="80" x2="220" y2="380" stroke="#fef08a" strokeWidth="25" strokeLinecap="round" />
-                <line x1="220" y1="80" x2="340" y2="350" stroke="#fef08a" strokeWidth="20" strokeLinecap="round" />
+              {/* SUN HALO */}
+              <circle cx="220" cy="90" r="46" fill="url(#worldSunGrad)" opacity="0.95" />
+              <circle cx="220" cy="90" r="58" fill="none" stroke="rgba(251, 191, 36, 0.45)" strokeWidth="3" strokeDasharray="6 6" />
+
+              {/* BIRDS FLYING IN SKY */}
+              <g fill="none" stroke="#fef08a" strokeWidth="2.5" strokeLinecap="round" opacity="0.9">
+                <path d="M 100 115 Q 112 105 124 115 Q 136 105 148 115" />
+                <path d="M 292 130 Q 300 122 308 130 Q 316 122 324 130" />
               </g>
 
-              {/* RADIANT SUN */}
-              <circle cx="220" cy="85" r="34" fill="url(#heroSunGrad2)" opacity="0.95" />
-              <circle cx="220" cy="85" r="44" fill="none" stroke="rgba(251, 191, 36, 0.4)" strokeWidth="3" strokeDasharray="4 4" />
+              {/* GRASSY HILL BASE */}
+              <path d="M 20 360 Q 220 250 420 360 Z" fill="url(#worldHillGrad)" />
+              <path d="M 60 360 Q 220 280 380 360 Z" fill="#10b981" opacity="0.3" />
 
-              {/* BIRDS FLYING TOWARDS SUN */}
-              <g fill="none" stroke="#fef08a" strokeWidth="2.5" strokeLinecap="round" opacity="0.85">
-                <path d="M 120 110 Q 130 100 140 110 Q 150 100 160 110" />
-                <path d="M 280 125 Q 288 117 296 125 Q 304 117 312 125" />
-              </g>
-
-              {/* ECO HILL BASE */}
-              <path d="M 40 340 Q 220 250 400 340 Z" fill="url(#heroHillGrad)" />
-              <path d="M 80 340 Q 220 280 360 340 Z" fill="#10b981" opacity="0.3" />
-
-              {/* TREE TRUNK & ROOT SYSTEM */}
-              <path d="M 214 300 L 214 180 L 226 180 L 226 300 Z" fill="#78350f" />
+              {/* TREE ROOT STRUCTURE */}
+              <path d="M 170 340 Q 200 320 205 280 L 235 280 Q 240 320 270 340 Z" fill="url(#trunkGrad)" />
               
-              {/* TREE FOLIAGE CANOPY */}
-              <circle cx="220" cy="150" r="50" fill="url(#heroTreeGrad2)" />
-              <circle cx="185" cy="170" r="36" fill="#10b981" />
-              <circle cx="255" cy="170" r="36" fill="#047857" />
+              {/* STURDY MAIN TRUNK & BRANCHES */}
+              <path d="M 195 295 C 195 220 180 180 160 150 L 180 140 C 200 175 210 210 215 295 Z" fill="url(#trunkGrad)" />
+              <path d="M 225 295 C 225 220 240 180 260 150 L 240 140 C 220 175 210 210 205 295 Z" fill="url(#trunkGrad)" />
+              <rect x="202" y="160" width="36" height="135" rx="8" fill="url(#trunkGrad)" />
 
-              {/* FLOWERS & LEAVES ON HILL */}
-              <circle cx="140" cy="305" r="6" fill="#f43f5e" />
-              <circle cx="300" cy="310" r="6" fill="#fbbf24" />
+              {/* MULTI-TIER LUSH CANOPY */}
+              {/* BACK CANOPY */}
+              <circle cx="150" cy="150" r="54" fill="url(#worldTreeGrad2)" />
+              <circle cx="290" cy="150" r="54" fill="url(#worldTreeGrad2)" />
+              <circle cx="220" cy="110" r="64" fill="url(#worldTreeGrad1)" />
 
-              {/* STUDENT 1: PLANTING TREE SAPLING */}
-              <g transform="translate(130, 240)">
-                <circle cx="25" cy="18" r="9" fill="#fcd34d" />
-                <path d="M 25 27 Q 35 42 45 52 L 15 52 Z" fill="#10b981" />
-                <path d="M 25 32 L 42 48" stroke="#fcd34d" strokeWidth="3" strokeLinecap="round" />
-                {/* Sapling Tool */}
-                <rect x="42" y="44" width="8" height="12" rx="2" fill="#78350f" />
+              {/* FRONT CANOPY ACCENTS */}
+              <circle cx="185" cy="135" r="48" fill="#10b981" />
+              <circle cx="255" cy="135" r="48" fill="#34d399" />
+              <circle cx="220" cy="155" r="40" fill="#059669" />
+
+              {/* GOLDEN ECO FRUITS ON CANOPY */}
+              <circle cx="160" cy="120" r="7" fill="#fbbf24" />
+              <circle cx="275" cy="130" r="7" fill="#fbbf24" />
+              <circle cx="220" cy="95" r="8" fill="#fef08a" />
+              <circle cx="200" cy="165" r="6" fill="#fbbf24" />
+              <circle cx="245" cy="165" r="6" fill="#fef08a" />
+
+              {/* FLUTTERING MONARCH BUTTERFLY */}
+              <g transform="translate(325, 175)" className="animate-float-reverse">
+                <path d="M0 0 Q-12 -12 -18 0 Q-12 12 0 0" fill="#fbbf24" />
+                <path d="M0 0 Q12 -12 18 0 Q12 12 0 0" fill="#f43f5e" />
+                <circle cx="0" cy="0" r="2" fill="#04271b" />
               </g>
 
-              {/* STUDENT 2: WATERING FLORA WITH CAN */}
-              <g transform="translate(250, 235)">
-                <circle cx="25" cy="18" r="9" fill="#fcd34d" />
-                <path d="M 25 27 L 15 58 L 35 58 Z" fill="#14b8a6" />
-                {/* Golden Watering Can */}
-                <rect x="2" y="36" width="16" height="12" rx="3" fill="#fbbf24" />
-                <path d="M -3 38 L 2 42" stroke="#fbbf24" strokeWidth="2.5" />
-                {/* Water Droplets */}
-                <circle cx="-8" cy="48" r="2" fill="#38bdf8" />
-                <circle cx="-12" cy="54" r="2" fill="#38bdf8" />
+              {/* FLOATING RPG BADGE 1: 7D STREAK */}
+              <g transform="translate(25, 220)">
+                <rect x="0" y="0" width="115" height="40" rx="20" fill="rgba(6, 36, 25, 0.95)" stroke="rgba(251, 191, 36, 0.7)" strokeWidth="1.5" />
+                <text x="18" y="25" fill="#fbbf24" fontSize="13" fontWeight="900" fontFamily="sans-serif">🔥 7D Streak</text>
               </g>
 
-              {/* FLOATING BUTTERFLY */}
-              <g transform="translate(320, 180)" className="animate-float-reverse">
-                <path d="M0 0 Q-10 -10 -15 0 Q-10 10 0 0" fill="#fbbf24" />
-                <path d="M0 0 Q10 -10 15 0 Q10 10 0 0" fill="#f43f5e" />
-              </g>
-
-              {/* LOOT BADGE ORBITS */}
-              <g transform="translate(310, 220)">
-                <rect x="0" y="0" width="95" height="38" rx="19" fill="rgba(6, 36, 25, 0.95)" stroke="rgba(16, 185, 129, 0.6)" strokeWidth="1.5" />
-                <text x="47.5" y="24" textAnchor="middle" fill="#34d399" fontSize="13" fontWeight="900">+350 XP</text>
-              </g>
-
-              <g transform="translate(35, 195)">
-                <rect x="0" y="0" width="105" height="38" rx="19" fill="rgba(35, 20, 5, 0.95)" stroke="rgba(245, 158, 11, 0.6)" strokeWidth="1.5" />
-                <text x="52.5" y="24" textAnchor="middle" fill="#fbbf24" fontSize="13" fontWeight="900">🔥 7D Streak</text>
+              {/* FLOATING RPG BADGE 2: +350 XP */}
+              <g transform="translate(300, 230)">
+                <rect x="0" y="0" width="110" height="40" rx="20" fill="rgba(6, 36, 25, 0.95)" stroke="rgba(52, 211, 153, 0.7)" strokeWidth="1.5" />
+                <text x="18" y="25" fill="#34d399" fontSize="13" fontWeight="900" fontFamily="sans-serif">+350 XP</text>
               </g>
             </svg>
 

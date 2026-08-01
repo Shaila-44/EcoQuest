@@ -23,15 +23,15 @@ export default function Sidebar({ activeTab, setActiveTab, onLogout, userStats }
   const navItems = [
     { id: 'home', label: 'Command Center', icon: Home, badge: 'Active Hub', highlight: true },
     { id: 'island', label: 'Island Realm', icon: Palmtree, badge: 'Sanctuary', separate: true },
-    { id: 'missions', label: 'Quest Board', icon: Target, count: '15 Active' },
+    { id: 'missions', label: 'Challenge Board', icon: Target, count: '15 Active' },
     { id: 'leaderboard', label: 'Hall of Champions', icon: Trophy, rank: '#4 Rank' },
-    { id: 'community', label: 'Eco Chronicles', icon: Users, alert: true },
+    { id: 'community', label: 'My Journey', icon: Users, alert: true },
     { id: 'store', label: 'Explorer Shop', icon: ShoppingBag, coins: '1,280' },
-    { id: 'achievements', label: 'Unlock Collection', icon: Award, count: '24/32' },
+    { id: 'achievements', label: 'Unlock Badges', icon: Award, count: '24/32' },
   ];
 
   return (
-    <aside className="fixed top-0 left-0 h-screen w-64 lg:w-72 bg-[#082a1d]/95 backdrop-blur-2xl border-r border-emerald-500/20 flex flex-col justify-between z-30 shadow-2xl shadow-emerald-950/40 select-none overflow-y-auto text-slate-100">
+    <aside className="fixed top-0 left-0 h-screen w-64 lg:w-72 bg-[#061912]/92 backdrop-blur-2xl border-r border-emerald-500/20 flex flex-col justify-between z-30 shadow-2xl shadow-emerald-950/40 select-none overflow-y-auto text-slate-100">
       
       {/* SIDEBAR HEADER & RPG EMBLEM LOGO */}
       <div>
