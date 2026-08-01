@@ -1,10 +1,13 @@
 """EcoQuest API — Cloudinary Storage Implementation."""
 
+import logging
 import time
 import cloudinary
 import cloudinary.uploader
 import cloudinary.utils
 from app.storage.base import StorageBackend
+
+logger = logging.getLogger(__name__)
 
 
 class CloudinaryStorage(StorageBackend):
@@ -57,7 +60,8 @@ class CloudinaryStorage(StorageBackend):
         try:
             res = cloudinary.uploader.destroy(public_id)
             return res.get("result") == "ok"
-        except Exception:
+        except Exception as exc:
+            logger.error("Failed to delete Cloudinary asset '%s': %s", public_id, exc)
             return False
 
     def get_url(self, public_id: str, transformations: dict | None = None) -> str:

@@ -1,8 +1,9 @@
 """EcoQuest API — Auth Routes."""
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.limiter import limiter
 from app.db.session import get_db
 from app.schemas.auth import LoginRequest, RefreshRequest, RegisterRequest, TokenResponse
 from app.schemas.common import MessageResponse
@@ -13,27 +14,22 @@ router = APIRouter()
 
 
 @router.post("/register", status_code=201, response_model=UserRead)
+@limiter.limit("5/minute")
 async def register(
+    request: Request,
     data: RegisterRequest,
     db: AsyncSession = Depends(get_db),
 ):
     """Register a new user."""
     service = AuthService(db)
     user = await service.register(data)
-    return UserRead(
-        id=user.user_id,
-        email=user.email_encrypted,
-        first_name=data.first_name,
-        last_name=data.last_name,
-        role=user.role.name if user.role else "student",
-        school_id=user.school_id,
-        is_active=True,
-        created_at=user.created_at,
-    )
+    return UserRead.model_validate(user)
 
 
 @router.post("/login", response_model=TokenResponse)
+@limiter.limit("10/minute")
 async def login(
+    request: Request,
     data: LoginRequest,
     db: AsyncSession = Depends(get_db),
 ):

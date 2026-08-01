@@ -44,3 +44,19 @@ def test_pipeline_result_dataclass():
     assert res.success is True
     assert res.verification.is_verified is True
     assert res.verification.confidence_score == 0.90
+
+
+@pytest.mark.asyncio
+async def test_gemini_verifier_unconfigured_fallback():
+    from app.pipeline.verifier import GeminiVerifier
+
+    verifier = GeminiVerifier(api_key="")
+    result = await verifier.verify(
+        image_bytes=b"fake_image_data",
+        challenge_title="Recycle Plastic",
+        challenge_description="Recycle 5 plastic bottles",
+    )
+
+    assert result.is_verified is False
+    assert result.confidence_score == 0.0
+    assert result.rejection_reason == "AI_UNCONFIGURED"
