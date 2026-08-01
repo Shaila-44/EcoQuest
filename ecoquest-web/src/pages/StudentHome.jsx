@@ -9,6 +9,11 @@ import UploadProofModal from '../components/student/UploadProofModal';
 import StartMissionModal from '../components/student/StartMissionModal';
 import ParticlesBackground from '../components/ParticlesBackground';
 
+import QuestBoard from '../components/student/QuestBoard';
+import HallOfChampions from '../components/student/HallOfChampions';
+import EcoChronicles from '../components/student/EcoChronicles';
+import UnlockCollection from '../components/student/UnlockCollection';
+import ExplorerShop from '../components/student/ExplorerShop';
 
 export default function StudentHome({ onNavigateIsland, onLogout }) {
   const [activeTab, setActiveTab] = useState('home');
@@ -25,7 +30,7 @@ export default function StudentHome({ onNavigateIsland, onLogout }) {
   };
 
   return (
-    <div className="min-h-screen bg-[#092017] text-slate-100 font-body relative overflow-x-hidden flex selection:bg-emerald-500 selection:text-white">
+    <div className="min-h-screen bg-[#05130d] text-slate-100 font-body relative overflow-x-hidden flex selection:bg-emerald-500 selection:text-white">
       
       {/* DYNAMIC AMBIENT BIOLUMINESCENT PARTICLES CANVAS */}
       <ParticlesBackground />
@@ -52,39 +57,67 @@ export default function StudentHome({ onNavigateIsland, onLogout }) {
           onLogout={onLogout}
         />
 
-        {/* MAIN HOME COMMAND CENTER CONTENT */}
-        <main className="flex-1 p-6 lg:p-10 space-y-10 max-w-7xl mx-auto w-full relative z-10">
+        {/* MAIN CONTENT AREA */}
+        <main className="flex-1 p-6 lg:p-10 max-w-7xl mx-auto w-full relative z-10">
           
-          {/* 1. WELCOME HERO SECTION WITH DYNAMIC MESSAGE ROTATOR & RICH VECTOR ARTWORK */}
-          <WelcomeHero
-            onStartFeaturedMission={() => setMissionModalOpen(true)}
-          />
+          {activeTab === 'missions' ? (
+            /* QUEST BOARD PAGE */
+            <QuestBoard
+              onStartMission={() => setMissionModalOpen(true)}
+              onOpenUploadProof={() => setUploadModalOpen(true)}
+            />
+          ) : activeTab === 'leaderboard' ? (
+            /* HALL OF CHAMPIONS PAGE */
+            <HallOfChampions />
+          ) : activeTab === 'community' ? (
+            /* ECO CHRONICLES PAGE */
+            <EcoChronicles />
+          ) : activeTab === 'achievements' ? (
+            /* UNLOCK COLLECTION PAGE */
+            <UnlockCollection />
+          ) : activeTab === 'store' ? (
+            /* EXPLORER SHOP PAGE */
+            <ExplorerShop />
+          ) : (
+            /* HOME COMMAND CENTER CONTENT */
+            <div className="space-y-10">
 
-          {/* 2. TODAY'S FEATURED MISSION (PRIORITY RPG QUEST CARD) */}
-          <FeaturedMission
-            onStartMission={() => setMissionModalOpen(true)}
-          />
 
-          {/* 3. DAILY METRICS & STREAK SECTION */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-            
-            {/* ADVENTURE PROGRESS RING & STATS (6 COLUMNS) */}
-            <div className="lg:col-span-6 flex">
-              <div className="w-full">
-                <DailyProgress />
+
+              {/* 1. WELCOME HERO SECTION WITH DYNAMIC MESSAGE ROTATOR & RICH VECTOR ARTWORK */}
+              <WelcomeHero
+                onStartFeaturedMission={() => setMissionModalOpen(true)}
+              />
+
+              {/* 2. TODAY'S FEATURED MISSION (PRIORITY RPG QUEST CARD) */}
+              <FeaturedMission
+                onStartMission={() => setMissionModalOpen(true)}
+              />
+
+              {/* 3. DAILY METRICS & STREAK SECTION */}
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+                
+                {/* ADVENTURE PROGRESS RING & STATS (6 COLUMNS) */}
+                <div className="lg:col-span-6 flex">
+                  <div className="w-full">
+                    <DailyProgress />
+                  </div>
+                </div>
+
+                {/* FLAME STREAK CARD & CALENDAR (6 COLUMNS) */}
+                <div className="lg:col-span-6 flex">
+                  <div className="w-full">
+                    <StreakCard />
+                  </div>
+                </div>
+
               </div>
             </div>
-
-            {/* FLAME STREAK CARD & CALENDAR (6 COLUMNS) */}
-            <div className="lg:col-span-6 flex">
-              <div className="w-full">
-                <StreakCard />
-              </div>
-            </div>
-
-          </div>
+          )}
 
         </main>
+
+
 
 
         {/* FOOTER */}
