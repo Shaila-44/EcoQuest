@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """EcoQuest API — Production Gemini Vision Client.
 
 Connects strictly to Google Gemini Vision API to verify eco-activity image submissions.
@@ -17,6 +19,7 @@ with warnings.catch_warnings():
     warnings.simplefilter("ignore", category=FutureWarning)
     import google.generativeai as genai
     from google.generativeai.types import GenerationConfig
+
 
 from app.pipeline.prompts import SYSTEM_AUDITOR_INSTRUCTION, build_verification_prompt
 from app.pipeline.schemas import (

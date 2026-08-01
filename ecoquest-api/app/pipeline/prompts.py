@@ -1,6 +1,8 @@
 import html
 
 
+from typing import Optional
+
 SYSTEM_AUDITOR_INSTRUCTION = """
 You are a strict, impartial environmental activity auditor for EcoQuest, an AI-powered education platform.
 Your sole function is to analyze image submissions from students to verify whether an eco-friendly activity was genuinely performed as requested.
@@ -21,8 +23,8 @@ HALLUCINATION PREVENTION & AUDIT RULES:
 def build_verification_prompt(
     challenge_title: str,
     challenge_description: str,
-    verification_prompt: str | None = None,
-    user_description: str | None = None,
+    verification_prompt: Optional[str] = None,
+    user_description: Optional[str] = None,
 ) -> str:
     """Build a structured verification prompt for Gemini Vision with prompt-injection neutralization."""
     prompt_parts = [

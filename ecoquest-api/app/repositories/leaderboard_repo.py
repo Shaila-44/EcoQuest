@@ -1,4 +1,9 @@
+from __future__ import annotations
+
+"""EcoQuest API — Leaderboard Repository."""
+
 import uuid
+from typing import Optional
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -36,6 +41,8 @@ class LeaderboardRepository(BaseRepository[Leaderboard]):
         )
         result = await self.session.execute(stmt)
         return list(result.scalars().all())
+
+    async def get_rank_for_user(self, user_id: uuid.UUID) -> Optional[Leaderboard]:
 
     async def list_top_ranks(self, limit: int = 50) -> list[Leaderboard]:
         """Fetch global top ranks ordered by points descending with user preloaded."""

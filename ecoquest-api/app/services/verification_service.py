@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """EcoQuest API — Verification Decision Service.
 
 Pure domain decision engine that evaluates AI results against platform thresholds.
@@ -14,6 +16,7 @@ from dataclasses import dataclass
 from enum import Enum
 import json
 import logging
+from typing import Optional
 from pydantic import ValidationError
 
 from app.pipeline.schemas import GeminiVisionResponseSchema, VerificationResult
@@ -39,10 +42,11 @@ class DecisionResult:
     activity_detected: str
     environmental_impact: str
     feedback: str
-    rejection_reason: str | None
+    rejection_reason: Optional[str]
     is_stock_photo: bool = False
     is_screen_photo: bool = False
     is_blurry: bool = False
+
 
 
 class VerificationService:

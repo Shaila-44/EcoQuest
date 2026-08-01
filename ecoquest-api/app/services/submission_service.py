@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """EcoQuest API — Submission Service.
 
 Workflow Coordinator for EcoQuest Submissions.
@@ -7,6 +9,7 @@ and structured logging.
 
 import logging
 import uuid
+from typing import Optional
 
 from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -19,8 +22,6 @@ from app.models.submission import Submission
 from app.models.user import User
 from app.pipeline.orchestrator import PipelineOrchestrator
 from app.pipeline.verifier import GeminiVerifier
-from app.repositories.challenge_repo import ChallengeRepository
-from app.repositories.submission_repo import SubmissionRepository
 from app.repositories.challenge_repo import ChallengeRepository
 from app.repositories.submission_repo import SubmissionRepository
 from app.repositories.user_repo import UserRepository
@@ -41,9 +42,10 @@ class SubmissionService:
     def __init__(
         self,
         session: AsyncSession,
-        orchestrator: PipelineOrchestrator | None = None,
-        gamification_service: GamificationService | None = None,
+        orchestrator: Optional[PipelineOrchestrator] = None,
+        gamification_service: Optional[GamificationService] = None,
     ):
+
         self.session = session
         self.submission_repo = SubmissionRepository(session)
         self.challenge_repo = ChallengeRepository(session)

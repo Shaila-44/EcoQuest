@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """EcoQuest API — Abstract Storage Interface.
 
 Strategy pattern for file storage. Implementations can be swapped
@@ -5,6 +7,7 @@ without changing business logic.
 """
 
 from abc import ABC, abstractmethod
+from typing import Optional
 
 
 class StorageBackend(ABC):
@@ -35,7 +38,8 @@ class StorageBackend(ABC):
         ...
 
     @abstractmethod
-    def get_url(self, public_id: str, transformations: dict | None = None) -> str:
+    def get_url(self, public_id: str, transformations: Optional[dict] = None) -> str:
+
         """Get a URL for a stored file with optional transformations.
 
         Returns:

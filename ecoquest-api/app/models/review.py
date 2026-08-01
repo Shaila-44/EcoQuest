@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 """EcoQuest API — Review Model."""
 
 import uuid
 from datetime import datetime
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from sqlalchemy import DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.dialects.postgresql import UUID
@@ -28,8 +30,9 @@ class Review(Base, TimestampMixin):
         UUID(as_uuid=True), ForeignKey("users.user_id", ondelete="CASCADE"), nullable=False, index=True
     )
     decision: Mapped[str] = mapped_column(String(20), nullable=False)
-    comment: Mapped[str | None] = mapped_column(Text, nullable=True)
-    points_override: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    comment: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    points_override: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+
     reviewed_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default="now()",

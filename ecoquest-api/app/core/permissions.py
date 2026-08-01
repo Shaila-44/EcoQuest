@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """EcoQuest API — Role-Based Access Control.
 
 Permission-based RBAC system. Endpoints check permissions, not roles.
@@ -83,6 +85,7 @@ def require_role(allowed_roles: list[RoleName]):
 
     def role_checker(current_user):
         user_role = None
+
         if hasattr(current_user, "role") and current_user.role:
             user_role = getattr(current_user.role, "role_name", current_user.role)
 
@@ -91,6 +94,7 @@ def require_role(allowed_roles: list[RoleName]):
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="User role not authorized to access this resource.",
             )
+
         return current_user
 
     return role_checker
