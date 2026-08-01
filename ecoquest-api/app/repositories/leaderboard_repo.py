@@ -5,6 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.leaderboard import Leaderboard
+from app.models.user import User
 from app.repositories.base import BaseRepository
 
 
@@ -25,8 +26,8 @@ class LeaderboardRepository(BaseRepository[Leaderboard]):
         return list(result.scalars().all())
 
     async def get_by_school(self, school_id: uuid.UUID, limit: int = 100) -> list[Leaderboard]:
-        """Fetch the leaderboard for a specific school."""
-        from app.models.user import User
+        """Fetch the leaderboard for a specific school by joining User."""
+
         stmt = (
             select(Leaderboard)
             .join(Leaderboard.user)

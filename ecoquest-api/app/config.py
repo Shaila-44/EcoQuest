@@ -14,6 +14,7 @@ class Settings(BaseSettings):
         env_file=".env",
         env_file_encoding="utf-8",
         case_sensitive=True,
+        extra="ignore",
     )
 
     # ----- Database -----
@@ -37,7 +38,7 @@ class Settings(BaseSettings):
     # ----- Application -----
     ENVIRONMENT: str = "development"
     LOG_LEVEL: str = "DEBUG"
-    CORS_ORIGINS: str = "http://localhost:3000"
+    CORS_ORIGINS: str = "http://localhost:3000,http://localhost:5173,http://localhost:5175"
 
     # ----- Rate Limiting -----
     RATE_LIMIT_PER_MINUTE: int = 100
