@@ -10,5 +10,8 @@ echo "Starting deployment checks..."
 echo "Running Alembic migrations..."
 alembic upgrade head
 
+echo "Seeding demo data..."
+python -m scripts.seed
+
 echo "Starting FastAPI application with Uvicorn..."
 exec uvicorn app.main:app --host 0.0.0.0 --port 8000

@@ -52,17 +52,11 @@ async def register(
     db: AsyncSession = Depends(get_db),
 ) -> UserRead:
     """Register a new user, log them in via HttpOnly cookie, and return UserRead."""
-    service = AuthService(db)
-    user = await service.register(data)
-
-    
-    # Generate access token & set cookie
-    login_data = LoginRequest(email=data.email, password=data.password)
-    login_env = await service.login(login_data)
-    if login_env.access_token:
-        set_auth_cookie(response, login_env.access_token)
-
-    return UserRead.model_validate(user)
+    from fastapi import HTTPException
+    raise HTTPException(
+        status_code=status.HTTP_403_FORBIDDEN,
+        detail="Registration is disabled for this demo.",
+    )
 
 
 @router.post("/login", response_model=LoginResponseEnvelope)

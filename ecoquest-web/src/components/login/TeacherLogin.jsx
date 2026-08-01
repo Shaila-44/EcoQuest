@@ -177,16 +177,9 @@ export default function TeacherLogin({ onLoginSuccess }) {
 
       {/* MODE TOGGLE */}
       <div className="flex items-center justify-between pt-1">
-        <button
-          type="button"
-          onClick={() => {
-            setMode(mode === 'login' ? 'register' : 'login');
-            setError('');
-          }}
-          className="text-xs font-black text-amber-300 hover:text-amber-200 transition-colors hover:underline cursor-pointer"
-        >
-          {mode === 'login' ? 'New here? Create an educator account' : 'Already have an account? Log in'}
-        </button>
+        <span className="text-xs font-black text-amber-300/80">
+          Demo accounts only. Please use the provided credentials.
+        </span>
       </div>
 
       {/* PRIMARY BUTTON */}
