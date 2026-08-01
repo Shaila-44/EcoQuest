@@ -1,7 +1,7 @@
 """EcoQuest API — Application Factory.
 
 Creates and configures the FastAPI application with all middleware,
-exception handlers, and route registrations.
+exception handlers, rate limiting, and route registrations.
 """
 
 from contextlib import asynccontextmanager
@@ -9,19 +9,22 @@ from collections.abc import AsyncGenerator
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.util import get_remote_address
 
-from app.config import settings
+from app.api.v1.auth import router as auth_router
 from app.api.v1.router import api_v1_router
+from app.config import settings
 from app.core.exception_handlers import register_exception_handlers
+from app.core.limiter import limiter
 from app.core.middleware import RequestIdMiddleware
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
     """Application lifespan — startup and shutdown events."""
-    # Startup
     yield
-    # Shutdown
 
 
 def create_app() -> FastAPI:
@@ -34,6 +37,9 @@ def create_app() -> FastAPI:
         redoc_url="/redoc" if settings.ENVIRONMENT == "development" else None,
         lifespan=lifespan,
     )
+
+    application.state.limiter = limiter
+    application.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
     # --- Middleware (order matters: last added = first executed) ---
     application.add_middleware(
@@ -50,8 +56,15 @@ def create_app() -> FastAPI:
 
     # --- Routers ---
     application.include_router(api_v1_router, prefix="/api/v1")
+    application.include_router(auth_router, prefix="/auth", tags=["Auth"])
+
+    @application.get("/health", status_code=200, tags=["Health"])
+    async def health_check():
+        """Health check endpoint for container health probes and load balancers."""
+        return {"status": "ok", "service": "ecoquest-api", "version": "0.1.0"}
 
     return application
+
 
 
 app = create_app()

@@ -1,5 +1,5 @@
 import uuid
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -20,10 +20,11 @@ class School(Base, TimestampMixin):
     school_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     school_code: Mapped[str] = mapped_column(String, unique=True, index=True, nullable=False)
     school_name: Mapped[str] = mapped_column(String, nullable=False)
-    address: Mapped[str | None] = mapped_column(String, nullable=True)
-    city: Mapped[str | None] = mapped_column(String, nullable=True)
-    state: Mapped[str | None] = mapped_column(String, nullable=True)
-    pincode: Mapped[str | None] = mapped_column(String, nullable=True)
+    address: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+    city: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+    state: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+    pincode: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+
 
     users: Mapped[list["User"]] = relationship("User", back_populates="school", cascade="all, delete-orphan")
     challenges: Mapped[list["Challenge"]] = relationship("Challenge", back_populates="school", cascade="all, delete-orphan")

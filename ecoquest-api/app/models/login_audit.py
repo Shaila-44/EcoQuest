@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 import uuid
 from datetime import datetime
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from sqlalchemy import DateTime, Enum as SQLEnum, ForeignKey, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -21,12 +23,13 @@ class LoginAudit(Base):
     
     login_time: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     login_method: Mapped[LoginMethod] = mapped_column(SQLEnum(LoginMethod), nullable=False)
-    ip_address: Mapped[str | None] = mapped_column(String, nullable=True)
-    user_agent: Mapped[str | None] = mapped_column(String, nullable=True)
-    device_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("devices.device_id", ondelete="SET NULL"), nullable=True)
-    location: Mapped[str | None] = mapped_column(String, nullable=True)
+    ip_address: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+    user_agent: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+    device_id: Mapped[Optional[uuid.UUID]] = mapped_column(ForeignKey("devices.device_id", ondelete="SET NULL"), nullable=True)
+    location: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     status: Mapped[LoginStatus] = mapped_column(SQLEnum(LoginStatus), nullable=False)
-    failure_reason: Mapped[str | None] = mapped_column(String, nullable=True)
+    failure_reason: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+
 
     user: Mapped["User"] = relationship("User", back_populates="login_audits")
     device: Mapped["Device"] = relationship("Device", back_populates="login_audits")

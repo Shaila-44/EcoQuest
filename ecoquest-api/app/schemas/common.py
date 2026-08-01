@@ -1,5 +1,8 @@
+from __future__ import annotations
+
 """EcoQuest API — Common Response Schemas."""
 
+from typing import Optional
 from pydantic import BaseModel
 
 
@@ -9,7 +12,8 @@ class ErrorDetail(BaseModel):
     code: str
     message: str
     details: dict = {}
-    request_id: str | None = None
+    request_id: Optional[str] = None
+
 
 
 class ErrorResponse(BaseModel):

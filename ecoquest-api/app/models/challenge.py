@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 import uuid
 from datetime import datetime
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from sqlalchemy import DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -21,11 +23,12 @@ class Challenge(Base, TimestampMixin):
     created_by: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.user_id", ondelete="RESTRICT"), nullable=False)
     
     title: Mapped[str] = mapped_column(String, nullable=False)
-    description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     category: Mapped[str] = mapped_column(String, nullable=False)
     points: Mapped[int] = mapped_column(Integer, default=0)
-    start_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
-    end_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    start_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+    end_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+
 
     school: Mapped["School"] = relationship("School", back_populates="challenges")
     creator: Mapped["User"] = relationship("User", back_populates="created_challenges")

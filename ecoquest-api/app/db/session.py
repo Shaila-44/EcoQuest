@@ -4,11 +4,14 @@ Configures the async SQLAlchemy engine and session factory.
 Provides a dependency for FastAPI route injection.
 """
 
+import logging
 from collections.abc import AsyncGenerator
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from app.config import settings
+
+logger = logging.getLogger(__name__)
 
 engine = create_async_engine(
     settings.DATABASE_URL,
@@ -16,6 +19,7 @@ engine = create_async_engine(
     pool_size=20,
     max_overflow=10,
     pool_pre_ping=True,
+    pool_recycle=1800,
 )
 
 async_session_factory = async_sessionmaker(
@@ -31,7 +35,8 @@ async def get_db() -> AsyncGenerator[AsyncSession]:
         try:
             yield session
             await session.commit()
-        except Exception:
+        except Exception as exc:
+            logger.error("Database session transaction error, rolling back: %s", exc)
             await session.rollback()
             raise
         finally:

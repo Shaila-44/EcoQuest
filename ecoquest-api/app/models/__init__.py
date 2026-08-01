@@ -20,6 +20,9 @@ from app.models.trust_score_history_user import TrustScoreHistoryUser
 from app.models.school_trust_score import SchoolTrustScore
 from app.models.school_trust_factor import SchoolTrustFactor
 from app.models.trust_score_history_school import TrustScoreHistorySchool
+from app.models.user_session import UserSession
+from app.models.device_approval import DeviceApproval
+
 
 # Also expose Enums if needed directly from models
 from app.models.enums import (

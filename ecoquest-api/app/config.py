@@ -1,9 +1,12 @@
+from __future__ import annotations
+
 """EcoQuest API — Application Configuration.
 
 Uses Pydantic Settings to parse environment variables with type safety
 and validation. All config is centralized here.
 """
 
+from typing import Optional
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -14,6 +17,7 @@ class Settings(BaseSettings):
         env_file=".env",
         env_file_encoding="utf-8",
         case_sensitive=True,
+        extra="ignore",
     )
 
     # ----- Database -----
@@ -21,9 +25,17 @@ class Settings(BaseSettings):
 
     # ----- Auth -----
     JWT_SECRET_KEY: str = "CHANGE_ME_TO_A_RANDOM_256_BIT_STRING"
-    JWT_ALGORITHM: str = "HS256"
+    JWT_ALGORITHM: str = "RS256"
     JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 15
     JWT_REFRESH_TOKEN_EXPIRE_DAYS: int = 7
+    RSA_PRIVATE_KEY: Optional[str] = None
+    RSA_PUBLIC_KEY: Optional[str] = None
+    RSA_PRIVATE_KEY_PATH: Optional[str] = None
+    RSA_PUBLIC_KEY_PATH: Optional[str] = None
+    COOKIE_SECURE: bool = False
+    COOKIE_SAMESITE: str = "lax"
+
+
 
     # ----- AI Pipeline -----
     GEMINI_API_KEY: str = ""
@@ -37,7 +49,7 @@ class Settings(BaseSettings):
     # ----- Application -----
     ENVIRONMENT: str = "development"
     LOG_LEVEL: str = "DEBUG"
-    CORS_ORIGINS: str = "http://localhost:3000"
+    CORS_ORIGINS: str = "http://localhost:3000,http://localhost:5173,http://localhost:5175"
 
     # ----- Rate Limiting -----
     RATE_LIMIT_PER_MINUTE: int = 100

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """EcoQuest API — Generic CRUD Repository.
 
 Provides reusable CRUD operations for all models. Domain repositories
@@ -5,7 +7,7 @@ extend this with custom queries.
 """
 
 import uuid
-from typing import Any, Generic, TypeVar
+from typing import Any, Generic, Optional, TypeVar
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -22,7 +24,8 @@ class BaseRepository(Generic[ModelType]):
         self.model = model
         self.session = session
 
-    async def get_by_id(self, id: uuid.UUID) -> ModelType | None:
+    async def get_by_id(self, id: uuid.UUID) -> Optional[ModelType]:
+
         """Fetch a single record by primary key."""
         return await self.session.get(self.model, id)
 
