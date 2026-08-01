@@ -1,7 +1,8 @@
 """EcoQuest API — Submission Repository."""
 
 import uuid
-from sqlalchemy import select, func
+
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.enums import SubmissionStatus

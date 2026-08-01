@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import hashlib
 import uuid
-from datetime import datetime, timedelta, timezone
-from typing import Optional
+from datetime import UTC, datetime, timedelta
+
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -34,7 +34,7 @@ class SessionRepository(BaseRepository[UserSession]):
         expires_days: int = 7,
     ) -> UserSession:
         """Create and persist a new user session with SHA-256 token hash."""
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         expires_at = now + timedelta(days=expires_days)
 
         token_hash = hash_token(refresh_token)
@@ -52,9 +52,9 @@ class SessionRepository(BaseRepository[UserSession]):
         await self.session.flush()
         return db_session
 
-    async def get_active_session_by_user(self, user_id: uuid.UUID) -> Optional[UserSession]:
+    async def get_active_session_by_user(self, user_id: uuid.UUID) -> UserSession | None:
         """Fetch the currently active session for a user."""
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         stmt = (
             select(UserSession)
             .where(
@@ -68,10 +68,10 @@ class SessionRepository(BaseRepository[UserSession]):
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
 
-    async def get_session_by_token_hash(self, refresh_token: str) -> Optional[UserSession]:
+    async def get_session_by_token_hash(self, refresh_token: str) -> UserSession | None:
         """Fetch active session by SHA-256 hash of refresh token."""
         token_hash = hash_token(refresh_token)
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         stmt = select(UserSession).where(
             UserSession.refresh_token_hash == token_hash,
             UserSession.is_active == True,
@@ -87,7 +87,7 @@ class SessionRepository(BaseRepository[UserSession]):
         expires_days: int = 7,
     ) -> UserSession:
         """Rotate session refresh token hash and update last active time."""
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         db_session.refresh_token_hash = hash_token(new_refresh_token)
         db_session.last_active_at = now
         db_session.expires_at = now + timedelta(days=expires_days)
@@ -97,7 +97,7 @@ class SessionRepository(BaseRepository[UserSession]):
 
     async def revoke_session(self, session_id: uuid.UUID) -> bool:
         """Revoke a specific session."""
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         stmt = (
             update(UserSession)
             .where(UserSession.session_id == session_id, UserSession.is_active == True)
@@ -108,7 +108,7 @@ class SessionRepository(BaseRepository[UserSession]):
 
     async def revoke_all_user_sessions(self, user_id: uuid.UUID) -> int:
         """Revoke all active sessions for a user."""
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         stmt = (
             update(UserSession)
             .where(UserSession.user_id == user_id, UserSession.is_active == True)
@@ -119,7 +119,7 @@ class SessionRepository(BaseRepository[UserSession]):
 
     async def list_active_sessions(self, user_id: uuid.UUID) -> list[UserSession]:
         """Fetch all active sessions for a user."""
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         stmt = (
             select(UserSession)
             .where(
@@ -139,11 +139,11 @@ class SessionRepository(BaseRepository[UserSession]):
         user_id: uuid.UUID,
         device_id: str,
         device_name: str,
-        ip_address: Optional[str] = None,
+        ip_address: str | None = None,
         expire_minutes: int = 15,
     ) -> DeviceApproval:
         """Create a pending device approval request."""
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         expires_at = now + timedelta(minutes=expire_minutes)
 
         approval = DeviceApproval(
@@ -161,7 +161,7 @@ class SessionRepository(BaseRepository[UserSession]):
 
     async def get_pending_device_approvals(self, user_id: uuid.UUID) -> list[DeviceApproval]:
         """Get all pending device approval requests for a user."""
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         stmt = (
             select(DeviceApproval)
             .where(
@@ -174,7 +174,7 @@ class SessionRepository(BaseRepository[UserSession]):
         result = await self.session.execute(stmt)
         return list(result.scalars().all())
 
-    async def get_device_approval_by_id(self, request_id: uuid.UUID) -> Optional[DeviceApproval]:
+    async def get_device_approval_by_id(self, request_id: uuid.UUID) -> DeviceApproval | None:
         """Fetch a device approval request by ID."""
         stmt = select(DeviceApproval).where(DeviceApproval.request_id == request_id)
         result = await self.session.execute(stmt)

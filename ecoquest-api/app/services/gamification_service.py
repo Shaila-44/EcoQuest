@@ -14,6 +14,7 @@ Follows clean architecture:
 
 import math
 import uuid
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -36,7 +37,7 @@ class GamificationService:
     async def award_xp(self, user: User, points: int) -> dict:
         """Award XP points to a student and calculate level progression."""
         current_points = getattr(user, "total_points", 0) + points
-        setattr(user, "total_points", current_points)
+        user.total_points = current_points
 
         # Level formula: level = floor(sqrt(points / 100)) + 1
         level = math.floor(math.sqrt(current_points / 100)) + 1
@@ -140,7 +141,7 @@ class GamificationService:
         """Award points to a user and update their leaderboard entry."""
         uid = user.user_id if isinstance(user, User) else user
         repo = LeaderboardRepository(self.session)
-        
+
         # Get or create leaderboard entry
         entry = await repo.get_rank_for_user(uid)
         if entry:

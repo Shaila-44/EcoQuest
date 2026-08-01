@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime
-from typing import Optional
+
 from pydantic import BaseModel, ConfigDict, Field
 
 
@@ -21,7 +21,7 @@ class SessionRead(BaseModel):
     created_at: datetime
     last_active_at: datetime
     expires_at: datetime
-    revoked_at: Optional[datetime] = None
+    revoked_at: datetime | None = None
 
 
 class DeviceApprovalRead(BaseModel):
@@ -33,7 +33,7 @@ class DeviceApprovalRead(BaseModel):
     user_id: uuid.UUID
     device_id: str
     device_name: str
-    ip_address: Optional[str] = None
+    ip_address: str | None = None
     status: str
     created_at: datetime
     expires_at: datetime
@@ -51,8 +51,8 @@ class LoginResponseEnvelope(BaseModel):
     """Envelope for login response supporting immediate token issuance or pending approval requirement."""
 
     status: str = Field(default="SUCCESS", description="SUCCESS or APPROVAL_REQUIRED")
-    access_token: Optional[str] = None
-    refresh_token: Optional[str] = None
-    token_type: Optional[str] = "bearer"
-    request_id: Optional[uuid.UUID] = Field(default=None, description="Set when status is APPROVAL_REQUIRED")
-    message: Optional[str] = None
+    access_token: str | None = None
+    refresh_token: str | None = None
+    token_type: str | None = "bearer"
+    request_id: uuid.UUID | None = Field(default=None, description="Set when status is APPROVAL_REQUIRED")
+    message: str | None = None

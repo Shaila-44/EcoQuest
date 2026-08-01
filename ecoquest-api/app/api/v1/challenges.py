@@ -4,18 +4,19 @@ from __future__ import annotations
 
 import uuid
 from typing import Optional
+
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_current_user
+from app.core.permissions import require_role
 from app.db.session import get_db
+from app.models.enums import RoleName
 from app.models.user import User
 from app.schemas.challenge import ChallengeCreate, ChallengeRead, ChallengeUpdate
 from app.schemas.submission import SubmissionRead
 from app.services.challenge_service import ChallengeService
 from app.services.submission_service import SubmissionService
-from app.core.permissions import require_role
-from app.models.enums import RoleName
 
 router = APIRouter()
 
@@ -36,7 +37,7 @@ async def list_challenges(
 async def get_daily_challenge(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-) -> Optional[ChallengeRead]:
+) -> ChallengeRead | None:
     """Get today's challenge for the current user."""
     service = ChallengeService(db)
     c = await service.get_daily_challenge(school_id=current_user.school_id)

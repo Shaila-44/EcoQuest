@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from sqlalchemy import DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.dialects.postgresql import UUID
@@ -30,8 +30,8 @@ class Review(Base, TimestampMixin):
         UUID(as_uuid=True), ForeignKey("users.user_id", ondelete="CASCADE"), nullable=False, index=True
     )
     decision: Mapped[str] = mapped_column(String(20), nullable=False)
-    comment: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    points_override: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    comment: Mapped[str | None] = mapped_column(Text, nullable=True)
+    points_override: Mapped[int | None] = mapped_column(Integer, nullable=True)
 
     reviewed_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
@@ -40,5 +40,5 @@ class Review(Base, TimestampMixin):
     )
 
     # Relationships — Submission and User do not declare a 'reviews' back-reference
-    submission: Mapped["Submission"] = relationship("Submission", foreign_keys=[submission_id])
-    reviewer: Mapped["User"] = relationship("User", foreign_keys=[reviewer_id])
+    submission: Mapped[Submission] = relationship("Submission", foreign_keys=[submission_id])
+    reviewer: Mapped[User] = relationship("User", foreign_keys=[reviewer_id])

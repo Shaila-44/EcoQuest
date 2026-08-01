@@ -3,7 +3,7 @@ from __future__ import annotations
 """EcoQuest API — User Repository."""
 
 import uuid
-from typing import Optional
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -49,7 +49,7 @@ class UserRepository(BaseRepository[User]):
 
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
-    async def get_by_phone_hash(self, phone_hash: str) -> Optional[User]:
+    async def get_by_phone_hash(self, phone_hash: str) -> User | None:
         """Fetch a user by phone hash."""
         stmt = select(User).where(User.phone_hash == phone_hash)
         result = await self.session.execute(stmt)
@@ -67,7 +67,7 @@ class UserRepository(BaseRepository[User]):
             await self.session.flush()
         return role
 
-    async def get_or_create_default_school(self, school_code: Optional[str] = None) -> School:
+    async def get_or_create_default_school(self, school_code: str | None = None) -> School:
         """Fetch school by code or retrieve/create default school."""
         if school_code:
             stmt = select(School).where(School.school_code == school_code)

@@ -1,8 +1,9 @@
 """Unit tests — AI Pipeline."""
 
 import pytest
+
 from app.pipeline.prompts import build_verification_prompt
-from app.pipeline.schemas import GeminiVisionResponseSchema, VerificationResult, PipelineResult
+from app.pipeline.schemas import GeminiVisionResponseSchema, PipelineResult, VerificationResult
 
 
 def test_build_verification_prompt_with_description():

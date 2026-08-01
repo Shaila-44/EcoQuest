@@ -1,11 +1,12 @@
 """Unit tests — Security Audit (SSRF, Prompt Injection, RBAC)."""
 
 import pytest
+from fastapi import HTTPException
+
 from app.core.exceptions import ValidationError
+from app.core.permissions import RoleName, require_role
 from app.pipeline.orchestrator import validate_ssrf_safe_url
 from app.pipeline.prompts import build_verification_prompt
-from app.core.permissions import require_role, RoleName
-from fastapi import HTTPException
 
 
 def test_ssrf_protection_blocks_restricted_ips():

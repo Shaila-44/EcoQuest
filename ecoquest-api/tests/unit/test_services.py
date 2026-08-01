@@ -1,8 +1,8 @@
 """Unit tests — Gamification and Service Layer."""
 
 import math
+
 import pytest
-from app.models.user import User
 
 
 def test_level_calculation_formula():
@@ -33,11 +33,13 @@ def test_user_trust_score_delta():
 @pytest.mark.asyncio
 async def test_transaction_rollback_on_failure(mocker=None):
     """Verify mock session rollback behavior on error."""
-    from unittest.mock import AsyncMock, MagicMock
-    from fastapi import HTTPException
-    from app.services.review_service import ReviewService
-    from app.schemas.review import ReviewCreate
     import uuid
+    from unittest.mock import AsyncMock, MagicMock
+
+    from fastapi import HTTPException
+
+    from app.schemas.review import ReviewCreate
+    from app.services.review_service import ReviewService
 
     mock_session = MagicMock()
     mock_session.rollback = AsyncMock()

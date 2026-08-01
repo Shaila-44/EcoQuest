@@ -3,7 +3,7 @@ from __future__ import annotations
 """EcoQuest API — Leaderboard Repository."""
 
 import uuid
-from typing import Optional
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload

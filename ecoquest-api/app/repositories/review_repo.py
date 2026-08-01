@@ -3,7 +3,7 @@ from __future__ import annotations
 """EcoQuest API — Review Repository."""
 
 import uuid
-from typing import Optional
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -23,7 +23,7 @@ class ReviewRepository(BaseRepository[Review]):
         result = await self.session.execute(stmt)
         return list(result.scalars().all())
 
-    async def get_latest_for_submission(self, submission_id: uuid.UUID) -> Optional[Review]:
+    async def get_latest_for_submission(self, submission_id: uuid.UUID) -> Review | None:
 
         """Get the most recent review for a submission."""
         stmt = select(Review).where(Review.submission_id == submission_id).order_by(Review.created_at.desc()).limit(1)

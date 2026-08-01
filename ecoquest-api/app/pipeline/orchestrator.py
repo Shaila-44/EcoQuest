@@ -10,17 +10,20 @@ import asyncio
 import io
 import ipaddress
 import logging
-from typing import Optional
 import socket
 from urllib.parse import urlparse
 
 import httpx
 from PIL import Image
 
-from app.core.exceptions import PipelineError, ValidationError
+from app.core.exceptions import ValidationError
 from app.pipeline.schemas import PipelineResult, VerificationResult
 from app.pipeline.verifier import BaseVisionVerifier, GeminiVerifier
-from app.services.verification_service import DecisionResult, VerificationDecision, VerificationService
+from app.services.verification_service import (
+    DecisionResult,
+    VerificationDecision,
+    VerificationService,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -70,8 +73,8 @@ class PipelineOrchestrator:
 
     def __init__(
         self,
-        verifier: Optional[BaseVisionVerifier] = None,
-        verification_service: Optional[VerificationService] = None,
+        verifier: BaseVisionVerifier | None = None,
+        verification_service: VerificationService | None = None,
     ):
         self.verifier = verifier or GeminiVerifier(api_key="")
         self.verification_service = verification_service or VerificationService()
@@ -81,8 +84,8 @@ class PipelineOrchestrator:
         image_url: str,
         challenge_title: str,
         challenge_description: str,
-        verification_prompt: Optional[str] = None,
-        user_description: Optional[str] = None,
+        verification_prompt: str | None = None,
+        user_description: str | None = None,
         user_trust_score: float = 100.0,
     ) -> PipelineResult:
 

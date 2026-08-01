@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime
-from typing import Optional
 
 from pydantic import BaseModel
 
@@ -13,11 +12,11 @@ class ChallengeCreate(BaseModel):
     """Schema for creating a new challenge."""
 
     title: str
-    description: Optional[str] = None
+    description: str | None = None
     category: str
     points: int = 0
-    start_date: Optional[datetime] = None
-    end_date: Optional[datetime] = None
+    start_date: datetime | None = None
+    end_date: datetime | None = None
 
 
 class ChallengeRead(BaseModel):
@@ -27,13 +26,13 @@ class ChallengeRead(BaseModel):
     school_id: uuid.UUID
     created_by: uuid.UUID
     title: str
-    description: Optional[str] = None
+    description: str | None = None
     category: str
     points: int
-    start_date: Optional[datetime] = None
-    end_date: Optional[datetime] = None
+    start_date: datetime | None = None
+    end_date: datetime | None = None
     created_at: datetime
-    updated_at: Optional[datetime] = None
+    updated_at: datetime | None = None
 
     model_config = {"from_attributes": True}
 
@@ -41,10 +40,10 @@ class ChallengeRead(BaseModel):
 class ChallengeUpdate(BaseModel):
     """Schema for updating a challenge."""
 
-    title: Optional[str] = None
-    description: Optional[str] = None
-    category: Optional[str] = None
-    points: Optional[int] = None
-    start_date: Optional[datetime] = None
-    end_date: Optional[datetime] = None
+    title: str | None = None
+    description: str | None = None
+    category: str | None = None
+    points: int | None = None
+    start_date: datetime | None = None
+    end_date: datetime | None = None
 
