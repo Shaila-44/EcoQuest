@@ -6,7 +6,8 @@ Handles authentication business logic: registration, login,
 token creation, token refresh, logout, session management,
 device approvals, and password changes.
 """
-
+import logging
+from typing import Optional
 import hashlib
 import uuid
 from typing import Optional
@@ -27,6 +28,8 @@ from app.repositories.session_repo import SessionRepository
 from app.repositories.user_repo import UserRepository
 from app.schemas.auth import LoginRequest, RegisterRequest, TokenResponse
 from app.schemas.session import LoginResponseEnvelope
+
+logger = logging.getLogger(__name__)
 
 
 class AuthService:

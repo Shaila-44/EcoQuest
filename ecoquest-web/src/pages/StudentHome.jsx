@@ -16,7 +16,7 @@ import EcoChronicles from '../components/student/EcoChronicles';
 import UnlockCollection from '../components/student/UnlockCollection';
 import ExplorerShop from '../components/student/ExplorerShop';
 
-export default function StudentHome({ onNavigateIsland, onLogout }) {
+export default function StudentHome({ onNavigateIsland, onSwitchToEducator, onLogout }) {
   const [activeTab, setActiveTab] = useState('home');
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
   const [missionModalOpen, setMissionModalOpen] = useState(false);
@@ -45,6 +45,7 @@ export default function StudentHome({ onNavigateIsland, onLogout }) {
       <Sidebar
         activeTab={activeTab}
         setActiveTab={handleTabChange}
+        onSwitchToEducator={onSwitchToEducator}
         onLogout={onLogout}
       />
 

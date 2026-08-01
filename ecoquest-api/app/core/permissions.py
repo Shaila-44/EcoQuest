@@ -6,11 +6,13 @@ Permission-based RBAC system. Endpoints check permissions, not roles.
 """
 
 from enum import Enum
-from typing import Callable, Any
 
-from fastapi import Depends, HTTPException, status
+from fastapi import HTTPException, status
 
 from app.models.enums import RoleName
+
+# Alias UserRole to RoleName for backward compatibility
+UserRole = RoleName
 
 
 class Permission(str, Enum):
@@ -78,23 +80,21 @@ def require_permission(role: RoleName, permission: Permission) -> None:
         )
 
 
-def require_role(*allowed_roles: str) -> Callable[..., Any]:
-    """FastAPI dependency for checking if user role matches one of allowed_roles."""
-    from app.api.deps import get_current_user
-    from app.models.user import User
+def require_role(allowed_roles: list[RoleName]):
+    """FastAPI dependency factory to enforce allowed roles."""
 
-    async def role_checker(current_user: User = Depends(get_current_user)) -> User:
-        user_role_str = "student"
+    def role_checker(current_user):
+        user_role = None
+
         if hasattr(current_user, "role") and current_user.role:
-            r_val = getattr(current_user.role, "role_name", None)
-            user_role_str = r_val.value if hasattr(r_val, "value") else str(r_val)
+            user_role = getattr(current_user.role, "role_name", current_user.role)
 
-        if user_role_str.lower() not in [r.lower() for r in allowed_roles]:
+        if user_role not in allowed_roles:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="Insufficient permissions",
+                detail="User role not authorized to access this resource.",
             )
+
         return current_user
 
     return role_checker
-

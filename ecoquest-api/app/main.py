@@ -17,9 +17,8 @@ from app.api.v1.auth import router as auth_router
 from app.api.v1.router import api_v1_router
 from app.config import settings
 from app.core.exception_handlers import register_exception_handlers
+from app.core.limiter import limiter
 from app.core.middleware import RequestIdMiddleware
-
-limiter = Limiter(key_func=get_remote_address, default_limits=[f"{settings.RATE_LIMIT_PER_MINUTE}/minute"])
 
 
 @asynccontextmanager
@@ -58,6 +57,11 @@ def create_app() -> FastAPI:
     # --- Routers ---
     application.include_router(api_v1_router, prefix="/api/v1")
     application.include_router(auth_router, prefix="/auth", tags=["Auth"])
+
+    @application.get("/health", status_code=200, tags=["Health"])
+    async def health_check():
+        """Health check endpoint for container health probes and load balancers."""
+        return {"status": "ok", "service": "ecoquest-api", "version": "0.1.0"}
 
     return application
 

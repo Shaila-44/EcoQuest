@@ -1,40 +1,10 @@
-"""EcoQuest API — Review Service.
-
-Handles teacher review workflow: approve, reject, or request resubmission.
-"""
-
-import uuid
-
-from fastapi import HTTPException, status
-from sqlalchemy.ext.asyncio import AsyncSession
-
-from app.models.enums import SubmissionStatus
-from app.models.review import Review
-from app.models.submission import Submission
-from app.models.user import User
-from app.repositories.review_repo import ReviewRepository
-from app.repositories.submission_repo import SubmissionRepository
-from app.schemas.review import ReviewCreate
-from app.services.gamification_service import GamificationService
-from app.services.leaderboard_service import LeaderboardService
-
-
-class ReviewService:
-    """Business logic for teacher review operations."""
-
-    def __init__(self, session: AsyncSession):
-        self.session = session
-        self.review_repo = ReviewRepository(session)
-        self.submission_repo = SubmissionRepository(session)
-        self.gamification_service = GamificationService(session)
-        self.leaderboard_service = LeaderboardService(session)
-
-    async def create_review(
-        self,
-        data: ReviewCreate,
-        reviewer: User,
-    ) -> Review:
-        """Create a teacher review and update submission status."""
+async def create_review(
+    self,
+    data: ReviewCreate,
+    reviewer: User,
+) -> Review:
+    """Create a teacher review and update submission status atomically."""
+    try:
         submission = await self.submission_repo.get_by_id(data.submission_id)
 
         if not submission:
@@ -45,7 +15,7 @@ class ReviewService:
 
         new_status = (
             SubmissionStatus.APPROVED
-            if data.status.lower() == "approved"
+            if data.decision.lower() in ("approved", "verified")
             else SubmissionStatus.REJECTED
         )
 
@@ -82,22 +52,51 @@ class ReviewService:
         new_review = Review(
             submission_id=data.submission_id,
             reviewer_id=reviewer.user_id,
-            status=data.status,
+            decision=data.decision,
             comment=data.comment,
+            points_override=data.points_override,
         )
 
-        return await self.review_repo.create(new_review)
+        created_review = await self.review_repo.create(new_review)
 
-    async def get_pending_reviews(
-        self,
-        school_id: uuid.UUID,
-    ) -> list[Submission]:
-        """Fetch all submissions awaiting teacher review for a school."""
-        return await self.submission_repo.get_pending_for_school(school_id)
+        await self.session.flush()
 
-    async def get_review_history(
-        self,
-        submission_id: uuid.UUID,
-    ) -> list[Review]:
-        """Get review history for a submission."""
-        return await self.review_repo.get_by_submission(submission_id)
+        logger.info(
+            "Created review %s for submission %s by reviewer %s",
+            created_review.review_id,
+            data.submission_id,
+            reviewer.user_id,
+        )
+
+        return created_review
+
+    except Exception as exc:
+        logger.error(
+            "Transaction error during review creation, rolling back: %s",
+            exc,
+        )
+        await self.session.rollback()
+
+        if isinstance(exc, HTTPException):
+            raise
+
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to save review due to a transaction error.",
+        )
+
+
+async def get_pending_reviews(
+    self,
+    school_id: uuid.UUID,
+) -> list[Submission]:
+    """Fetch all submissions awaiting teacher review for a school."""
+    return await self.submission_repo.get_pending_for_school(school_id)
+
+
+async def get_review_history(
+    self,
+    submission_id: uuid.UUID,
+) -> list[Review]:
+    """Get review history for a submission."""
+    return await self.review_repo.get_by_submission(submission_id)

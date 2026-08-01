@@ -28,3 +28,29 @@ def test_user_trust_score_delta():
 
     assert min(100.0, initial_score + approved_delta) == 100.0
     assert max(0.0, initial_score + rejected_delta) == 95.0
+
+
+@pytest.mark.asyncio
+async def test_transaction_rollback_on_failure(mocker=None):
+    """Verify mock session rollback behavior on error."""
+    from unittest.mock import AsyncMock, MagicMock
+    from fastapi import HTTPException
+    from app.services.review_service import ReviewService
+    from app.schemas.review import ReviewCreate
+    import uuid
+
+    mock_session = MagicMock()
+    mock_session.rollback = AsyncMock()
+    mock_session.flush = AsyncMock()
+
+    service = ReviewService(mock_session)
+    service.submission_repo.get_by_id = AsyncMock(side_effect=Exception("DB Connection Error"))
+
+    with pytest.raises(HTTPException) as exc_info:
+        await service.create_review(
+            data=ReviewCreate(submission_id=uuid.uuid4(), decision="approved"),
+            reviewer=MagicMock(user_id=uuid.uuid4()),
+        )
+
+    assert exc_info.value.status_code == 500
+    mock_session.rollback.assert_called_once()

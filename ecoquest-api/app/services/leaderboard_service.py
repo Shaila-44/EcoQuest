@@ -7,6 +7,7 @@ Handles leaderboard queries and score aggregation updates.
 
 import uuid
 from typing import Optional
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.leaderboard import LeaderboardEntry
@@ -68,3 +69,43 @@ class LeaderboardService:
                 total_points=points_awarded,
             )
             await self.leaderboard_repo.create(new_entry)
+=======
+async def get_overall_leaderboard(
+    self,
+    limit: int = 50,
+) -> list[Leaderboard]:
+    """Fetch overall top student leaderboard with 10-second TTL caching."""
+    cache_key = f"overall_{limit}"
+    now = time.monotonic()
+
+    if cache_key in _LEADERBOARD_CACHE:
+        cached_time, cached_data = _LEADERBOARD_CACHE[cache_key]
+        if now - cached_time < CACHE_TTL_SECONDS:
+            return cached_data
+
+    ranks = await self.leaderboard_repo.get_global(limit)
+    _LEADERBOARD_CACHE[cache_key] = (now, ranks)
+    return ranks
+
+
+async def get_school_leaderboard(
+    self,
+    school_id: uuid.UUID,
+    limit: int = 50,
+) -> list[Leaderboard]:
+    """Fetch school leaderboard with 10-second TTL caching."""
+    cache_key = f"school_{school_id}_{limit}"
+    now = time.monotonic()
+
+    if cache_key in _LEADERBOARD_CACHE:
+        cached_time, cached_data = _LEADERBOARD_CACHE[cache_key]
+        if now - cached_time < CACHE_TTL_SECONDS:
+            return cached_data
+
+    ranks = await self.leaderboard_repo.get_by_school(
+        school_id,
+        limit=limit,
+    )
+    _LEADERBOARD_CACHE[cache_key] = (now, ranks)
+    return ranks
+

@@ -33,11 +33,12 @@ export default function StudentLogin({ onLoginSuccess }) {
         origin: { y: 0.6 }
       });
       setTimeout(() => {
+        window.location.hash = '/home';
         if (onLoginSuccess) {
-          onLoginSuccess();
+          onLoginSuccess('student');
         }
-      }, 1000);
-    }, 1200);
+      }, 400);
+    }, 800);
   };
 
   return (

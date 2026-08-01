@@ -1,15 +1,16 @@
 from __future__ import annotations
 
-"""EcoQuest API — Auth & Session Routes."""
-
 import uuid
 from typing import Optional
+
 from fastapi import APIRouter, Depends, Header, Request, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_current_user
 from app.config import settings
+from app.core.limiter import limiter
 from app.db.session import get_db
+
 from app.models.user import User
 from app.schemas.auth import LoginRequest, RefreshRequest, RegisterRequest, TokenResponse
 from app.schemas.common import MessageResponse
@@ -25,6 +26,7 @@ from app.services.auth_service import AuthService
 router = APIRouter()
 
 
+
 def set_auth_cookie(response: Response, token: str) -> None:
     """Set HttpOnly access token cookie."""
     response.set_cookie(
@@ -37,8 +39,14 @@ def set_auth_cookie(response: Response, token: str) -> None:
     )
 
 
-@router.post("/register", status_code=status.HTTP_201_CREATED, response_model=UserRead)
+@router.post(
+    "/register",
+    status_code=status.HTTP_201_CREATED,
+    response_model=UserRead,
+)
+@limiter.limit("5/minute")
 async def register(
+    request: Request,
     data: RegisterRequest,
     response: Response,
     db: AsyncSession = Depends(get_db),
@@ -46,6 +54,7 @@ async def register(
     """Register a new user, log them in via HttpOnly cookie, and return UserRead."""
     service = AuthService(db)
     user = await service.register(data)
+
     
     # Generate access token & set cookie
     login_data = LoginRequest(email=data.email, password=data.password)
@@ -57,10 +66,12 @@ async def register(
 
 
 @router.post("/login", response_model=LoginResponseEnvelope)
+@limiter.limit("10/minute")
+
 async def login(
+    request: Request,
     data: LoginRequest,
     response: Response,
-    request: Request,
     x_device_id: Optional[str] = Header(default="default-device", alias="X-Device-ID"),
     x_device_name: Optional[str] = Header(default="Browser Session", alias="X-Device-Name"),
     db: AsyncSession = Depends(get_db),

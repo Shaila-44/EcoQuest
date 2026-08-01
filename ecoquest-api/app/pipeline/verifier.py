@@ -13,11 +13,13 @@ import abc
 import asyncio
 import json
 import logging
-from typing import Optional
+import warnings
 
-import google.generativeai as genai
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore", category=FutureWarning)
+    import google.generativeai as genai
+    from google.generativeai.types import GenerationConfig
 
-from google.generativeai.types import GenerationConfig
 
 from app.pipeline.prompts import SYSTEM_AUDITOR_INSTRUCTION, build_verification_prompt
 from app.pipeline.schemas import (

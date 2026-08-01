@@ -19,9 +19,9 @@ export default function Navbar({ onOpenGetStarted, onOpenDemo }) {
   }, []);
 
   const navLinks = [
-    { name: 'Quests', href: '#features' },
+    { name: 'About', href: '#features' },
     { name: 'Hall of Champions', href: '#leaderboard' },
-    { name: 'Lore', href: '#about' },
+    { name: 'Our Mission', href: '#about' },
     { name: 'Contact', href: '#contact' },
   ];
 
