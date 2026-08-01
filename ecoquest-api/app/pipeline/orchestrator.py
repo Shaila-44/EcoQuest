@@ -8,6 +8,7 @@ Gemini Vision client execution, and VerificationService decision evaluation.
 
 import asyncio
 import io
+import os
 import ipaddress
 import logging
 from typing import Optional
@@ -168,15 +169,24 @@ class PipelineOrchestrator:
 
     async def _fetch_and_process_image(self, image_url: str) -> tuple[bytes, str]:
         """Download image over HTTPS, inspect magic bytes, enforce 10MB limit, and downscale dimensions."""
-        validate_ssrf_safe_url(image_url)
+        
+        # Local Upload Fallback Support for MVP Demo
+        if image_url.startswith("http://localhost:8000/uploads/"):
+            filename = image_url.split("/")[-1]
+            local_path = os.path.join("uploads", filename)
+            try:
+                with open(local_path, "rb") as f:
+                    raw_bytes = f.read()
+            except Exception as exc:
+                raise ValidationError(f"Could not read local file: {exc}")
+        else:
+            validate_ssrf_safe_url(image_url)
+            async with httpx.AsyncClient(timeout=8.0) as client:
+                resp = await client.get(image_url)
+                resp.raise_for_status()
+                raw_bytes = resp.content
 
-        async with httpx.AsyncClient(timeout=8.0) as client:
-            resp = await client.get(image_url)
-            resp.raise_for_status()
-
-            raw_bytes = resp.content
-
-            # Enforce maximum 10 MB size limit
+        # Enforce maximum 10 MB size limit
             if len(raw_bytes) > MAX_FILE_SIZE_BYTES:
                 raise ValidationError(
                     f"Image file size ({len(raw_bytes) / 1024 / 1024:.1f} MB) exceeds maximum allowed 10 MB limit."

@@ -44,3 +44,4 @@ out/
 *.bak
 *.tmp
 *.tsbuildinfo
+test_env/
