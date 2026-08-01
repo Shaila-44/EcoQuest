@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Sidebar from '../components/student/Sidebar';
 import TopNav from '../components/student/TopNav';
 import WelcomeHero from '../components/student/WelcomeHero';
@@ -57,68 +58,72 @@ export default function StudentHome({ onNavigateIsland, onLogout }) {
           onLogout={onLogout}
         />
 
-        {/* MAIN CONTENT AREA */}
+        {/* MAIN CONTENT AREA WITH SMOOTH PAGE TRANSITIONS */}
         <main className="flex-1 p-6 lg:p-10 max-w-7xl mx-auto w-full relative z-10">
-          
-          {activeTab === 'missions' ? (
-            /* QUEST BOARD PAGE */
-            <QuestBoard
-              onStartMission={() => setMissionModalOpen(true)}
-              onOpenUploadProof={() => setUploadModalOpen(true)}
-            />
-          ) : activeTab === 'leaderboard' ? (
-            /* HALL OF CHAMPIONS PAGE */
-            <HallOfChampions />
-          ) : activeTab === 'community' ? (
-            /* ECO CHRONICLES PAGE */
-            <EcoChronicles />
-          ) : activeTab === 'achievements' ? (
-            /* UNLOCK COLLECTION PAGE */
-            <UnlockCollection />
-          ) : activeTab === 'store' ? (
-            /* EXPLORER SHOP PAGE */
-            <ExplorerShop />
-          ) : (
-            /* HOME COMMAND CENTER CONTENT */
-            <div className="space-y-10">
+          <AnimatePresence mode="popLayout">
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.15, ease: 'easeOut' }}
+            >
 
+              {activeTab === 'missions' ? (
+                /* QUEST BOARD PAGE */
+                <QuestBoard
+                  onStartMission={() => setMissionModalOpen(true)}
+                  onOpenUploadProof={() => setUploadProofModal(true)}
+                />
+              ) : activeTab === 'leaderboard' ? (
+                /* HALL OF CHAMPIONS PAGE */
+                <HallOfChampions />
+              ) : activeTab === 'community' ? (
+                /* ECO CHRONICLES PAGE */
+                <EcoChronicles />
+              ) : activeTab === 'achievements' ? (
+                /* UNLOCK COLLECTION PAGE */
+                <UnlockCollection />
+              ) : activeTab === 'store' ? (
+                /* EXPLORER SHOP PAGE */
+                <ExplorerShop />
+              ) : (
+                /* HOME COMMAND CENTER CONTENT */
+                <div className="space-y-10">
 
+                  {/* 1. WELCOME HERO SECTION WITH DYNAMIC MESSAGE ROTATOR & RICH VECTOR ARTWORK */}
+                  <WelcomeHero
+                    onStartFeaturedMission={() => setMissionModalOpen(true)}
+                  />
 
-              {/* 1. WELCOME HERO SECTION WITH DYNAMIC MESSAGE ROTATOR & RICH VECTOR ARTWORK */}
-              <WelcomeHero
-                onStartFeaturedMission={() => setMissionModalOpen(true)}
-              />
+                  {/* 2. TODAY'S FEATURED MISSION (PRIORITY RPG QUEST CARD) */}
+                  <FeaturedMission
+                    onStartMission={() => setMissionModalOpen(true)}
+                  />
 
-              {/* 2. TODAY'S FEATURED MISSION (PRIORITY RPG QUEST CARD) */}
-              <FeaturedMission
-                onStartMission={() => setMissionModalOpen(true)}
-              />
+                  {/* 3. DAILY METRICS & STREAK SECTION */}
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+                    
+                    {/* ADVENTURE PROGRESS RING & STATS (6 COLUMNS) */}
+                    <div className="lg:col-span-6 flex">
+                      <div className="w-full">
+                        <DailyProgress />
+                      </div>
+                    </div>
 
-              {/* 3. DAILY METRICS & STREAK SECTION */}
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-                
-                {/* ADVENTURE PROGRESS RING & STATS (6 COLUMNS) */}
-                <div className="lg:col-span-6 flex">
-                  <div className="w-full">
-                    <DailyProgress />
+                    {/* STREAK CARD (6 COLUMNS) */}
+                    <div className="lg:col-span-6 flex">
+                      <div className="w-full">
+                        <StreakCard />
+                      </div>
+                    </div>
                   </div>
+
                 </div>
-
-                {/* FLAME STREAK CARD & CALENDAR (6 COLUMNS) */}
-                <div className="lg:col-span-6 flex">
-                  <div className="w-full">
-                    <StreakCard />
-                  </div>
-                </div>
-
-              </div>
-            </div>
-          )}
-
+              )}
+            </motion.div>
+          </AnimatePresence>
         </main>
-
-
-
 
         {/* FOOTER */}
         <footer className="py-6 px-6 lg:px-10 border-t border-emerald-500/20 bg-[#04160d]/80 backdrop-blur-md relative z-10 text-slate-300">

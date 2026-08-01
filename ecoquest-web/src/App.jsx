@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import ParticlesBackground from './components/ParticlesBackground';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
@@ -63,91 +64,92 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  if (currentView === 'login') {
-    return (
-      <Login
-        onNavigateHome={navigateToLanding}
-        onLoginSuccess={navigateToStudentHome}
-      />
-    );
-  }
-
-  if (currentView === 'my_island') {
-    return (
-      <MyIsland
-        onNavigateHome={navigateToStudentHome}
-      />
-    );
-  }
-
-  if (currentView === 'student_home') {
-    return (
-      <StudentHome
-        onNavigateIsland={navigateToMyIsland}
-        onLogout={navigateToLogin}
-      />
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-[#05130d] text-slate-100 font-body relative overflow-x-hidden selection:bg-emerald-500 selection:text-white">
+    <AnimatePresence mode="popLayout">
+      <motion.div
+        key={currentView}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.15, ease: 'easeOut' }}
+        className="w-full min-h-screen"
+      >
 
-      
-      {/* Dynamic ambient leaf & particle canvas background */}
-      <ParticlesBackground />
+        {currentView === 'login' ? (
+          <Login
+            onNavigateHome={navigateToLanding}
+            onLoginSuccess={navigateToStudentHome}
+          />
+        ) : currentView === 'my_island' ? (
+          <MyIsland
+            onNavigateHome={navigateToStudentHome}
+          />
+        ) : currentView === 'student_home' ? (
+          <StudentHome
+            onNavigateIsland={navigateToMyIsland}
+            onLogout={navigateToLogin}
+          />
+        ) : (
+          <div className="min-h-screen bg-[#05130d] text-slate-100 font-body relative overflow-x-hidden selection:bg-emerald-500 selection:text-white">
 
-      {/* Sticky Glass Navbar */}
-      <Navbar
-        onOpenGetStarted={navigateToLogin}
-        onOpenDemo={() => setDemoModalOpen(true)}
-      />
+            {/* Dynamic ambient leaf & particle canvas background */}
+            <ParticlesBackground />
 
-      {/* Main Content Sections */}
-      <main className="relative z-10">
-        {/* Hero Section */}
-        <Hero
-          onOpenGetStarted={navigateToLogin}
-          onOpenDemo={() => setDemoModalOpen(true)}
-        />
+            {/* Sticky Glass Navbar */}
+            <Navbar
+              onOpenGetStarted={navigateToLogin}
+              onOpenDemo={() => setDemoModalOpen(true)}
+            />
 
-        {/* Features Section */}
-        <Features
-          onOpenDemo={() => setDemoModalOpen(true)}
-        />
+            {/* Main Content Sections */}
+            <main className="relative z-10">
+              {/* Hero Section */}
+              <Hero
+                onOpenGetStarted={navigateToLogin}
+                onOpenDemo={() => setDemoModalOpen(true)}
+              />
 
-        {/* Leaderboard Section */}
-        <Leaderboard
-          onOpenFullLeaderboard={() => setLeaderboardModalOpen(true)}
-        />
+              {/* Features Section */}
+              <Features
+                onOpenDemo={() => setDemoModalOpen(true)}
+              />
 
-        {/* About & Impact Calculator Section */}
-        <About />
+              {/* Leaderboard Section */}
+              <Leaderboard
+                onOpenFullLeaderboard={() => setLeaderboardModalOpen(true)}
+              />
 
-        {/* Contact Section */}
-        <Contact />
-      </main>
+              {/* About & Impact Calculator Section */}
+              <About />
 
-      {/* Footer */}
-      <Footer
-        onOpenGetStarted={navigateToLogin}
-      />
+              {/* Contact Section */}
+              <Contact />
+            </main>
 
+            {/* Footer */}
+            <Footer
+              onOpenGetStarted={navigateToLogin}
+            />
 
-      {/* Interactive Modals */}
-      <ChallengeModal
-        isOpen={demoModalOpen}
-        onClose={() => setDemoModalOpen(false)}
-      />
+            {/* Interactive Modals */}
+            <ChallengeModal
+              isOpen={demoModalOpen}
+              onClose={() => setDemoModalOpen(false)}
+            />
 
-      <LeaderboardModal
-        isOpen={leaderboardModalOpen}
-        onClose={() => setLeaderboardModalOpen(false)}
-      />
+            <LeaderboardModal
+              isOpen={leaderboardModalOpen}
+              onClose={() => setLeaderboardModalOpen(false)}
+            />
 
-      <GetStartedModal
-        isOpen={getStartedModalOpen}
-        onClose={() => setGetStartedModalOpen(false)}
-      />
-    </div>
+            <GetStartedModal
+              isOpen={getStartedModalOpen}
+              onClose={() => setGetStartedModalOpen(false)}
+            />
+          </div>
+        )}
+      </motion.div>
+    </AnimatePresence>
   );
 }
+
