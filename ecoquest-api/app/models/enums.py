@@ -9,6 +9,7 @@ class RoleName(str, enum.Enum):
 class UserStatus(str, enum.Enum):
     ACTIVE = "Active"
     INACTIVE = "Inactive"
+    SUSPENDED = "Suspended"
 
 class LoginMethod(str, enum.Enum):
     EMAIL = "Email"
@@ -21,6 +22,8 @@ class LoginStatus(str, enum.Enum):
 
 class SubmissionStatus(str, enum.Enum):
     PENDING = "Pending"
+    PROCESSING = "Processing"
+    APPROVED = "Approved"
     VERIFIED = "Verified"
     REJECTED = "Rejected"
 

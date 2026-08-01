@@ -2,12 +2,17 @@
 
 import uuid
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 from sqlalchemy import DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base, TimestampMixin
+
+if TYPE_CHECKING:
+    from app.models.submission import Submission
+    from app.models.user import User
 
 
 class Review(Base, TimestampMixin):
@@ -31,6 +36,6 @@ class Review(Base, TimestampMixin):
         nullable=False,
     )
 
-    # Relationships
-    submission: Mapped["Submission"] = relationship(back_populates="reviews")  # type: ignore[name-defined] # noqa: F821
-    reviewer: Mapped["User"] = relationship(back_populates="reviews")  # type: ignore[name-defined] # noqa: F821
+    # Relationships — Submission and User do not declare a 'reviews' back-reference
+    submission: Mapped["Submission"] = relationship("Submission", foreign_keys=[submission_id])
+    reviewer: Mapped["User"] = relationship("User", foreign_keys=[reviewer_id])
