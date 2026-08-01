@@ -68,6 +68,11 @@ class AuthService:
 
         # Resolve school
         school = await self.user_repo.get_or_create_default_school(data.school_code)
+        if school is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"School with code '{data.school_code}' not found.",
+            )
 
         hashed_pwd = hash_password(data.password)
         name = f"{data.first_name.strip()} {data.last_name.strip()}".strip()
@@ -94,21 +99,48 @@ class AuthService:
         ip_address: Optional[str] = None,
     ) -> LoginResponseEnvelope:
         """Authenticate user credentials, enforce one-device policy, and manage sessions."""
-        email_clean = data.email.lower().strip()
-        email_hash = hashlib.sha256(email_clean.encode("utf-8")).hexdigest()
+        user: Optional[User] = None
 
-        user = await self.user_repo.get_by_email_hash(email_hash)
+        if data.email:
+            email_clean = data.email.lower().strip()
+            email_hash = hashlib.sha256(email_clean.encode("utf-8")).hexdigest()
+            user = await self.user_repo.get_by_email_hash(email_hash)
+        elif data.student_id:
+            try:
+                u_id = uuid.UUID(data.student_id)
+                user = await self.user_repo.get_by_id(u_id)
+            except ValueError:
+                email_clean = data.student_id.lower().strip()
+                email_hash = hashlib.sha256(email_clean.encode("utf-8")).hexdigest()
+                user = await self.user_repo.get_by_email_hash(email_hash)
+
         if user is None or not verify_password(data.password, user.password_hash):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Incorrect email or password.",
+                detail="Invalid login credentials. Please check your Student ID, Email, and Password provided by school management.",
             )
+
+        # Validate school_id / school_code if supplied during login
+        if data.school_id is not None and user.school_id != data.school_id:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid login credentials. Student is not registered under the specified School ID.",
+            )
+
+        if data.school_code:
+            user_school = await self.user_repo.get_school_by_id(user.school_id)
+            if not user_school or user_school.school_code.lower() != data.school_code.lower().strip():
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Invalid login credentials. Student is not registered under the specified School Code.",
+                )
 
         if user.status != UserStatus.ACTIVE:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail=f"Account is {user.status.value.lower()}.",
+                detail=f"Account is {user.status.value.lower()}. Please contact school management.",
             )
+
 
         # Check for an active session on another device (One-Device Login Enforcement)
         active_session = await self.session_repo.get_active_session_by_user(user.user_id)

@@ -70,21 +70,33 @@ async def get_by_email_hash(
             await self.session.flush()
         return role
 
-    async def get_or_create_default_school(self, school_code: Optional[str] = None) -> School:
-        """Fetch school by code or retrieve/create default school."""
-        if school_code:
-            stmt = select(School).where(School.school_code == school_code)
-            res = await self.session.execute(stmt)
-            school = res.scalar_one_or_none()
-            if school:
-                return school
+    async def get_school_by_code(self, school_code: str) -> Optional[School]:
+        """Fetch school by code."""
+        stmt = select(School).where(School.school_code == school_code)
+        res = await self.session.execute(stmt)
+        return res.scalar_one_or_none()
 
-        stmt_any = select(School).limit(1)
-        res_any = await self.session.execute(stmt_any)
-        school = res_any.scalar_one_or_none()
+    async def get_school_by_id(self, school_id: uuid.UUID) -> Optional[School]:
+        """Fetch school by ID."""
+        stmt = select(School).where(School.school_id == school_id)
+        res = await self.session.execute(stmt)
+        return res.scalar_one_or_none()
+
+    async def get_or_create_default_school(self, school_code: Optional[str] = None) -> School:
+        """Fetch school by code or retrieve/create school for school_code."""
+        code = school_code.strip() if school_code else "ECO001"
+        stmt = select(School).where(School.school_code == code)
+        res = await self.session.execute(stmt)
+        school = res.scalar_one_or_none()
         if not school:
-            school = School(school_code="ECO001", school_name="Default EcoQuest Academy", address="Online")
+            school = School(
+                school_code=code,
+                school_name=f"School {code}",
+                address="Online",
+            )
             self.session.add(school)
             await self.session.flush()
         return school
+
+
 

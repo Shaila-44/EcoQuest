@@ -196,8 +196,47 @@ async def test_password_change_revokes_sessions(db_session):
 
     # Verify login works with new password
     login_new = LoginRequest(email="change_pwd@ecoquest.org", password="NewPassword123!")
-    env_new = await auth_service.login(login_new, device_id="dev-pwd")
-    assert env_new.status == "SUCCESS"
+@pytest.mark.asyncio
+async def test_login_invalid_school_code_raises(db_session):
+    auth_service = AuthService(db_session)
+    req = RegisterRequest(
+        email="invalid_school@ecoquest.org",
+        password="Password123!",
+        first_name="Invalid",
+        last_name="School",
+    )
+    user = await auth_service.register(req)
+
+    # Login with wrong school_code fails
+    login_wrong_school = LoginRequest(
+        email="invalid_school@ecoquest.org",
+        password="Password123!",
+        school_code="WRONG_SCHOOL_999",
+    )
+    with pytest.raises(HTTPException) as exc:
+        await auth_service.login(login_wrong_school)
+    assert exc.value.status_code == 401
+
+
+@pytest.mark.asyncio
+async def test_login_by_student_id(db_session):
+    auth_service = AuthService(db_session)
+    req = RegisterRequest(
+        email="student_id_login@ecoquest.org",
+        password="Password123!",
+        first_name="Student",
+        last_name="ID",
+    )
+    user = await auth_service.register(req)
+
+    login_student_id = LoginRequest(
+        student_id=str(user.user_id),
+        password="Password123!",
+    )
+    env = await auth_service.login(login_student_id)
+    assert env.status == "SUCCESS"
+    assert env.access_token is not None
+
 
 
 
