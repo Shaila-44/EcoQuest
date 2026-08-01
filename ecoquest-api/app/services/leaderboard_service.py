@@ -5,7 +5,6 @@ Handles leaderboard queries and score aggregation updates.
 
 import uuid
 
-from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.leaderboard import LeaderboardEntry
@@ -20,16 +19,11 @@ class LeaderboardService:
         self.leaderboard_repo = LeaderboardRepository(session)
 
     async def get_overall_leaderboard(
-        self, limit: int = 50
+        self,
+        limit: int = 50,
     ) -> list[LeaderboardEntry]:
         """Fetch the overall top student leaderboard."""
-        stmt = (
-            select(LeaderboardEntry)
-            .order_by(LeaderboardEntry.total_points.desc())
-            .limit(limit)
-        )
-        result = await self.session.execute(stmt)
-        return list(result.scalars().all())
+        return await self.leaderboard_repo.get_global(limit)
 
     async def get_school_leaderboard(
         self,
@@ -37,7 +31,10 @@ class LeaderboardService:
         limit: int = 50,
     ) -> list[LeaderboardEntry]:
         """Fetch the leaderboard for a specific school."""
-        return await self.leaderboard_repo.get_by_school(school_id, limit=limit)
+        return await self.leaderboard_repo.get_by_school(
+            school_id,
+            limit=limit,
+        )
 
     async def get_user_rank(
         self,

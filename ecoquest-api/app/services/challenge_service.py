@@ -5,9 +5,9 @@ Handles challenge CRUD and daily challenge selection.
 
 import uuid
 
-from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.exceptions import NotFoundError
 from app.models.challenge import Challenge
 from app.models.user import User
 from app.repositories.challenge_repo import ChallengeRepository
@@ -47,10 +47,7 @@ class ChallengeService:
         challenge = await self.challenge_repo.get_by_id(challenge_id)
 
         if not challenge:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Challenge not found.",
-            )
+            raise NotFoundError("Challenge", str(challenge_id))
 
         return challenge
 
@@ -62,14 +59,12 @@ class ChallengeService:
         challenge = await self.challenge_repo.get_daily_challenge(school_id)
 
         if not challenge:
-            # Fallback: get any active challenge for the school
             active_challenges = await self.challenge_repo.get_active_by_school(
                 school_id
             )
             if active_challenges:
                 return active_challenges[0]
 
-            # Ultimate fallback: return any existing challenge
             all_challenges = await self.challenge_repo.list(limit=1)
             return all_challenges[0] if all_challenges else None
 
