@@ -240,39 +240,43 @@ class SubmissionService:
         
         # Trigger AI Pipeline (could be background task, but keeping it simple/sync for now)
         try:
-            # We would normally fetch the challenge details here for the prompt
             challenge_repo = ChallengeRepository(self.session)
             challenge = await challenge_repo.get_by_id(data.challenge_id)
             if not challenge:
                 raise ValueError("Challenge not found")
-                
+
             pipeline_result = await orchestrator.run(
                 image_url=data.image_url,
                 challenge_title=challenge.title,
                 challenge_description=challenge.description or "",
             )
-            
-            if pipeline_result.is_verified:
+
+            # Correct attribute path: PipelineResult → VerificationResult → is_verified
+            if pipeline_result.verification.is_verified:
                 created_submission.status = SubmissionStatus.APPROVED
                 created_submission.points_earned = challenge.points
-                
+
                 # Award points via GamificationService
                 from app.services.gamification_service import GamificationService
                 gamification = GamificationService(self.session)
                 await gamification.award_points(user_id, challenge.points)
-                
+
             else:
                 created_submission.status = SubmissionStatus.REJECTED
-                
+
             updated_submission = await repo.update(created_submission, {
                 "status": created_submission.status,
                 "points_earned": created_submission.points_earned
             })
             return SubmissionRead.model_validate(updated_submission)
-            
-        except Exception as e:
-            # Fallback to pending if AI fails
+
+        except ValueError:
+            # Business rule violations (challenge not found, etc.) — leave as PENDING
             return SubmissionRead.model_validate(created_submission)
+        except Exception:
+            # Pipeline failures (network, AI API) — leave as PENDING for retry
+            return SubmissionRead.model_validate(created_submission)
+
 
     async def get_submission(self, submission_id: uuid.UUID) -> SubmissionRead | None:
         """Fetch a submission."""

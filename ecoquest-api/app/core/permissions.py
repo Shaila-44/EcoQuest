@@ -7,7 +7,7 @@ from enum import Enum
 
 from fastapi import HTTPException, status
 
-from app.models.user import UserRole
+from app.models.enums import RoleName
 
 
 class Permission(str, Enum):
@@ -38,12 +38,12 @@ class Permission(str, Enum):
     SCHOOL_MANAGE = "school:manage"
 
 
-ROLE_PERMISSIONS: dict[UserRole, set[Permission]] = {
-    UserRole.STUDENT: {
+ROLE_PERMISSIONS: dict[RoleName, set[Permission]] = {
+    RoleName.STUDENT: {
         Permission.SUBMISSION_CREATE,
         Permission.SUBMISSION_VIEW_OWN,
     },
-    UserRole.TEACHER: {
+    RoleName.TEACHER: {
         Permission.CHALLENGE_CREATE,
         Permission.CHALLENGE_EDIT_OWN,
         Permission.CHALLENGE_DELETE,
@@ -52,20 +52,21 @@ ROLE_PERMISSIONS: dict[UserRole, set[Permission]] = {
         Permission.REVIEW_OVERRIDE,
         Permission.USER_VIEW_SCHOOL,
     },
-    UserRole.ADMIN: set(Permission),  # All permissions
+    RoleName.SCHOOL_ADMIN: set(Permission),
+    RoleName.SUPER_ADMIN: set(Permission),
 }
 
 
-def has_permission(role: UserRole, permission: Permission) -> bool:
+def has_permission(role: RoleName, permission: Permission) -> bool:
     """Check if a role has a specific permission."""
     return permission in ROLE_PERMISSIONS.get(role, set())
 
 
-def require_permission(role: UserRole, permission: Permission) -> None:
+def require_permission(role: RoleName, permission: Permission) -> None:
     """Raise 403 if the role does not have the required permission.
 
     Use in route handlers:
-        require_permission(current_user.role, Permission.CHALLENGE_CREATE)
+        require_permission(current_user.role.role_name, Permission.CHALLENGE_CREATE)
     """
     if not has_permission(role, permission):
         raise HTTPException(
