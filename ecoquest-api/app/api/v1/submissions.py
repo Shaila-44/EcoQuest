@@ -10,8 +10,10 @@ Follows production security best practices:
 """
 
 import logging
+import os
+import shutil
 import uuid
-from fastapi import APIRouter, Depends, Request, status
+from fastapi import APIRouter, Depends, Request, status, File, UploadFile, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_current_user
@@ -37,6 +39,30 @@ async def get_upload_url(
     logger.info("Presigned upload URL requested by user %s", current_user.user_id)
     service = SubmissionService(db)
     return await service.generate_upload_url(folder=folder)
+
+
+@router.post("/upload-local", status_code=status.HTTP_200_OK)
+@limiter.limit("20/minute")
+async def upload_local(
+    request: Request,
+    file: UploadFile = File(...)
+) -> dict:
+    """Fallback endpoint for local file uploads when Cloudinary is unavailable."""
+    if file.size and file.size > 10 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="File too large (max 10MB).")
+        
+    ext = file.filename.split(".")[-1].lower() if file.filename else ""
+    if ext not in ["jpg", "jpeg", "png", "webp"]:
+        raise HTTPException(status_code=400, detail="Unsupported file format.")
+
+    os.makedirs("uploads", exist_ok=True)
+    safe_filename = f"{uuid.uuid4().hex}_{file.filename}"
+    file_path = os.path.join("uploads", safe_filename)
+    
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+        
+    return {"url": f"http://localhost:8000/uploads/{safe_filename}"}
 
 
 @router.post("", status_code=status.HTTP_201_CREATED, response_model=SubmissionRead)

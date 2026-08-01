@@ -7,7 +7,9 @@ exception handlers, rate limiting, and route registrations.
 from contextlib import asynccontextmanager
 from collections.abc import AsyncGenerator
 
+import os
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
@@ -61,6 +63,9 @@ def create_app() -> FastAPI:
     async def health_check():
         """Health check endpoint for container health probes and load balancers."""
         return {"status": "ok", "service": "ecoquest-api", "version": "0.1.0"}
+        
+    os.makedirs("uploads", exist_ok=True)
+    application.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
     return application
 

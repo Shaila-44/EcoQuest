@@ -39,12 +39,20 @@ class CloudinaryStorage(StorageBackend):
 
         """Generate a Cloudinary signed upload URL parameters."""
         if not (self.cloud_name and self.api_key and self.api_secret):
-            logger.error("Cloudinary is not configured (missing cloud_name/api_key/api_secret).")
-            raise HTTPException(
-                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-                detail="Image storage is not configured on this server. Set CLOUDINARY_CLOUD_NAME, "
-                "CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET.",
-            )
+            logger.warning("Cloudinary is not configured. Falling back to local MVP upload endpoint.")
+            timestamp = int(time.time())
+            
+            # Local fallback for the MVP demo
+            upload_url = "http://localhost:8000/api/v1/submissions/upload-local"
+            
+            return {
+                "upload_url": upload_url,
+                "public_id": public_id,
+                "timestamp": timestamp,
+                "signature": "local_signature",
+                "api_key": "local_api_key",
+                "folder": folder,
+            }
 
         timestamp = int(time.time())
         params_to_sign = {
