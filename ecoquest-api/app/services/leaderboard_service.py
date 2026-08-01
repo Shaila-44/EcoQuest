@@ -1,86 +1,38 @@
-import time
-import uuid
+async def get_overall_leaderboard(
+    self,
+    limit: int = 50,
+) -> list[Leaderboard]:
+    """Fetch overall top student leaderboard with 10-second TTL caching."""
+    cache_key = f"overall_{limit}"
+    now = time.monotonic()
 
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
+    if cache_key in _LEADERBOARD_CACHE:
+        cached_time, cached_data = _LEADERBOARD_CACHE[cache_key]
+        if now - cached_time < CACHE_TTL_SECONDS:
+            return cached_data
 
-from app.models.leaderboard import Leaderboard
-from app.repositories.leaderboard_repo import LeaderboardRepository
-
-# In-memory TTL Cache: { cache_key: (timestamp, cached_data) }
-_LEADERBOARD_CACHE: dict[str, tuple[float, list[Leaderboard]]] = {}
-CACHE_TTL_SECONDS = 10.0
+    ranks = await self.leaderboard_repo.get_global(limit)
+    _LEADERBOARD_CACHE[cache_key] = (now, ranks)
+    return ranks
 
 
-class LeaderboardService:
-    """Business logic for leaderboard operations with high-throughput TTL caching."""
+async def get_school_leaderboard(
+    self,
+    school_id: uuid.UUID,
+    limit: int = 50,
+) -> list[Leaderboard]:
+    """Fetch school leaderboard with 10-second TTL caching."""
+    cache_key = f"school_{school_id}_{limit}"
+    now = time.monotonic()
 
-    def __init__(self, session: AsyncSession):
-        self.session = session
-        self.leaderboard_repo = LeaderboardRepository(session)
+    if cache_key in _LEADERBOARD_CACHE:
+        cached_time, cached_data = _LEADERBOARD_CACHE[cache_key]
+        if now - cached_time < CACHE_TTL_SECONDS:
+            return cached_data
 
-    async def get_overall_leaderboard(
-        self, limit: int = 50
-    ) -> list[Leaderboard]:
-        """Fetch overall top student leaderboard with 10-second TTL caching."""
-        cache_key = f"overall_{limit}"
-        now = time.monotonic()
-
-        if cache_key in _LEADERBOARD_CACHE:
-            cached_time, cached_data = _LEADERBOARD_CACHE[cache_key]
-            if now - cached_time < CACHE_TTL_SECONDS:
-                return cached_data
-
-        ranks = await self.leaderboard_repo.list_top_ranks(limit=limit)
-        _LEADERBOARD_CACHE[cache_key] = (now, ranks)
-        return ranks
-
-    async def get_school_leaderboard(
-        self,
-        school_id: uuid.UUID,
-        limit: int = 50,
-    ) -> list[Leaderboard]:
-        """Fetch school leaderboard with 10-second TTL caching."""
-        cache_key = f"school_{school_id}_{limit}"
-        now = time.monotonic()
-
-        if cache_key in _LEADERBOARD_CACHE:
-            cached_time, cached_data = _LEADERBOARD_CACHE[cache_key]
-            if now - cached_time < CACHE_TTL_SECONDS:
-                return cached_data
-
-        ranks = await self.leaderboard_repo.get_by_school(school_id, limit=limit)
-        _LEADERBOARD_CACHE[cache_key] = (now, ranks)
-        return ranks
-
-    async def get_user_rank(
-        self,
-        user_id: uuid.UUID,
-    ) -> Leaderboard | None:
-        """Get the leaderboard entry for a user."""
-        return await self.leaderboard_repo.get_rank_for_user(user_id)
-
-    async def update_leaderboard_entry(
-        self,
-        user_id: uuid.UUID,
-        school_id: uuid.UUID,
-        points_awarded: int,
-    ) -> None:
-        """Increment a user's leaderboard points and invalidate relevant cache entries."""
-        entry = await self.leaderboard_repo.get_rank_for_user(user_id)
-
-        if entry:
-            entry.total_points += points_awarded
-            await self.leaderboard_repo.update(
-                entry,
-                {"total_points": entry.total_points},
-            )
-        else:
-            new_entry = Leaderboard(
-                user_id=user_id,
-                total_points=points_awarded,
-            )
-            await self.leaderboard_repo.create(new_entry)
-
-        # Invalidate TTL cache after update
-        _LEADERBOARD_CACHE.clear()
+    ranks = await self.leaderboard_repo.get_by_school(
+        school_id,
+        limit=limit,
+    )
+    _LEADERBOARD_CACHE[cache_key] = (now, ranks)
+    return ranks

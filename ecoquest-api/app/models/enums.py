@@ -22,6 +22,8 @@ class LoginStatus(str, enum.Enum):
 
 class SubmissionStatus(str, enum.Enum):
     PENDING = "Pending"
+    PROCESSING = "Processing"
+    APPROVED = "Approved"
     VERIFIED = "Verified"
     APPROVED = "Approved"
     REJECTED = "Rejected"

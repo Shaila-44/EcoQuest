@@ -66,7 +66,11 @@ def has_permission(role: RoleName, permission: Permission) -> bool:
 
 
 def require_permission(role: RoleName, permission: Permission) -> None:
-    """Raise 403 if the role does not have the required permission."""
+    """Raise 403 if the role does not have the required permission.
+
+    Use in route handlers:
+        require_permission(current_user.role.role_name, Permission.CHALLENGE_CREATE)
+    """
     if not has_permission(role, permission):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -76,11 +80,12 @@ def require_permission(role: RoleName, permission: Permission) -> None:
 
 def require_role(allowed_roles: list[RoleName]):
     """FastAPI dependency factory to enforce allowed roles."""
+
     def role_checker(current_user):
         user_role = None
         if hasattr(current_user, "role") and current_user.role:
             user_role = getattr(current_user.role, "role_name", current_user.role)
-        
+
         if user_role not in allowed_roles:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,

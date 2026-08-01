@@ -3,6 +3,8 @@
 FastAPI dependency injection for database sessions and current user.
 """
 
+import uuid
+
 from collections.abc import AsyncGenerator
 
 from fastapi import Depends, HTTPException, status
@@ -12,6 +14,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.security import decode_token
 from app.db.session import get_db
+from app.models.enums import UserStatus
 from app.models.user import User
 from app.repositories.user_repo import UserRepository
 
@@ -43,10 +46,18 @@ async def get_current_user(
             detail="Invalid or expired token",
         )
 
-    repo = UserRepository(db)
-    user = await repo.get_by_id(user_id)
+    try:
+        user_uuid = uuid.UUID(user_id)
+    except (ValueError, AttributeError):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token subject",
+        )
 
-    if user is None or not user.is_active:
+    repo = UserRepository(db)
+    user = await repo.get_by_id(user_uuid)
+
+    if user is None or user.status != UserStatus.ACTIVE:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="User not found or deactivated",

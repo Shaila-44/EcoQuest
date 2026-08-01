@@ -21,10 +21,16 @@ from app.pipeline.orchestrator import PipelineOrchestrator
 from app.pipeline.verifier import GeminiVerifier
 from app.repositories.challenge_repo import ChallengeRepository
 from app.repositories.submission_repo import SubmissionRepository
+from app.repositories.challenge_repo import ChallengeRepository
+from app.repositories.submission_repo import SubmissionRepository
 from app.repositories.user_repo import UserRepository
-from app.schemas.submission import SubmissionCreate
+
+from app.schemas.submission import SubmissionCreate, SubmissionRead
+
 from app.services.gamification_service import GamificationService
 from app.storage.cloudinary import CloudinaryStorage
+
+from app.core.exceptions import DuplicateError, NotFoundError
 
 logger = logging.getLogger(__name__)
 
@@ -217,4 +223,3 @@ class SubmissionService:
                 detail="Can only cancel pending submissions.",
             )
         await self.submission_repo.delete(sub)
-
