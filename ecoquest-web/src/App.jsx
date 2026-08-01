@@ -13,6 +13,7 @@ import LeaderboardModal from './components/LeaderboardModal';
 import GetStartedModal from './components/GetStartedModal';
 import Login from './pages/Login';
 import StudentHome from './pages/StudentHome';
+import EducatorHome from './pages/EducatorHome';
 import MyIsland from './pages/MyIsland';
 
 export default function App() {
@@ -30,6 +31,8 @@ export default function App() {
         setCurrentView('my_island');
       } else if (hash === '#/landing' || hash === '#landing') {
         setCurrentView('landing');
+      } else if (hash === '#/educator' || hash === '#educator') {
+        setCurrentView('educator_home');
       } else if (hash === '#/home' || hash === '#home') {
         setCurrentView('student_home');
       }
@@ -58,10 +61,24 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const navigateToEducatorHome = () => {
+    window.location.hash = '/educator';
+    setCurrentView('educator_home');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const navigateToMyIsland = () => {
     window.location.hash = '/island';
     setCurrentView('my_island');
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleLoginSuccess = (role) => {
+    if (role === 'educator') {
+      navigateToEducatorHome();
+    } else {
+      navigateToStudentHome();
+    }
   };
 
   return (
@@ -74,19 +91,25 @@ export default function App() {
         transition={{ duration: 0.15, ease: 'easeOut' }}
         className="w-full min-h-screen"
       >
-
         {currentView === 'login' ? (
           <Login
             onNavigateHome={navigateToLanding}
-            onLoginSuccess={navigateToStudentHome}
+            onLoginSuccess={handleLoginSuccess}
           />
         ) : currentView === 'my_island' ? (
           <MyIsland
             onNavigateHome={navigateToStudentHome}
           />
+        ) : currentView === 'educator_home' ? (
+          <EducatorHome
+            onNavigateIsland={navigateToMyIsland}
+            onSwitchToStudent={navigateToStudentHome}
+            onLogout={navigateToLogin}
+          />
         ) : currentView === 'student_home' ? (
           <StudentHome
             onNavigateIsland={navigateToMyIsland}
+            onSwitchToEducator={navigateToEducatorHome}
             onLogout={navigateToLogin}
           />
         ) : (
@@ -152,4 +175,3 @@ export default function App() {
     </AnimatePresence>
   );
 }
-

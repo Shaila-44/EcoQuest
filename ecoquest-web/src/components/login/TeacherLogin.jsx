@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  School, 
-  Building2, 
-  Lock, 
-  Eye, 
-  EyeOff, 
-  ArrowRight, 
-  Loader2 
+import {
+  School,
+  Building2,
+  Lock,
+  Eye,
+  EyeOff,
+  ArrowRight,
+  Loader2
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -32,7 +32,14 @@ export default function TeacherLogin() {
         spread: 70,
         origin: { y: 0.6 }
       });
-    }, 1800);
+
+      setTimeout(() => {
+        window.location.hash = '/educator';
+        if (onLoginSuccess) {
+          onLoginSuccess('educator');
+        }
+      }, 400);
+    }, 800);
   };
 
   return (
