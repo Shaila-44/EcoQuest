@@ -180,6 +180,11 @@ class SubmissionService:
                 detail="Failed to save submission due to a system transaction error.",
             )
 
+    async def list_student_submissions(self, user_id: uuid.UUID, challenge_id: uuid.UUID) -> list[Submission]:
+        """List submissions for a specific student and challenge."""
+        repo = SubmissionRepository(self.session)
+        return await repo.get_by_student_and_challenge(user_id, challenge_id)
+
     async def get_submission(self, submission_id: uuid.UUID) -> Submission:
         """Fetch submission details."""
         sub = await self.submission_repo.get_by_id(submission_id)

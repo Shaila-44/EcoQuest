@@ -23,6 +23,7 @@ class UserService:
         """Fetch a user by ID."""
         user = await self.user_repo.get_by_id(user_id)
 
+
         if not user:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,

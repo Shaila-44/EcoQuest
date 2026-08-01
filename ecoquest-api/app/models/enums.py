@@ -27,7 +27,6 @@ class SubmissionStatus(str, enum.Enum):
     PROCESSING = "Processing"
     APPROVED = "Approved"
     VERIFIED = "Verified"
-    APPROVED = "Approved"
     REJECTED = "Rejected"
 
 class VerificationStatus(str, enum.Enum):

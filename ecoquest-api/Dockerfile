@@ -18,13 +18,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY pyproject.toml .
 
 # Extract project dependencies and pre-install them into /install directory
-RUN python -c " \
-import tomllib \
-with open('pyproject.toml', 'rb') as f: \
-    data = tomllib.load(f) \
-deps = data.get('project', {}).get('dependencies', []) \
-print('\n'.join(deps)) \
-" > requirements.txt \
+RUN python -c "import tomllib; f = open('pyproject.toml', 'rb'); data = tomllib.load(f); f.close(); deps = data.get('project', {}).get('dependencies', []); print('\n'.join(deps))" > requirements.txt \
     && pip install --no-cache-dir --prefix=/install -r requirements.txt
 
 # Copy source code and build/install the current project package (without rebuilding deps)

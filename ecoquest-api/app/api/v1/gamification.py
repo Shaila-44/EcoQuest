@@ -11,7 +11,7 @@ from app.services.gamification_service import GamificationService
 router = APIRouter()
 
 
-@router.get("/badges")
+@router.get("/badges", status_code=200)
 async def list_all_badges(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
@@ -24,7 +24,7 @@ async def list_all_badges(
     ]
 
 
-@router.get("/badges/me")
+@router.get("/badges/me", status_code=200)
 async def get_my_badges(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
@@ -39,7 +39,7 @@ async def get_my_badges(
     }
 
 
-@router.get("/stats/me")
+@router.get("/stats/me", status_code=200)
 async def get_my_stats(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
@@ -55,7 +55,7 @@ async def get_my_stats(
     }
 
 
-@router.get("/levels")
+@router.get("/levels", status_code=200)
 async def get_level_thresholds(
     current_user: User = Depends(get_current_user),
 ):

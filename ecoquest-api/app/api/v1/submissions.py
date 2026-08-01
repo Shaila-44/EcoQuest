@@ -15,6 +15,7 @@ from fastapi import APIRouter, Depends, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_current_user
+
 from app.core.limiter import limiter
 from app.core.permissions import require_role
 from app.db.session import get_db
@@ -25,7 +26,6 @@ from app.services.submission_service import SubmissionService
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
-
 
 @router.post("/upload-url", status_code=status.HTTP_200_OK)
 @limiter.limit("10/minute")
@@ -48,6 +48,7 @@ async def create_submission(
     data: SubmissionCreate,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
+
 ):
     """Create a new student submission and trigger Gemini Vision AI verification.
 
@@ -84,6 +85,7 @@ async def get_submission(
     submission_id: uuid.UUID,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
+
 ):
     """Get details for a specific submission."""
     service = SubmissionService(db)

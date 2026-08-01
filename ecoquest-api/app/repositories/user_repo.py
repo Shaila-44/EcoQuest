@@ -21,37 +21,34 @@ class UserRepository(BaseRepository[User]):
     def __init__(self, session: AsyncSession):
         super().__init__(User, session)
 
-async def get_by_id(
-    self,
-    id: uuid.UUID,
-) -> User | None:
-    """Fetch a user by primary key with role preloaded."""
-    stmt = (
-        select(User)
-        .options(selectinload(User.role))
-        .where(User.user_id == id)
-    )
+    async def get_by_id(
+        self,
+        id: uuid.UUID,
+    ) -> User | None:
+        """Fetch a user by primary key with role preloaded."""
+        stmt = (
+            select(User)
+            .options(selectinload(User.role))
+            .where(User.user_id == id)
+        )
 
-    result = await self.session.execute(stmt)
-    return result.scalar_one_or_none()
-
-
-async def get_by_email_hash(
-    self,
-    email_hash: str,
-) -> User | None:
-    """Fetch a user by email hash with role preloaded."""
-    stmt = (
-        select(User)
-        .options(selectinload(User.role))
-        .where(User.email_hash == email_hash)
-    )
-
-    result = await self.session.execute(stmt)
-    return result.scalar_one_or_none()
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
-        
+
+
+    async def get_by_email_hash(
+        self,
+        email_hash: str,
+    ) -> User | None:
+        """Fetch a user by email hash with role preloaded."""
+        stmt = (
+            select(User)
+            .options(selectinload(User.role))
+            .where(User.email_hash == email_hash)
+        )
+
+        result = await self.session.execute(stmt)
+        return result.scalar_one_or_none()
     async def get_by_phone_hash(self, phone_hash: str) -> Optional[User]:
         """Fetch a user by phone hash."""
         stmt = select(User).where(User.phone_hash == phone_hash)
