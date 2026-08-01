@@ -11,9 +11,12 @@ import abc
 import asyncio
 import json
 import logging
+import warnings
 
-import google.generativeai as genai
-from google.generativeai.types import GenerationConfig
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore", category=FutureWarning)
+    import google.generativeai as genai
+    from google.generativeai.types import GenerationConfig
 
 from app.pipeline.prompts import SYSTEM_AUDITOR_INSTRUCTION, build_verification_prompt
 from app.pipeline.schemas import (

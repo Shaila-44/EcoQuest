@@ -136,17 +136,17 @@ class GamificationService:
             "trust_score": user.trust_score,
             "badges_count": len(user_badges),
         }
-    async def award_points(self, user_id: uuid.UUID, points: int) -> None:
+    async def award_points(self, user: User | uuid.UUID, points: int) -> None:
         """Award points to a user and update their leaderboard entry."""
-        from app.repositories.leaderboard_repo import LeaderboardRepository
+        uid = user.user_id if isinstance(user, User) else user
         repo = LeaderboardRepository(self.session)
         
         # Get or create leaderboard entry
-        entry = await repo.get_rank_for_user(user_id)
+        entry = await repo.get_rank_for_user(uid)
         if entry:
             entry.total_points += points
             await repo.update(entry, {"total_points": entry.total_points})
         else:
             from app.models.leaderboard import Leaderboard
-            new_entry = Leaderboard(user_id=user_id, total_points=points)
+            new_entry = Leaderboard(user_id=uid, total_points=points)
             await repo.create(new_entry)

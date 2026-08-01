@@ -1,19 +1,19 @@
-"""EcoQuest API — Leaderboard Service.
-
-Handles leaderboard queries and score aggregation updates.
-"""
-
+import time
 import uuid
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.leaderboard import LeaderboardEntry
+from app.models.leaderboard import Leaderboard
 from app.repositories.leaderboard_repo import LeaderboardRepository
+
+# In-memory TTL Cache: { cache_key: (timestamp, cached_data) }
+_LEADERBOARD_CACHE: dict[str, tuple[float, list[Leaderboard]]] = {}
+CACHE_TTL_SECONDS = 10.0
 
 
 class LeaderboardService:
-    """Business logic for leaderboard operations."""
+    """Business logic for leaderboard operations with high-throughput TTL caching."""
 
     def __init__(self, session: AsyncSession):
         self.session = session
@@ -21,28 +21,42 @@ class LeaderboardService:
 
     async def get_overall_leaderboard(
         self, limit: int = 50
-    ) -> list[LeaderboardEntry]:
-        """Fetch the overall top student leaderboard."""
-        stmt = (
-            select(LeaderboardEntry)
-            .order_by(LeaderboardEntry.total_points.desc())
-            .limit(limit)
-        )
-        result = await self.session.execute(stmt)
-        return list(result.scalars().all())
+    ) -> list[Leaderboard]:
+        """Fetch overall top student leaderboard with 10-second TTL caching."""
+        cache_key = f"overall_{limit}"
+        now = time.monotonic()
+
+        if cache_key in _LEADERBOARD_CACHE:
+            cached_time, cached_data = _LEADERBOARD_CACHE[cache_key]
+            if now - cached_time < CACHE_TTL_SECONDS:
+                return cached_data
+
+        ranks = await self.leaderboard_repo.list_top_ranks(limit=limit)
+        _LEADERBOARD_CACHE[cache_key] = (now, ranks)
+        return ranks
 
     async def get_school_leaderboard(
         self,
         school_id: uuid.UUID,
         limit: int = 50,
-    ) -> list[LeaderboardEntry]:
-        """Fetch the leaderboard for a specific school."""
-        return await self.leaderboard_repo.get_by_school(school_id, limit=limit)
+    ) -> list[Leaderboard]:
+        """Fetch school leaderboard with 10-second TTL caching."""
+        cache_key = f"school_{school_id}_{limit}"
+        now = time.monotonic()
+
+        if cache_key in _LEADERBOARD_CACHE:
+            cached_time, cached_data = _LEADERBOARD_CACHE[cache_key]
+            if now - cached_time < CACHE_TTL_SECONDS:
+                return cached_data
+
+        ranks = await self.leaderboard_repo.get_by_school(school_id, limit=limit)
+        _LEADERBOARD_CACHE[cache_key] = (now, ranks)
+        return ranks
 
     async def get_user_rank(
         self,
         user_id: uuid.UUID,
-    ) -> LeaderboardEntry | None:
+    ) -> Leaderboard | None:
         """Get the leaderboard entry for a user."""
         return await self.leaderboard_repo.get_rank_for_user(user_id)
 
@@ -52,7 +66,7 @@ class LeaderboardService:
         school_id: uuid.UUID,
         points_awarded: int,
     ) -> None:
-        """Increment a user's leaderboard points."""
+        """Increment a user's leaderboard points and invalidate relevant cache entries."""
         entry = await self.leaderboard_repo.get_rank_for_user(user_id)
 
         if entry:
@@ -62,9 +76,11 @@ class LeaderboardService:
                 {"total_points": entry.total_points},
             )
         else:
-            new_entry = LeaderboardEntry(
+            new_entry = Leaderboard(
                 user_id=user_id,
-                school_id=school_id,
                 total_points=points_awarded,
             )
             await self.leaderboard_repo.create(new_entry)
+
+        # Invalidate TTL cache after update
+        _LEADERBOARD_CACHE.clear()

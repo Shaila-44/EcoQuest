@@ -4,8 +4,13 @@ Coordinates image acquisition, format/size validation, pre-processing,
 Gemini Vision client execution, and VerificationService decision evaluation.
 """
 
+import asyncio
 import io
+import ipaddress
 import logging
+import socket
+from urllib.parse import urlparse
+
 import httpx
 from PIL import Image
 
@@ -25,6 +30,36 @@ MAGIC_BYTES = {
     b"\x89PNG\r\n\x1a\n": "image/png",
     b"RIFF": "image/webp",
 }
+
+
+def validate_ssrf_safe_url(url: str) -> None:
+    """Validate that the URL is a safe HTTP/HTTPS URL and does not resolve to private/loopback/metadata IP ranges."""
+    parsed = urlparse(url)
+    if parsed.scheme not in ("http", "https"):
+        raise ValidationError("Invalid URL scheme. Only HTTP and HTTPS protocols are allowed.")
+
+    hostname = parsed.hostname
+    if not hostname:
+        raise ValidationError("Invalid image URL: missing hostname.")
+
+    # Check for direct IP literal or resolve domain
+    try:
+        addr_info = socket.getaddrinfo(hostname, None)
+        for family, _, _, _, sockaddr in addr_info:
+            ip_str = sockaddr[0]
+            ip = ipaddress.ip_address(ip_str)
+            if (
+                ip.is_private
+                or ip.is_loopback
+                or ip.is_link_local
+                or ip.is_multicast
+                or ip.is_reserved
+                or ip.is_unspecified
+            ):
+                logger.warning("SSRF Attempt blocked for host %s resolving to restricted IP %s", hostname, ip_str)
+                raise ValidationError("Image URL resolves to a restricted network address.")
+    except socket.gaierror as exc:
+        raise ValidationError(f"Unable to resolve domain hostname '{hostname}'.") from exc
 
 
 class PipelineOrchestrator:
@@ -128,6 +163,8 @@ class PipelineOrchestrator:
 
     async def _fetch_and_process_image(self, image_url: str) -> tuple[bytes, str]:
         """Download image over HTTPS, inspect magic bytes, enforce 10MB limit, and downscale dimensions."""
+        validate_ssrf_safe_url(image_url)
+
         async with httpx.AsyncClient(timeout=8.0) as client:
             resp = await client.get(image_url)
             resp.raise_for_status()
@@ -145,22 +182,27 @@ class PipelineOrchestrator:
             if not mime_type:
                 raise ValidationError("Unsupported file format or unreadable image magic bytes.")
 
-            # Downscale using Pillow
+            # Downscale using Pillow offloaded to thread pool for non-blocking event loop execution
             try:
-                img = Image.open(io.BytesIO(raw_bytes))
-                img.verify()  # Check for image corruption
-                img = Image.open(io.BytesIO(raw_bytes))  # Reopen after verify()
-
-                max_size = (1024, 1024)
-                img.thumbnail(max_size, Image.Resampling.LANCZOS)
-
-                buffer = io.BytesIO()
-                fmt = "JPEG" if mime_type == "image/jpeg" else "PNG"
-                img.save(buffer, format=fmt, quality=85)
-                return buffer.getvalue(), mime_type
+                processed_bytes = await asyncio.to_thread(self._process_image_cpu, raw_bytes, mime_type)
+                return processed_bytes, mime_type
             except Exception as img_exc:
                 logger.warning("Pillow processing warning for URL %s: %s", image_url, img_exc)
                 return raw_bytes, mime_type
+
+    def _process_image_cpu(self, raw_bytes: bytes, mime_type: str) -> bytes:
+        """CPU-bound image downscaling and format optimization executed in thread pool."""
+        img = Image.open(io.BytesIO(raw_bytes))
+        img.verify()  # Check for image corruption
+        img = Image.open(io.BytesIO(raw_bytes))  # Reopen after verify()
+
+        max_size = (1024, 1024)
+        img.thumbnail(max_size, Image.Resampling.LANCZOS)
+
+        buffer = io.BytesIO()
+        fmt = "JPEG" if mime_type == "image/jpeg" else "PNG"
+        img.save(buffer, format=fmt, quality=85)
+        return buffer.getvalue()
 
     def _detect_mime_type_from_magic_bytes(self, raw_bytes: bytes) -> str | None:
         """Inspect image header magic bytes to verify file format."""

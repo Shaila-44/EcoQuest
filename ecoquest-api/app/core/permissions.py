@@ -7,7 +7,10 @@ from enum import Enum
 
 from fastapi import HTTPException, status
 
-from app.models.user import UserRole
+from app.models.enums import RoleName
+
+# Alias UserRole to RoleName for backward compatibility
+UserRole = RoleName
 
 
 class Permission(str, Enum):
@@ -38,12 +41,12 @@ class Permission(str, Enum):
     SCHOOL_MANAGE = "school:manage"
 
 
-ROLE_PERMISSIONS: dict[UserRole, set[Permission]] = {
-    UserRole.STUDENT: {
+ROLE_PERMISSIONS: dict[RoleName, set[Permission]] = {
+    RoleName.STUDENT: {
         Permission.SUBMISSION_CREATE,
         Permission.SUBMISSION_VIEW_OWN,
     },
-    UserRole.TEACHER: {
+    RoleName.TEACHER: {
         Permission.CHALLENGE_CREATE,
         Permission.CHALLENGE_EDIT_OWN,
         Permission.CHALLENGE_DELETE,
@@ -52,23 +55,37 @@ ROLE_PERMISSIONS: dict[UserRole, set[Permission]] = {
         Permission.REVIEW_OVERRIDE,
         Permission.USER_VIEW_SCHOOL,
     },
-    UserRole.ADMIN: set(Permission),  # All permissions
+    RoleName.SCHOOL_ADMIN: set(Permission),
+    RoleName.SUPER_ADMIN: set(Permission),
 }
 
 
-def has_permission(role: UserRole, permission: Permission) -> bool:
+def has_permission(role: RoleName, permission: Permission) -> bool:
     """Check if a role has a specific permission."""
     return permission in ROLE_PERMISSIONS.get(role, set())
 
 
-def require_permission(role: UserRole, permission: Permission) -> None:
-    """Raise 403 if the role does not have the required permission.
-
-    Use in route handlers:
-        require_permission(current_user.role, Permission.CHALLENGE_CREATE)
-    """
+def require_permission(role: RoleName, permission: Permission) -> None:
+    """Raise 403 if the role does not have the required permission."""
     if not has_permission(role, permission):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Insufficient permissions",
         )
+
+
+def require_role(allowed_roles: list[RoleName]):
+    """FastAPI dependency factory to enforce allowed roles."""
+    def role_checker(current_user):
+        user_role = None
+        if hasattr(current_user, "role") and current_user.role:
+            user_role = getattr(current_user.role, "role_name", current_user.role)
+        
+        if user_role not in allowed_roles:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="User role not authorized to access this resource.",
+            )
+        return current_user
+
+    return role_checker

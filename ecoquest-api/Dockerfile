@@ -58,7 +58,6 @@ RUN useradd -u 10001 --create-home appuser \
 COPY start.sh .
 RUN chmod +x start.sh
 
-RUN useradd --create-home appuser && chown -R appuser /app
 USER appuser
 
 EXPOSE 8000
