@@ -1,9 +1,14 @@
+from __future__ import annotations
+
 """EcoQuest API — Shared Dependencies.
+
 
 FastAPI dependency injection for database sessions and current user.
 """
 
 from collections.abc import AsyncGenerator
+
+import uuid
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -30,18 +35,20 @@ async def get_current_user(
     """
     try:
         payload = decode_token(credentials.credentials)
-        user_id = payload.get("sub")
+        user_id_raw = payload.get("sub")
         token_type = payload.get("type")
-        if user_id is None or token_type != "access":
+        if user_id_raw is None or token_type != "access":
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid token",
             )
-    except JWTError:
+        user_id = uuid.UUID(str(user_id_raw))
+    except (JWTError, ValueError):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid or expired token",
         )
+
 
     repo = UserRepository(db)
     user = await repo.get_by_id(user_id)

@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 """EcoQuest API — Custom Exception Classes.
+
 
 Structured exception hierarchy for consistent error handling.
 """

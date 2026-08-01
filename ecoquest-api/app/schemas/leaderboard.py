@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 """EcoQuest API — Leaderboard Schemas."""
+
 
 import uuid
 from decimal import Decimal

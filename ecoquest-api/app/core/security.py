@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 """EcoQuest API — Security Utilities.
+
 
 JWT creation/verification and password hashing.
 """

@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from sqlalchemy import DateTime, Float, ForeignKey, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -19,7 +19,8 @@ class SchoolTrustFactor(Base):
     
     factor_type: Mapped[str] = mapped_column(String, nullable=False)
     factor_score: Mapped[float] = mapped_column(Float, nullable=False)
-    description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
+
 
     school: Mapped["School"] = relationship("School", back_populates="trust_factors")

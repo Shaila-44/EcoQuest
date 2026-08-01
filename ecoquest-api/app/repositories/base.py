@@ -1,8 +1,11 @@
+from __future__ import annotations
+
 """EcoQuest API — Generic CRUD Repository.
 
 Provides reusable CRUD operations for all models. Domain repositories
 extend this with custom queries.
 """
+
 
 import uuid
 from typing import Any, Generic, TypeVar

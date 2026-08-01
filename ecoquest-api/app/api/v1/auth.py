@@ -1,36 +1,59 @@
+from __future__ import annotations
+
 """EcoQuest API — Auth Routes."""
 
-from fastapi import APIRouter
+from typing import Optional
+from fastapi import APIRouter, Depends, status
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.schemas.auth import LoginRequest, RegisterRequest, RefreshRequest, TokenResponse
+from app.db.session import get_db
+from app.schemas.auth import LoginRequest, RefreshRequest, RegisterRequest, TokenResponse
 from app.schemas.common import MessageResponse
+from app.schemas.user import UserRead
+from app.services.auth_service import AuthService
 
 router = APIRouter()
 
 
-@router.post("/register", status_code=201)
-async def register(data: RegisterRequest) -> dict:
+@router.post("/register", response_model=UserRead, status_code=status.HTTP_201_CREATED)
+async def register(
+    data: RegisterRequest,
+    db: AsyncSession = Depends(get_db),
+) -> UserRead:
     """Register a new user."""
-    # TODO: Implement registration logic
-    return {"message": "Registration endpoint — not yet implemented"}
+    auth_service = AuthService(db)
+    user = await auth_service.register(data)
+    return UserRead.model_validate(user)
 
 
-@router.post("/login")
-async def login(data: LoginRequest) -> dict:
+@router.post("/login", response_model=TokenResponse)
+async def login(
+    data: LoginRequest,
+    db: AsyncSession = Depends(get_db),
+) -> TokenResponse:
     """Authenticate and return JWT tokens."""
-    # TODO: Implement login logic
-    return {"message": "Login endpoint — not yet implemented"}
+    auth_service = AuthService(db)
+    return await auth_service.login(data)
 
 
-@router.post("/refresh")
-async def refresh_token(data: RefreshRequest) -> dict:
+@router.post("/refresh", response_model=TokenResponse)
+async def refresh_token(
+    data: RefreshRequest,
+    db: AsyncSession = Depends(get_db),
+) -> TokenResponse:
     """Exchange a refresh token for a new access token."""
-    # TODO: Implement token refresh logic
-    return {"message": "Token refresh endpoint — not yet implemented"}
+    auth_service = AuthService(db)
+    return await auth_service.refresh_token(data.refresh_token)
 
 
-@router.post("/logout")
-async def logout() -> MessageResponse:
+@router.post("/logout", response_model=MessageResponse)
+async def logout(
+    data: Optional[RefreshRequest] = None,
+    db: AsyncSession = Depends(get_db),
+) -> MessageResponse:
     """Invalidate the current refresh token."""
-    # TODO: Implement logout logic
-    return MessageResponse(message="Logout endpoint — not yet implemented")
+    auth_service = AuthService(db)
+    await auth_service.logout(data.refresh_token if data else None)
+    return MessageResponse(message="Successfully logged out")
+
+

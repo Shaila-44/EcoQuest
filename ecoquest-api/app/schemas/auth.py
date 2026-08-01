@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 """EcoQuest API — Auth Schemas."""
+
 
 from pydantic import BaseModel, EmailStr
 

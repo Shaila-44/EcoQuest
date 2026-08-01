@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 """EcoQuest API — Common Response Schemas."""
+
 
 from pydantic import BaseModel
 

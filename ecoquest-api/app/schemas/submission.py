@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 """EcoQuest API — Submission Schemas."""
+
 
 import uuid
 from datetime import datetime
