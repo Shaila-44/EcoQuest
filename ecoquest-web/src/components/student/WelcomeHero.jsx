@@ -226,13 +226,6 @@ export default function WelcomeHero({ onStartFeaturedMission }) {
                 </linearGradient>
               </defs>
 
-              {/* RADIANT SUN & LIGHT RAYS */}
-              <g opacity="0.3">
-                <line x1="220" y1="90" x2="60" y2="340" stroke="#fef08a" strokeWidth="26" strokeLinecap="round" />
-                <line x1="220" y1="90" x2="220" y2="390" stroke="#fef08a" strokeWidth="32" strokeLinecap="round" />
-                <line x1="220" y1="90" x2="380" y2="340" stroke="#fef08a" strokeWidth="26" strokeLinecap="round" />
-              </g>
-
               {/* SUN HALO */}
               <circle cx="220" cy="90" r="46" fill="url(#worldSunGrad)" opacity="0.95" />
               <circle cx="220" cy="90" r="58" fill="none" stroke="rgba(251, 191, 36, 0.45)" strokeWidth="3" strokeDasharray="6 6" />
