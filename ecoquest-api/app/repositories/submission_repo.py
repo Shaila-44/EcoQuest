@@ -3,6 +3,7 @@
 import uuid
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from app.models.enums import SubmissionStatus
 from app.models.submission import Submission
@@ -14,6 +15,22 @@ class SubmissionRepository(BaseRepository[Submission]):
 
     def __init__(self, session: AsyncSession):
         super().__init__(Submission, session)
+
+    async def get_by_id(self, id: uuid.UUID) -> Submission | None:
+        """Fetch a submission by primary key with the owning user preloaded (avoids async lazy-load errors)."""
+        stmt = (
+            select(Submission)
+            .options(selectinload(Submission.user))
+            .where(Submission.submission_id == id)
+        )
+        result = await self.session.execute(stmt)
+        return result.scalar_one_or_none()
+
+    async def get_by_challenge(self, challenge_id: uuid.UUID) -> list[Submission]:
+        """Fetch all submissions for a specific challenge, across all students."""
+        stmt = select(Submission).where(Submission.challenge_id == challenge_id)
+        result = await self.session.execute(stmt)
+        return list(result.scalars().all())
 
     async def get_by_student_and_challenge(self, student_id: uuid.UUID, challenge_id: uuid.UUID) -> list[Submission]:
         """Fetch all submissions for a specific student and challenge."""

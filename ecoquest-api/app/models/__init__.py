@@ -12,6 +12,7 @@ from app.models.login_audit import LoginAudit
 from app.models.challenge import Challenge
 from app.models.submission import Submission
 from app.models.ai_verification import AIVerification
+from app.models.review import Review
 from app.models.security_event import SecurityEvent
 from app.models.badge import Badge
 from app.models.user_badge import UserBadge
@@ -45,6 +46,7 @@ __all__ = [
     "Challenge",
     "Submission",
     "AIVerification",
+    "Review",
     "SecurityEvent",
     "Badge",
     "UserBadge",
@@ -53,6 +55,8 @@ __all__ = [
     "SchoolTrustScore",
     "SchoolTrustFactor",
     "TrustScoreHistorySchool",
+    "UserSession",
+    "DeviceApproval",
     "RoleName",
     "UserStatus",
     "LoginMethod",

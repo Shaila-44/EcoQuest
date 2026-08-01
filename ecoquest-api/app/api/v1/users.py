@@ -4,14 +4,18 @@ import uuid
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import get_current_user
+from app.api.deps import get_current_user, require_admin
+from app.core.permissions import require_role
 from app.db.session import get_db
+from app.models.enums import RoleName
 from app.models.user import User
 from app.schemas.user import UserRead, UserUpdate
 from app.services.user_service import UserService
 
 
 router = APIRouter()
+
+TEACHER_ADMIN_ROLES = [RoleName.TEACHER, RoleName.SCHOOL_ADMIN, RoleName.SUPER_ADMIN]
 
 
 @router.get("/me", response_model=UserRead, status_code=200)
@@ -36,7 +40,7 @@ async def update_current_user_profile(
 
 @router.get("", response_model=list[UserRead], status_code=200)
 async def list_users(
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_admin),
     db: AsyncSession = Depends(get_db),
 ) -> list[UserRead]:
     """List all users (admin only)."""
@@ -48,10 +52,23 @@ async def list_users(
 @router.get("/{user_id}", response_model=UserRead, status_code=200)
 async def get_user(
     user_id: uuid.UUID,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_role(TEACHER_ADMIN_ROLES)),
     db: AsyncSession = Depends(get_db),
 ) -> UserRead:
     """Get a specific user's details (admin/teacher)."""
     service = UserService(db)
+    u = await service.get_profile(user_id)
+    return UserRead.model_validate(u)
+
+
+@router.post("/{user_id}/deactivate", response_model=UserRead, status_code=200)
+async def deactivate_user(
+    user_id: uuid.UUID,
+    current_user: User = Depends(require_admin),
+    db: AsyncSession = Depends(get_db),
+) -> UserRead:
+    """Deactivate a user account (admin only)."""
+    service = UserService(db)
+    await service.deactivate_user(user_id)
     u = await service.get_profile(user_id)
     return UserRead.model_validate(u)

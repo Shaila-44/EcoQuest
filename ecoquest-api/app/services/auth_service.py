@@ -10,7 +10,6 @@ import logging
 from typing import Optional
 import hashlib
 import uuid
-from typing import Optional
 from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -52,16 +51,13 @@ class AuthService:
                 detail="A user with this email address already exists.",
             )
 
-        # Resolve role enum
+        # Resolve role enum. Public self-registration is intentionally limited to
+        # Student/Teacher — School Admin / Super Admin must be provisioned via
+        # scripts/create_admin.py, not granted by whatever role string a client sends.
         role_map = {
             "student": RoleName.STUDENT,
             "user": RoleName.STUDENT,
             "teacher": RoleName.TEACHER,
-            "school admin": RoleName.SCHOOL_ADMIN,
-            "school_admin": RoleName.SCHOOL_ADMIN,
-            "admin": RoleName.SUPER_ADMIN,
-            "super admin": RoleName.SUPER_ADMIN,
-            "super_admin": RoleName.SUPER_ADMIN,
         }
         role_name = role_map.get(data.role.lower().strip(), RoleName.STUDENT)
         role = await self.user_repo.get_or_create_role(role_name)

@@ -23,6 +23,13 @@ from app.pipeline.schemas import GeminiVisionResponseSchema, VerificationResult
 
 logger = logging.getLogger(__name__)
 
+# Rejection reasons that mean the AI system itself failed to produce a verdict
+# (missing config, timeout, malformed response, transient outage) — these must
+# route to teacher review (PENDING), not REJECTED, regardless of confidence_score.
+AI_UNAVAILABLE_REASONS = frozenset(
+    {"AI_UNCONFIGURED", "AI_TIMEOUT", "AI_SCHEMA_ERROR", "AI_UNAVAILABLE", "AI_UNKNOWN_ERROR"}
+)
+
 
 class VerificationDecision(str, Enum):
     """Standardized decision outcome for submission verification."""
@@ -108,6 +115,21 @@ class VerificationService:
         user_trust_score: float = 100.0,
     ) -> DecisionResult:
         """Evaluate a VerificationResult against dynamic trust thresholds and authenticity flags."""
+        # 0. AI system failure (not a real evaluation) -> always queue for teacher review
+        if verification.rejection_reason in AI_UNAVAILABLE_REASONS:
+            return DecisionResult(
+                decision=VerificationDecision.PENDING,
+                confidence_score=verification.confidence_score,
+                is_verified=False,
+                activity_detected=verification.activity_detected,
+                environmental_impact=verification.environmental_impact,
+                feedback=verification.feedback or "AI verification unavailable. Sent to teacher review.",
+                rejection_reason=verification.rejection_reason,
+                is_stock_photo=verification.is_stock_photo,
+                is_screen_photo=verification.is_screen_photo,
+                is_blurry=verification.is_blurry,
+            )
+
         # 1. Evaluate Authenticity Flags
         if verification.is_stock_photo or verification.is_screen_photo or verification.is_blurry:
             reason = "STOCK_IMAGE_DETECTED" if verification.is_stock_photo else (

@@ -20,6 +20,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
+    networks:
+      - ecoquest-network
 
   postgres:
     image: postgres:16-alpine
@@ -29,12 +31,11 @@ services:
       - "5432:5432"
     env_file:
       - ./ecoquest-api/.env
-    # Variables POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB 
-    # are loaded from env_file to avoid hardcoding secrets
-    environment:
-      POSTGRES_USER: ecoquest
-      POSTGRES_PASSWORD: ecoquest
-      POSTGRES_DB: ecoquest
+    # POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB come from env_file above.
+    # Do NOT also hardcode them here — a duplicate `environment:` block takes
+    # precedence over env_file per-service and previously caused the Postgres
+    # container's actual credentials to silently diverge from what the api
+    # container's DATABASE_URL (built from the same .env) expected.
     volumes:
       - pgdata:/var/lib/postgresql/data
     networks:
@@ -45,26 +46,7 @@ services:
       timeout: 5s
       retries: 5
 
-  backend:
-    build:
-      context: ./ecoquest-api
-      dockerfile: Dockerfile
-    container_name: ecoquest-backend
-    restart: unless-stopped
-    ports:
-      - "8000:8000"
-    environment:
-      - POSTGRES_USER=ecoquest
-      - POSTGRES_PASSWORD=ecoquest
-      - POSTGRES_DB=ecoquest
-      - DATABASE_URL=postgresql+asyncpg://ecoquest:ecoquest@postgres:5432/ecoquest
-      - ENVIRONMENT=development
-      - LOG_LEVEL=DEBUG
-    depends_on:
-      postgres:
-        condition: service_healthy
-    networks:
-      - ecoquest-network
+
 
 volumes:
   pgdata:

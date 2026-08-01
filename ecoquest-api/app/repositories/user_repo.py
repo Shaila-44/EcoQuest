@@ -55,6 +55,23 @@ class UserRepository(BaseRepository[User]):
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
 
+    async def list(
+        self,
+        *,
+        offset: int = 0,
+        limit: int = 20,
+        filters: Optional[dict] = None,
+    ) -> list[User]:
+        """Fetch a paginated list of users with role preloaded (avoids async lazy-load errors)."""
+        stmt = select(User).options(selectinload(User.role))
+        if filters:
+            for key, value in filters.items():
+                if hasattr(User, key) and value is not None:
+                    stmt = stmt.where(getattr(User, key) == value)
+        stmt = stmt.offset(offset).limit(limit)
+        result = await self.session.execute(stmt)
+        return list(result.scalars().all())
+
 
     async def get_or_create_role(self, role_name: RoleName) -> Role:
         """Fetch role by enum name or create if missing."""

@@ -6,7 +6,6 @@ Handles leaderboard queries and score aggregation updates.
 """
 
 import uuid
-from typing import Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -50,10 +49,9 @@ class LeaderboardService:
     async def update_leaderboard_entry(
         self,
         user_id: uuid.UUID,
-        school_id: uuid.UUID,
         points_awarded: int,
     ) -> None:
-        """Increment a user's leaderboard points."""
+        """Increment a user's leaderboard points. School scoping is derived via the User relation at query time."""
         entry = await self.leaderboard_repo.get_rank_for_user(user_id)
 
         if entry:
@@ -65,7 +63,6 @@ class LeaderboardService:
         else:
             new_entry = LeaderboardEntry(
                 user_id=user_id,
-                school_id=school_id,
                 total_points=points_awarded,
             )
             await self.leaderboard_repo.create(new_entry)

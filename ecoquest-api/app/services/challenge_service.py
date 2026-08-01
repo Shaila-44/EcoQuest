@@ -7,8 +7,9 @@ Handles challenge CRUD and daily challenge selection.
 
 import logging
 import uuid
-from typing import Optional
+from datetime import datetime, timedelta, timezone
 
+from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.exceptions import NotFoundError
@@ -16,6 +17,12 @@ from app.models.challenge import Challenge
 from app.models.user import User
 from app.repositories.challenge_repo import ChallengeRepository
 from app.schemas.challenge import ChallengeCreate, ChallengeUpdate
+
+# Default active window applied when a teacher creates a challenge without
+# explicit start/end dates. list_challenges()/get_daily_challenge() only
+# surface challenges with a non-null, currently-active date range, so a
+# challenge created with no dates would otherwise be invisible to students.
+DEFAULT_CHALLENGE_WINDOW_DAYS = 30
 
 logger = logging.getLogger(__name__)
 
@@ -37,6 +44,12 @@ class ChallengeService:
         school_id = getattr(data, "school_id", None) or creator.school_id
         start_date = getattr(data, "start_date", None) or getattr(data, "starts_at", None)
         end_date = getattr(data, "end_date", None) or getattr(data, "ends_at", None)
+
+        # Default to an immediately-active window if the caller didn't specify one.
+        if start_date is None:
+            start_date = datetime.now(timezone.utc)
+        if end_date is None:
+            end_date = start_date + timedelta(days=DEFAULT_CHALLENGE_WINDOW_DAYS)
 
         try:
             new_challenge = Challenge(

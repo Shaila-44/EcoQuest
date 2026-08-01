@@ -3,7 +3,7 @@ from __future__ import annotations
 """EcoQuest API — Challenge Repository."""
 
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -20,7 +20,7 @@ class ChallengeRepository(BaseRepository[Challenge]):
 
     async def get_active_by_school(self, school_id: uuid.UUID) -> list[Challenge]:
         """Fetch all active challenges for a school."""
-        now = datetime.now()
+        now = datetime.now(timezone.utc)
         stmt = select(Challenge).where(
             Challenge.school_id == school_id,
             Challenge.start_date <= now,
@@ -32,7 +32,7 @@ class ChallengeRepository(BaseRepository[Challenge]):
     async def get_daily_challenge(self, school_id: uuid.UUID) -> Optional[Challenge]:
 
         """Fetch the daily challenge for a school (assuming 'daily' category)."""
-        now = datetime.now()
+        now = datetime.now(timezone.utc)
         stmt = select(Challenge).where(
             Challenge.school_id == school_id,
             Challenge.category == "daily",

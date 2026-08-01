@@ -49,7 +49,7 @@ export default function LoginCard({ onNavigateHome, onLoginSuccess }) {
           {role === 'student' ? (
             <StudentLogin key="student" onLoginSuccess={onLoginSuccess} />
           ) : (
-            <TeacherLogin key="teacher" />
+            <TeacherLogin key="teacher" onLoginSuccess={onLoginSuccess} />
           )}
         </AnimatePresence>
       </div>

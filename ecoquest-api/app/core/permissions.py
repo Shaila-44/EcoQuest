@@ -7,9 +7,10 @@ Permission-based RBAC system. Endpoints check permissions, not roles.
 
 from enum import Enum
 
-from fastapi import HTTPException, status
+from fastapi import Depends, HTTPException, status
 
 from app.models.enums import RoleName
+from app.models.user import User
 
 # Alias UserRole to RoleName for backward compatibility
 UserRole = RoleName
@@ -81,9 +82,16 @@ def require_permission(role: RoleName, permission: Permission) -> None:
 
 
 def require_role(allowed_roles: list[RoleName]):
-    """FastAPI dependency factory to enforce allowed roles."""
+    """FastAPI dependency factory to enforce allowed roles.
 
-    def role_checker(current_user):
+    Returns a dependency callable that resolves the authenticated user itself
+    (via app.api.deps.get_current_user) and then checks their role, so it can
+    be used directly as `Depends(require_role([...]))` without an extra
+    `get_current_user` dependency alongside it.
+    """
+    from app.api.deps import get_current_user
+
+    def role_checker(current_user: User = Depends(get_current_user)) -> User:
         user_role = None
 
         if hasattr(current_user, "role") and current_user.role:

@@ -17,7 +17,7 @@ from urllib.parse import urlparse
 import httpx
 from PIL import Image
 
-from app.core.exceptions import PipelineError, ValidationError
+from app.core.exceptions import ValidationError
 from app.pipeline.schemas import PipelineResult, VerificationResult
 from app.pipeline.verifier import BaseVisionVerifier, GeminiVerifier
 from app.services.verification_service import DecisionResult, VerificationDecision, VerificationService
@@ -157,6 +157,7 @@ class PipelineOrchestrator:
             is_stock_photo=decision_result.is_stock_photo,
             is_screen_photo=decision_result.is_screen_photo,
             is_blurry=decision_result.is_blurry,
+            decision=decision_result.decision.value,
         )
 
         return PipelineResult(

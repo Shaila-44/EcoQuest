@@ -1,11 +1,14 @@
 """EcoQuest API — Gamification Routes."""
 
+import math
+
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_current_user
 from app.db.session import get_db
 from app.models.user import User
+from app.repositories.leaderboard_repo import LeaderboardRepository
 from app.services.gamification_service import GamificationService
 
 router = APIRouter()
@@ -47,11 +50,18 @@ async def get_my_stats(
     """Get gamification stats for the current user."""
     service = GamificationService(db)
     stats = await service.get_user_stats(current_user)
+
+    leaderboard_repo = LeaderboardRepository(db)
+    entry = await leaderboard_repo.get_rank_for_user(current_user.user_id)
+    total_points = entry.total_points if entry else 0
+    level = math.floor(math.sqrt(total_points / 100)) + 1
+
     return {
         "user_id": str(current_user.user_id),
         "trust_score": current_user.trust_score,
-        "total_points": getattr(current_user, "total_points", 0),
-        "level": 1,
+        "total_points": total_points,
+        "level": level,
+        "badges_count": stats.get("badges_count", 0),
     }
 
 

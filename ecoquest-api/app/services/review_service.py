@@ -61,14 +61,10 @@ class ReviewService:
 
                 submission.points_earned = points
 
+                # award_points() both credits XP/leaderboard for the student.
+                # (update_leaderboard_entry is not also called here — that would double-count.)
                 await self.gamification_service.award_points(
                     submission.user,
-                    points,
-                )
-
-                await self.leaderboard_service.update_leaderboard_entry(
-                    submission.user_id,
-                    submission.user.school_id,
                     points,
                 )
 

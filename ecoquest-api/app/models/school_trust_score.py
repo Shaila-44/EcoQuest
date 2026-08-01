@@ -4,7 +4,6 @@ import uuid
 
 from sqlalchemy import DateTime, Float, ForeignKey, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy.dialects.postgresql import UUID
 
 from app.models.base import Base
 

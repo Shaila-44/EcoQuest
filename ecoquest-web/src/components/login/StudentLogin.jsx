@@ -1,44 +1,69 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  GraduationCap, 
-  Building2, 
-  Lock, 
-  Eye, 
-  EyeOff, 
-  ArrowRight, 
-  Loader2 
+import {
+  Mail,
+  Building2,
+  Lock,
+  Eye,
+  EyeOff,
+  ArrowRight,
+  Loader2,
+  AlertTriangle
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { useAuth } from '../../context/AuthContext';
 
 export default function StudentLogin({ onLoginSuccess }) {
-  const [studentId, setStudentId] = useState('');
+  const { login, register } = useAuth();
+  const [mode, setMode] = useState('login'); // 'login' | 'register'
+
+  const [email, setEmail] = useState('');
   const [schoolId, setSchoolId] = useState('');
   const [password, setPassword] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(true);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
+  const celebrate = () => confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
     setLoading(true);
 
-    setTimeout(() => {
+    try {
+      if (mode === 'login') {
+        const result = await login(email, password);
+        if (result.status === 'APPROVAL_REQUIRED') {
+          setError('Login from a new device requires approval from your other active session.');
+          setLoading(false);
+          return;
+        }
+      } else {
+        await register({
+          email,
+          password,
+          first_name: firstName,
+          last_name: lastName,
+          role: 'student',
+          school_code: schoolId || undefined,
+        });
+      }
+
       setLoading(false);
       setSuccess(true);
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 }
-      });
+      celebrate();
       setTimeout(() => {
         window.location.hash = '/home';
-        if (onLoginSuccess) {
-          onLoginSuccess('student');
-        }
+        if (onLoginSuccess) onLoginSuccess('Student');
       }, 400);
-    }, 800);
+    } catch (err) {
+      setLoading(false);
+      setError(err.message || 'Something went wrong. Please try again.');
+    }
   };
 
   return (
@@ -50,41 +75,78 @@ export default function StudentLogin({ onLoginSuccess }) {
       onSubmit={handleSubmit}
       className="space-y-4"
     >
-      {/* STUDENT ID INPUT */}
+      {error && (
+        <div className="flex items-start gap-2 px-3.5 py-2.5 rounded-2xl bg-rose-950/60 border border-rose-500/40 text-rose-300 text-xs font-bold">
+          <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+          <span>{error}</span>
+        </div>
+      )}
+
+      {mode === 'register' && (
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="block text-xs font-black text-emerald-300 uppercase tracking-wider mb-1.5">
+              First Name
+            </label>
+            <input
+              type="text"
+              required
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              className="w-full px-4 py-3 rounded-2xl border border-emerald-500/40 text-xs font-bold text-white placeholder-emerald-400/50 focus:outline-none focus:border-emerald-400 bg-[#04160d] transition-all shadow-inner"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-black text-emerald-300 uppercase tracking-wider mb-1.5">
+              Last Name
+            </label>
+            <input
+              type="text"
+              required
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              className="w-full px-4 py-3 rounded-2xl border border-emerald-500/40 text-xs font-bold text-white placeholder-emerald-400/50 focus:outline-none focus:border-emerald-400 bg-[#04160d] transition-all shadow-inner"
+            />
+          </div>
+        </div>
+      )}
+
+      {/* EMAIL INPUT */}
       <div>
         <label className="block text-xs font-black text-emerald-300 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-          <GraduationCap className="w-4 h-4 text-emerald-400" />
-          Student ID
+          <Mail className="w-4 h-4 text-emerald-400" />
+          Email
         </label>
         <div className="relative">
           <input
-            type="text"
+            type="email"
             required
-            placeholder="e.g. STU-84920"
-            value={studentId}
-            onChange={(e) => setStudentId(e.target.value)}
+            placeholder="you@ecoquest.dev"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             className="w-full pl-4 pr-4 py-3 rounded-2xl border border-emerald-500/40 text-xs font-bold text-white placeholder-emerald-400/50 focus:outline-none focus:border-emerald-400 bg-[#04160d] transition-all shadow-inner"
           />
         </div>
       </div>
 
-      {/* SCHOOL ID INPUT */}
-      <div>
-        <label className="block text-xs font-black text-emerald-300 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-          <Building2 className="w-4 h-4 text-emerald-400" />
-          School ID / Code
-        </label>
-        <div className="relative">
-          <input
-            type="text"
-            required
-            placeholder="e.g. DPS-RK-PURAM-2026"
-            value={schoolId}
-            onChange={(e) => setSchoolId(e.target.value)}
-            className="w-full pl-4 pr-4 py-3 rounded-2xl border border-emerald-500/40 text-xs font-bold text-white placeholder-emerald-400/50 focus:outline-none focus:border-emerald-400 bg-[#04160d] transition-all shadow-inner"
-          />
+      {/* SCHOOL ID INPUT (only meaningful on register — login resolves school from the account) */}
+      {mode === 'register' && (
+        <div>
+          <label className="block text-xs font-black text-emerald-300 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+            <Building2 className="w-4 h-4 text-emerald-400" />
+            School Code (optional)
+          </label>
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="e.g. ECO001"
+              value={schoolId}
+              onChange={(e) => setSchoolId(e.target.value)}
+              className="w-full pl-4 pr-4 py-3 rounded-2xl border border-emerald-500/40 text-xs font-bold text-white placeholder-emerald-400/50 focus:outline-none focus:border-emerald-400 bg-[#04160d] transition-all shadow-inner"
+            />
+          </div>
         </div>
-      </div>
+      )}
 
       {/* PASSWORD INPUT */}
       <div>
@@ -96,6 +158,7 @@ export default function StudentLogin({ onLoginSuccess }) {
           <input
             type={showPassword ? 'text' : 'password'}
             required
+            minLength={mode === 'register' ? 8 : undefined}
             placeholder="••••••••••••"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -111,43 +174,36 @@ export default function StudentLogin({ onLoginSuccess }) {
         </div>
       </div>
 
-      {/* REMEMBER ME & FORGOT PASSWORD */}
+      {/* MODE TOGGLE */}
       <div className="flex items-center justify-between pt-1">
-        <label className="flex items-center gap-2 cursor-pointer select-none">
-          <input
-            type="checkbox"
-            checked={rememberMe}
-            onChange={(e) => setRememberMe(e.target.checked)}
-            className="w-4 h-4 rounded text-emerald-400 focus:ring-emerald-400 border-emerald-500/40 accent-emerald-500 cursor-pointer bg-[#04160d]"
-          />
-          <span className="text-xs font-bold text-slate-200">Remember Me</span>
-        </label>
-
-        <a
-          href="#"
-          onClick={(e) => e.preventDefault()}
-          className="text-xs font-black text-amber-300 hover:text-amber-200 transition-colors hover:underline"
+        <button
+          type="button"
+          onClick={() => {
+            setMode(mode === 'login' ? 'register' : 'login');
+            setError('');
+          }}
+          className="text-xs font-black text-amber-300 hover:text-amber-200 transition-colors hover:underline cursor-pointer"
         >
-          Forgot Password?
-        </a>
+          {mode === 'login' ? 'New here? Create an account' : 'Already have an account? Log in'}
+        </button>
       </div>
 
       {/* PRIMARY BUTTON */}
       <button
         type="submit"
         disabled={loading}
-        className="w-full py-4 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-400 to-amber-300 text-slate-950 font-black text-sm shadow-xl shadow-emerald-500/30 hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 flex items-center justify-center gap-2 group mt-2 cursor-pointer border border-emerald-300/40"
+        className="w-full py-4 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-400 to-amber-300 text-slate-950 font-black text-sm shadow-xl shadow-emerald-500/30 hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 flex items-center justify-center gap-2 group mt-2 cursor-pointer border border-emerald-300/40 disabled:opacity-60"
       >
         {loading ? (
           <>
             <Loader2 className="w-4 h-4 animate-spin text-slate-950 stroke-[3]" />
-            <span>Authenticating Adventurer...</span>
+            <span>{mode === 'login' ? 'Authenticating Adventurer...' : 'Creating Account...'}</span>
           </>
         ) : success ? (
-          <span>Welcome Back, Adventurer! Redirecting... 🎉</span>
+          <span>Welcome, Adventurer! Redirecting... 🎉</span>
         ) : (
           <>
-            <span>Login as Student</span>
+            <span>{mode === 'login' ? 'Login as Student' : 'Create Student Account'}</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform stroke-[2.5]" />
           </>
         )}
@@ -156,4 +212,3 @@ export default function StudentLogin({ onLoginSuccess }) {
     </motion.form>
   );
 }
-

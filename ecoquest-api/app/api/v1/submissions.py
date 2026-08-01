@@ -17,9 +17,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.deps import get_current_user
 
 from app.core.limiter import limiter
-from app.core.permissions import require_role
 from app.db.session import get_db
-from app.models.enums import RoleName
 from app.models.user import User
 from app.schemas.submission import SubmissionCreate, SubmissionRead
 from app.services.submission_service import SubmissionService
