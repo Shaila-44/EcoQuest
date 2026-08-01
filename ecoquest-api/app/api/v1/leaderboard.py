@@ -50,11 +50,4 @@ async def get_my_rank(
     entry = await service.get_user_rank(current_user.user_id)
     if not entry:
         return None
-    return LeaderboardRead(
-        rank=1,
-        student_id=entry.user_id,
-        student_name=current_user.name or "Student",
-        avatar_url=current_user.profile_image,
-        points=entry.total_points,
-        school_name=entry.school.name if entry.school else "School",
-    )
+    return LeaderboardRead.model_validate(entry)

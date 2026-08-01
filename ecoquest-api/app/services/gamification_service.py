@@ -34,14 +34,26 @@ class GamificationService:
         self.leaderboard_repo = LeaderboardRepository(session)
 
     async def award_xp(self, user: User, points: int) -> dict:
-        """Award XP points to a student and calculate level progression."""
-        current_points = getattr(user, "total_points", 0) + points
-        setattr(user, "total_points", current_points)
+        """Award XP points to a student's leaderboard total and calculate level progression.
+
+        Total points live on the Leaderboard entry (the User model has no total_points
+        column), so this both credits the leaderboard and derives the level from it.
+        """
+        entry = await self.leaderboard_repo.get_rank_for_user(user.user_id)
+        if entry:
+            entry.total_points += points
+            await self.leaderboard_repo.update(entry, {"total_points": entry.total_points})
+            current_points = entry.total_points
+        else:
+            from app.models.leaderboard import Leaderboard
+
+            new_entry = Leaderboard(user_id=user.user_id, total_points=points)
+            created = await self.leaderboard_repo.create(new_entry)
+            current_points = created.total_points
 
         # Level formula: level = floor(sqrt(points / 100)) + 1
         level = math.floor(math.sqrt(current_points / 100)) + 1
 
-        await self.user_repo.update(user, {"trust_score": user.trust_score})
         return {
             "total_points": current_points,
             "points_awarded": points,
@@ -69,7 +81,7 @@ class GamificationService:
 
         history = TrustScoreHistoryUser(
             user_id=user.user_id,
-            score_change=delta,
+            score=new_score,
             reason=reason,
         )
         self.session.add(history)
@@ -84,14 +96,21 @@ class GamificationService:
 
         unlocked_badges = []
         for badge in all_badges:
-            if total_submissions >= getattr(badge, "required_count", 1):
+            required_count = 1
+            if isinstance(badge.criteria, dict):
+                required_count = badge.criteria.get("required_submissions", 1)
+            if total_submissions >= required_count:
                 stmt_has = select(UserBadge).where(
                     UserBadge.user_id == user.user_id,
                     UserBadge.badge_id == badge.badge_id,
                 )
                 res_has = await self.session.execute(stmt_has)
                 if not res_has.scalar_one_or_none():
-                    user_badge = UserBadge(user_id=user.user_id, badge_id=badge.badge_id)
+                    user_badge = UserBadge(
+                        user_id=user.user_id,
+                        badge_id=badge.badge_id,
+                        points_earned=badge.points,
+                    )
                     self.session.add(user_badge)
                     unlocked_badges.append(badge)
 
@@ -113,11 +132,11 @@ class GamificationService:
         total_submissions: int,
     ) -> dict:
         """Atomic helper to orchestrate all gamification rewards for a submission."""
-        xp_result = await self.award_xp(user, points_awarded) if is_approved else {"total_points": getattr(user, "total_points", 0), "points_awarded": 0, "level": 1}
+        # award_xp() already credits the leaderboard entry, so update_leaderboard() is
+        # intentionally not also called here — that would double-count points.
+        xp_result = await self.award_xp(user, points_awarded) if is_approved else {"total_points": 0, "points_awarded": 0, "level": 1}
         new_trust_score = await self.update_trust_score(user, is_approved=is_approved, confidence_score=confidence_score)
         unlocked_badges = await self.evaluate_and_award_badges(user, total_submissions) if is_approved else []
-        if is_approved:
-            await self.update_leaderboard(user, points_awarded)
 
         return {
             "xp": xp_result,

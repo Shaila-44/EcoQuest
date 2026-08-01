@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { api } from '../lib/api';
 import Sidebar from '../components/student/Sidebar';
 import TopNav from '../components/student/TopNav';
 import WelcomeHero from '../components/student/WelcomeHero';
@@ -20,6 +21,20 @@ export default function StudentHome({ onNavigateIsland, onSwitchToEducator, onLo
   const [activeTab, setActiveTab] = useState('home');
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
   const [missionModalOpen, setMissionModalOpen] = useState(false);
+  const [dailyChallenge, setDailyChallenge] = useState(null);
+  const [submissions, setSubmissions] = useState([]);
+
+  const refreshSubmissions = () => {
+    api.listSubmissions().then(setSubmissions).catch(() => {});
+  };
+
+  // Load the real daily challenge and the student's own submission history
+  // from the backend on mount — this is what UploadProofModal actually
+  // submits against (the elaborate quest cards below stay illustrative).
+  useEffect(() => {
+    api.getDailyChallenge().then(setDailyChallenge).catch(() => {});
+    refreshSubmissions();
+  }, []);
 
   // If student clicks "My Island" tab in sidebar, trigger island view
   const handleTabChange = (tabId) => {
@@ -74,7 +89,7 @@ export default function StudentHome({ onNavigateIsland, onSwitchToEducator, onLo
                 /* QUEST BOARD PAGE */
                 <QuestBoard
                   onStartMission={() => setMissionModalOpen(true)}
-                  onOpenUploadProof={() => setUploadProofModal(true)}
+                  onOpenUploadProof={() => setUploadModalOpen(true)}
                 />
               ) : activeTab === 'leaderboard' ? (
                 /* HALL OF CHAMPIONS PAGE */
@@ -152,12 +167,15 @@ export default function StudentHome({ onNavigateIsland, onSwitchToEducator, onLo
       <UploadProofModal
         isOpen={uploadModalOpen}
         onClose={() => setUploadModalOpen(false)}
+        challenge={dailyChallenge}
+        onSubmitted={refreshSubmissions}
       />
 
       <StartMissionModal
         isOpen={missionModalOpen}
         onClose={() => setMissionModalOpen(false)}
         onOpenUploadProof={() => setUploadModalOpen(true)}
+        challenge={dailyChallenge}
       />
 
     </div>

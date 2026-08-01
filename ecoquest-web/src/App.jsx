@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import ParticlesBackground from './components/ParticlesBackground';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
@@ -17,6 +18,19 @@ import EducatorHome from './pages/EducatorHome';
 import MyIsland from './pages/MyIsland';
 
 export default function App() {
+  return (
+    <AuthProvider>
+      <AppShell />
+    </AuthProvider>
+  );
+}
+
+// Backend roles ("Student", "Teacher", "School Admin", "Super Admin") collapse
+// down to two UI modes: the student experience, and the educator/admin experience.
+const EDUCATOR_ROLES = new Set(['Teacher', 'School Admin', 'Super Admin']);
+
+function AppShell() {
+  const { user, logout } = useAuth();
   const [currentView, setCurrentView] = useState('landing'); // Default to landing page
   const [demoModalOpen, setDemoModalOpen] = useState(false);
   const [leaderboardModalOpen, setLeaderboardModalOpen] = useState(false);
@@ -73,8 +87,16 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } finally {
+      navigateToLogin();
+    }
+  };
+
   const handleLoginSuccess = (role) => {
-    if (role === 'educator') {
+    if (role === 'educator' || EDUCATOR_ROLES.has(role)) {
       navigateToEducatorHome();
     } else {
       navigateToStudentHome();
@@ -104,13 +126,13 @@ export default function App() {
           <EducatorHome
             onNavigateIsland={navigateToMyIsland}
             onSwitchToStudent={navigateToStudentHome}
-            onLogout={navigateToLogin}
+            onLogout={handleLogout}
           />
         ) : currentView === 'student_home' ? (
           <StudentHome
             onNavigateIsland={navigateToMyIsland}
             onSwitchToEducator={navigateToEducatorHome}
-            onLogout={navigateToLogin}
+            onLogout={handleLogout}
           />
         ) : (
           <div className="min-h-screen bg-[#05130d] text-slate-100 font-body relative overflow-x-hidden selection:bg-emerald-500 selection:text-white">

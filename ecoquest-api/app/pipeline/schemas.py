@@ -45,6 +45,12 @@ class VerificationResult:
     is_stock_photo: bool = False
     is_screen_photo: bool = False
     is_blurry: bool = False
+    # Authoritative APPROVED/PENDING/REJECTED decision from VerificationService,
+    # carried through so downstream consumers don't have to re-derive it from
+    # confidence_score with their own (potentially inconsistent) thresholds.
+    # Defaults to "PENDING" so infra-level failures (image fetch errors, etc.)
+    # fail safe into teacher review rather than silently rejecting.
+    decision: str = "PENDING"
 
 
 @dataclass

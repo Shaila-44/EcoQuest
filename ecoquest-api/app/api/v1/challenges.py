@@ -101,4 +101,5 @@ async def list_challenge_submissions(
 ) -> list[SubmissionRead]:
     """List submissions for a specific challenge (teacher/admin)."""
     service = SubmissionService(db)
-    return await service.list_student_submissions(current_user.user_id, challenge_id)
+    submissions = await service.list_challenge_submissions(challenge_id)
+    return [SubmissionRead.model_validate(sub) for sub in submissions]

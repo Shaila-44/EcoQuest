@@ -26,12 +26,11 @@ from app.repositories.challenge_repo import ChallengeRepository
 from app.repositories.submission_repo import SubmissionRepository
 from app.repositories.user_repo import UserRepository
 
-from app.schemas.submission import SubmissionCreate, SubmissionRead
+from app.schemas.submission import SubmissionCreate
 
 from app.services.gamification_service import GamificationService
 from app.storage.cloudinary import CloudinaryStorage
 
-from app.core.exceptions import DuplicateError, NotFoundError
 
 logger = logging.getLogger(__name__)
 
@@ -120,19 +119,23 @@ class SubmissionService:
 
             verification = pipeline_result.verification
 
-            # 3. Map Verification Outcome to Submission & AI Status
-            if verification.is_verified and verification.confidence_score >= 0.60:
-                final_sub_status = SubmissionStatus.APPROVED
-                final_verif_status = VerificationStatus.APPROVED
-                points_earned = challenge.points if challenge.points > 0 else 10
-            elif verification.confidence_score >= 0.50 or not pipeline_result.success:
-                final_sub_status = SubmissionStatus.PENDING
-                final_verif_status = VerificationStatus.PENDING
-                points_earned = 0
-            else:
-                final_sub_status = SubmissionStatus.REJECTED
-                final_verif_status = VerificationStatus.REJECTED
-                points_earned = 0
+            # 3. Map the pipeline's authoritative decision to Submission & AI Status.
+            # (VerificationService already applied trust-score-aware thresholds; we
+            # respect that decision here rather than re-deriving it from confidence_score.)
+            decision_status_map = {
+                "APPROVED": (SubmissionStatus.APPROVED, VerificationStatus.APPROVED),
+                "PENDING": (SubmissionStatus.PENDING, VerificationStatus.PENDING),
+                "REJECTED": (SubmissionStatus.REJECTED, VerificationStatus.REJECTED),
+            }
+            final_sub_status, final_verif_status = decision_status_map.get(
+                verification.decision,
+                (SubmissionStatus.PENDING, VerificationStatus.PENDING),
+            )
+            points_earned = (
+                (challenge.points if challenge.points > 0 else 10)
+                if final_sub_status == SubmissionStatus.APPROVED
+                else 0
+            )
 
             # 4. Store Submission Entity
             new_submission = Submission(
@@ -141,6 +144,8 @@ class SubmissionService:
                 title=challenge.title,
                 description=data.description,
                 image_url=data.image_url,
+                latitude=data.latitude,
+                longitude=data.longitude,
                 status=final_sub_status,
                 points_earned=points_earned,
             )
@@ -184,6 +189,10 @@ class SubmissionService:
         """List submissions for a specific student and challenge."""
         repo = SubmissionRepository(self.session)
         return await repo.get_by_student_and_challenge(user_id, challenge_id)
+
+    async def list_challenge_submissions(self, challenge_id: uuid.UUID) -> list[Submission]:
+        """List all student submissions for a challenge (teacher/admin view)."""
+        return await self.submission_repo.get_by_challenge(challenge_id)
 
     async def get_submission(self, submission_id: uuid.UUID) -> Submission:
         """Fetch submission details."""

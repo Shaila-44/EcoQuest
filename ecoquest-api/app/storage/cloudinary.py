@@ -8,6 +8,7 @@ from typing import Optional
 import cloudinary
 import cloudinary.uploader
 import cloudinary.utils
+from fastapi import HTTPException, status
 from app.storage.base import StorageBackend
 
 logger = logging.getLogger(__name__)
@@ -37,6 +38,14 @@ class CloudinaryStorage(StorageBackend):
     ) -> dict:
 
         """Generate a Cloudinary signed upload URL parameters."""
+        if not (self.cloud_name and self.api_key and self.api_secret):
+            logger.error("Cloudinary is not configured (missing cloud_name/api_key/api_secret).")
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="Image storage is not configured on this server. Set CLOUDINARY_CLOUD_NAME, "
+                "CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET.",
+            )
+
         timestamp = int(time.time())
         params_to_sign = {
             "timestamp": timestamp,
