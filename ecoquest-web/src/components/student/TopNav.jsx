@@ -6,13 +6,10 @@ import {
   Zap, 
   Sparkles, 
   ChevronDown, 
-  CheckCircle2, 
-  Award,
-  ShieldCheck,
-  Crown,
-  LogOut,
-  User,
-  Plus
+  Crown, 
+  LogOut, 
+  User, 
+  ShieldCheck 
 } from 'lucide-react';
 
 const CartoonBoyAvatar = ({ className = "w-9 h-9" }) => (
@@ -49,45 +46,43 @@ export default function TopNav({ onOpenUploadModal, onOpenMissionModal, onLogout
   ];
 
   return (
-    <header className="h-20 bg-[#051912]/85 backdrop-blur-xl border-b border-emerald-500/25 sticky top-0 z-20 px-6 lg:px-10 flex items-center justify-between shadow-lg shadow-emerald-950/30">
+    <header className="h-20 bg-[#061c14]/90 backdrop-blur-2xl border-b border-emerald-500/30 sticky top-0 z-40 px-6 lg:px-10 flex items-center justify-between shadow-xl shadow-emerald-950/40 select-none">
       
-      {/* ADVENTURER RANK & LEVEL BADGE */}
+      {/* LEFT: SLEEK RANK CREST & XP PROGRESS CARD */}
       <div className="flex items-center gap-4">
-        <div className="flex items-center gap-3 bg-gradient-to-r from-[#0d3b2a] via-[#09291c] to-[#04160d] text-white border border-emerald-400/50 px-4 py-2 rounded-2xl shadow-[0_0_18px_rgba(16,185,129,0.2)] relative overflow-hidden group cursor-pointer hover:border-emerald-300 transition-all">
+        <div className="bg-[#04160d]/90 border border-emerald-500/30 p-2 pl-3 pr-5 rounded-2xl flex items-center gap-3.5 backdrop-blur-md shadow-md hover:border-emerald-400/50 transition-all">
           
-          {/* Glowing Shimmer Overlay */}
-          <div className="absolute top-0 right-0 w-16 h-16 bg-amber-400/10 rounded-full blur-md pointer-events-none group-hover:bg-amber-400/20 transition-all" />
-
-          {/* Level Crest Badge */}
-          <div className="relative flex-shrink-0">
-            <div className="w-10 h-10 rounded-2xl bg-[#051912] border-2 border-emerald-400/80 shadow-[0_0_12px_rgba(16,185,129,0.3)] flex flex-col items-center justify-center text-center group-hover:scale-105 group-hover:border-amber-400 transition-all">
-              <span className="text-[8px] font-black text-amber-400 uppercase leading-none tracking-tight">LVL</span>
-              <span className="text-sm font-black text-white leading-none font-heading">12</span>
+          {/* Level Badge */}
+          <div className="relative">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 via-teal-400 to-amber-400 p-0.5 shadow-md flex items-center justify-center">
+              <div className="w-full h-full bg-[#051912] rounded-[10px] flex flex-col items-center justify-center">
+                <span className="text-[7px] font-black text-amber-400 uppercase tracking-tight leading-none">LVL</span>
+                <span className="text-sm font-black text-white font-heading leading-none">12</span>
+              </div>
             </div>
-            <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-amber-400 rounded-full border-2 border-[#051912] flex items-center justify-center text-[7px] font-black text-slate-950 shadow-md">
+            <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-amber-400 rounded-full border-2 border-[#051912] flex items-center justify-center text-[7px] font-black text-slate-950">
               ★
             </span>
           </div>
 
-
-          {/* Level Info & Live Progress Meter */}
+          {/* Rank Title & XP Meter */}
           <div className="flex flex-col">
-            <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-1.5">
-                <Crown className="w-3.5 h-3.5 text-amber-400 fill-amber-400/20" />
+                <Crown className="w-3.5 h-3.5 text-amber-400" />
                 <span className="text-xs font-black text-white font-heading tracking-tight">
                   B-Rank Guardian
                 </span>
               </div>
-              <span className="text-[10px] font-black text-emerald-300/90 font-mono">
+              <span className="text-[10px] font-black text-emerald-400/90 font-mono">
                 3,450 / 5,000 XP
               </span>
             </div>
 
-            {/* Micro XP Progress Bar */}
-            <div className="w-36 sm:w-44 h-2 bg-[#04160d] rounded-full overflow-hidden p-0.5 border border-emerald-500/30 mt-1">
+            {/* Smooth Progress Bar */}
+            <div className="w-40 sm:w-52 h-1.5 bg-[#082419] rounded-full overflow-hidden mt-1.5 border border-emerald-500/20">
               <div 
-                className="h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-amber-400 rounded-full shadow-[0_0_10px_#34d399] transition-all duration-1000 w-[69%]"
+                className="h-full bg-gradient-to-r from-emerald-400 via-teal-300 to-amber-300 rounded-full shadow-[0_0_10px_#34d399] transition-all duration-700 w-[69%]"
               />
             </div>
           </div>
@@ -95,43 +90,43 @@ export default function TopNav({ onOpenUploadModal, onOpenMissionModal, onLogout
         </div>
       </div>
 
-
-      {/* RIGHT SIDE STATS & USER PROFILE */}
+      {/* RIGHT: PROFESSIONAL UNIFIED STATS & PROFILE BAR */}
       <div className="flex items-center gap-3 sm:gap-4">
 
-        {/* QUICK XP STAT */}
-        <div className="hidden sm:flex items-center gap-2 bg-[#092218]/90 border border-emerald-500/30 px-3.5 py-2 rounded-2xl shadow-sm">
-          <div className="w-6 h-6 rounded-lg bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-slate-950 font-black text-xs shadow-sm">
-            <Zap className="w-3.5 h-3.5 fill-slate-950" />
+        {/* UNIFIED RESOURCE SEGMENTED PILL */}
+        <div className="hidden sm:flex items-center bg-[#04160d]/90 border border-emerald-500/30 p-1.5 rounded-2xl backdrop-blur-md shadow-md divide-x divide-emerald-500/20">
+          
+          {/* XP Pill */}
+          <div className="flex items-center gap-2 px-3 py-1">
+            <div className="w-6 h-6 rounded-lg bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center text-emerald-400">
+              <Zap className="w-3.5 h-3.5 fill-emerald-400" />
+            </div>
+            <div className="text-xs font-black text-white font-mono">3,450 XP</div>
           </div>
-          <div>
-            <div className="text-[9px] uppercase font-black tracking-wider text-emerald-400">Adventure XP</div>
-            <div className="text-xs font-black text-white leading-none font-heading">3,450 XP</div>
+
+          {/* Coins Pill */}
+          <div className="flex items-center gap-2 px-3 py-1">
+            <div className="w-6 h-6 rounded-lg bg-amber-500/20 border border-amber-400/30 flex items-center justify-center text-amber-400">
+              <Coins className="w-3.5 h-3.5 fill-amber-400" />
+            </div>
+            <div className="text-xs font-black text-amber-300 font-mono">1,280 🪙</div>
           </div>
+
+          {/* Streak Pill */}
+          <div className="flex items-center gap-2 px-3 py-1">
+            <div className="w-6 h-6 rounded-lg bg-orange-500/20 border border-orange-400/30 flex items-center justify-center text-orange-400">
+              <Flame className="w-3.5 h-3.5 fill-orange-400 animate-pulse" />
+            </div>
+            <div className="text-xs font-black text-orange-300 font-heading">7D Streak</div>
+          </div>
+
         </div>
 
-        {/* ECO COINS / LOOT STAT */}
-        <div className="hidden sm:flex items-center gap-2 bg-[#1c1809]/90 border border-amber-500/35 px-3.5 py-2 rounded-2xl shadow-sm">
-          <div className="w-6 h-6 rounded-lg bg-gradient-to-tr from-amber-500 to-yellow-300 flex items-center justify-center text-slate-950 font-black text-xs shadow-sm">
-            <Coins className="w-3.5 h-3.5 fill-slate-950" />
-          </div>
-          <div>
-            <div className="text-[9px] uppercase font-black tracking-wider text-amber-400">Loot Coins</div>
-            <div className="text-xs font-black text-amber-300 leading-none font-heading">1,280 🪙</div>
-          </div>
-        </div>
-
-        {/* FIRE STREAK RUNE */}
-        <div className="flex items-center gap-2 bg-gradient-to-r from-orange-950/80 to-amber-950/80 border border-orange-500/40 px-3 py-2 rounded-2xl shadow-sm">
-          <Flame className="w-5 h-5 text-amber-400 fill-amber-400 animate-pulse" />
-          <span className="text-xs font-black text-amber-300 font-heading">7D Streak</span>
-        </div>
-
-        {/* USER PROFILE CARD WITH DROPDOWN */}
+        {/* USER PROFILE CARD */}
         <div className="relative">
           <button
             onClick={() => setShowProfileMenu(!showProfileMenu)}
-            className="flex items-center gap-2.5 p-1.5 pl-2 pr-3 rounded-2xl bg-[#092218]/90 border border-emerald-500/30 hover:border-emerald-400/60 transition-all cursor-pointer group select-none"
+            className="flex items-center gap-2.5 p-1.5 pl-2 pr-3 rounded-2xl bg-[#04160d]/90 border border-emerald-500/30 hover:border-emerald-400/60 transition-all cursor-pointer group shadow-md"
           >
             <div className="relative">
               <CartoonBoyAvatar className="w-9 h-9" />
@@ -146,10 +141,10 @@ export default function TopNav({ onOpenUploadModal, onOpenMissionModal, onLogout
             </div>
           </button>
 
-          {/* PROFILE DROPDOWN MENU */}
+          {/* PROFILE DROPDOWN */}
           {showProfileMenu && (
-            <div className="absolute right-0 mt-3 w-64 bg-[#08241a] rounded-3xl border border-emerald-500/40 shadow-2xl p-3 z-50 animate-in fade-in slide-in-from-top-2 duration-200 text-slate-100">
-              <div className="p-3 rounded-2xl bg-gradient-to-r from-emerald-950 via-teal-950 to-emerald-900 border border-emerald-500/30 mb-2">
+            <div className="absolute right-0 mt-3 w-64 bg-[#062016] rounded-3xl border border-emerald-500/40 shadow-2xl p-3 z-50 animate-in fade-in slide-in-from-top-2 duration-200 text-slate-100">
+              <div className="p-3 rounded-2xl bg-[#04160d] border border-emerald-500/30 mb-2">
                 <div className="flex items-center gap-3">
                   <CartoonBoyAvatar className="w-10 h-10" />
                   <div>
@@ -158,7 +153,6 @@ export default function TopNav({ onOpenUploadModal, onOpenMissionModal, onLogout
                   </div>
                 </div>
               </div>
-
 
               <div className="space-y-1">
                 <button
@@ -184,18 +178,18 @@ export default function TopNav({ onOpenUploadModal, onOpenMissionModal, onLogout
           )}
         </div>
 
-        {/* NOTIFICATIONS DROPDOWN */}
+        {/* NOTIFICATIONS BELL */}
         <div className="relative">
           <button
             onClick={() => setShowNotifications(!showNotifications)}
-            className="w-10 h-10 rounded-2xl bg-[#092218] hover:bg-emerald-900/70 border border-emerald-500/30 flex items-center justify-center text-emerald-300 hover:text-white transition-colors relative cursor-pointer"
+            className="w-10 h-10 rounded-2xl bg-[#04160d]/90 hover:bg-emerald-900/60 border border-emerald-500/30 flex items-center justify-center text-emerald-300 hover:text-white transition-colors relative cursor-pointer shadow-md"
           >
             <Bell className="w-4 h-4" />
-            <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-amber-400 ring-2 ring-[#051912]" />
+            <span className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-amber-400 ring-2 ring-[#051912]" />
           </button>
 
           {showNotifications && (
-            <div className="absolute right-0 mt-3 w-80 sm:w-96 bg-[#08241a] rounded-3xl border border-emerald-500/40 shadow-2xl p-4 z-50 animate-in fade-in slide-in-from-top-2 duration-200 text-slate-100">
+            <div className="absolute right-0 mt-3 w-80 sm:w-96 bg-[#062016] rounded-3xl border border-emerald-500/40 shadow-2xl p-4 z-50 animate-in fade-in slide-in-from-top-2 duration-200 text-slate-100">
               <div className="flex items-center justify-between pb-3 border-b border-emerald-500/20 mb-3">
                 <h4 className="text-xs font-black text-white uppercase tracking-wider font-heading">Quest Dispatch</h4>
                 <span className="text-[10px] font-black text-amber-300 bg-amber-500/20 px-2.5 py-0.5 rounded-full border border-amber-400/40">2 New</span>
@@ -232,4 +226,3 @@ export default function TopNav({ onOpenUploadModal, onOpenMissionModal, onLogout
     </header>
   );
 }
-

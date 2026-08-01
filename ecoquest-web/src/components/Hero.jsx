@@ -41,9 +41,9 @@ export default function Hero({ onOpenGetStarted, onOpenDemo }) {
 
             {/* Main Headline */}
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-[1.1] tracking-tight font-heading mb-6">
-              Embark on Quests.{' '}
+              Play for Planet,{' '}
               <span className="block mt-1 bg-gradient-to-r from-emerald-300 via-teal-200 to-amber-300 bg-clip-text text-transparent">
-                Save the Ecosystem.
+                Adventure Meets Impact.
               </span>
             </h1>
 

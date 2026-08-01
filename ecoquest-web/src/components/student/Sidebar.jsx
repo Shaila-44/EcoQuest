@@ -16,10 +16,12 @@ import {
   Zap,
   Sparkles,
   ShieldCheck,
-  Compass
+  Compass,
+  GraduationCap,
+  ArrowRight
 } from 'lucide-react';
 
-export default function Sidebar({ activeTab, setActiveTab, onLogout, userStats }) {
+export default function Sidebar({ activeTab, setActiveTab, onLogout, onSwitchToEducator, userStats }) {
   const navItems = [
     { id: 'home', label: 'Command Center', icon: Home, badge: 'Active Hub', highlight: true },
     { id: 'island', label: 'Island Realm', icon: Palmtree, badge: 'Sanctuary', separate: true },
@@ -35,7 +37,7 @@ export default function Sidebar({ activeTab, setActiveTab, onLogout, userStats }
       
       {/* SIDEBAR HEADER & RPG EMBLEM LOGO */}
       <div>
-        <div className="p-6 border-b border-emerald-500/20 flex items-center justify-between">
+        <div className="p-6 border-b border-emerald-500/20 flex flex-col gap-3">
           <div className="flex items-center gap-3.5 cursor-pointer group" onClick={() => setActiveTab('home')}>
             <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-emerald-600 via-teal-500 to-amber-400 flex items-center justify-center text-slate-950 shadow-lg shadow-emerald-500/30 ring-1 ring-emerald-300/40 group-hover:scale-105 transition-transform">
               <Leaf className="w-6 h-6 text-slate-950 fill-emerald-100/40" />
@@ -49,6 +51,19 @@ export default function Sidebar({ activeTab, setActiveTab, onLogout, userStats }
               </span>
             </div>
           </div>
+
+          {onSwitchToEducator && (
+            <button
+              onClick={onSwitchToEducator}
+              className="w-full p-2.5 rounded-2xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-400/40 text-amber-300 transition-all text-xs font-black flex items-center justify-between cursor-pointer group shadow-sm mt-1"
+            >
+              <span className="flex items-center gap-2">
+                <GraduationCap className="w-4 h-4 text-amber-400" />
+                <span>Educator Portal</span>
+              </span>
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+            </button>
+          )}
         </div>
 
         {/* ADVENTURER CARD STATUS & RANK CREST */}
