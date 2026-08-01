@@ -1,9 +1,7 @@
 """Unit tests — VerificationService Decision Engine."""
 
-import pytest
 from app.pipeline.schemas import VerificationResult
 from app.services.verification_service import (
-    DecisionResult,
     VerificationDecision,
     VerificationService,
 )
@@ -56,7 +54,7 @@ def test_evaluate_stock_photo_flag_rejects():
 def test_low_trust_score_elevates_approval_threshold():
     service = VerificationService(base_approval_threshold=0.85, low_trust_approval_threshold=0.92)
     v = VerificationResult(is_verified=True, confidence_score=0.88)
-    
+
     # Normal trust score (100.0) approves at 0.88
     res_normal = service.evaluate_result(v, user_trust_score=100.0)
     assert res_normal.decision == VerificationDecision.APPROVED

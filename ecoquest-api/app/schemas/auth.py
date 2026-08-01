@@ -2,7 +2,7 @@ from __future__ import annotations
 
 """EcoQuest API — Auth Schemas."""
 
-from typing import Optional
+
 from pydantic import BaseModel, EmailStr
 
 
@@ -21,8 +21,8 @@ class RegisterRequest(BaseModel):
     first_name: str
     last_name: str
     role: str = "student"
-    school_code: Optional[str] = None
-    grade: Optional[str] = None
+    school_code: str | None = None
+    grade: str | None = None
 
 
 

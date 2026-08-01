@@ -11,6 +11,8 @@ import {
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
+import { loginUser } from '../../services/api';
+
 export default function StudentLogin({ onLoginSuccess }) {
   const [studentId, setStudentId] = useState('');
   const [schoolId, setSchoolId] = useState('');
@@ -20,25 +22,26 @@ export default function StudentLogin({ onLoginSuccess }) {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
+    await loginUser(studentId || 'student@ecoquest.org', password, 'student');
+
+    setLoading(false);
+    setSuccess(true);
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 }
+    });
+
     setTimeout(() => {
-      setLoading(false);
-      setSuccess(true);
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 }
-      });
-      setTimeout(() => {
-        window.location.hash = '/home';
-        if (onLoginSuccess) {
-          onLoginSuccess('student');
-        }
-      }, 400);
-    }, 800);
+      window.location.hash = '/home';
+      if (onLoginSuccess) {
+        onLoginSuccess('student');
+      }
+    }, 400);
   };
 
   return (

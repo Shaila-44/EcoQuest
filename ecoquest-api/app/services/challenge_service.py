@@ -7,7 +7,6 @@ Handles challenge CRUD and daily challenge selection.
 
 import logging
 import uuid
-from typing import Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
 

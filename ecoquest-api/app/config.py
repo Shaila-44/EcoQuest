@@ -6,7 +6,7 @@ Uses Pydantic Settings to parse environment variables with type safety
 and validation. All config is centralized here.
 """
 
-from typing import Optional
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -28,10 +28,10 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str = "RS256"
     JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 15
     JWT_REFRESH_TOKEN_EXPIRE_DAYS: int = 7
-    RSA_PRIVATE_KEY: Optional[str] = None
-    RSA_PUBLIC_KEY: Optional[str] = None
-    RSA_PRIVATE_KEY_PATH: Optional[str] = None
-    RSA_PUBLIC_KEY_PATH: Optional[str] = None
+    RSA_PRIVATE_KEY: str | None = None
+    RSA_PUBLIC_KEY: str | None = None
+    RSA_PRIVATE_KEY_PATH: str | None = None
+    RSA_PUBLIC_KEY_PATH: str | None = None
     COOKIE_SECURE: bool = False
     COOKIE_SAMESITE: str = "lax"
 

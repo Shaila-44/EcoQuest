@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from sqlalchemy import DateTime, ForeignKey, String, func
 from sqlalchemy.dialects.postgresql import UUID
@@ -27,10 +27,10 @@ class DeviceApproval(Base):
     )
     device_id: Mapped[str] = mapped_column(String(100), nullable=False)
     device_name: Mapped[str] = mapped_column(String(100), nullable=False)
-    ip_address: Mapped[Optional[str]] = mapped_column(String(45), nullable=True)
+    ip_address: Mapped[str | None] = mapped_column(String(45), nullable=True)
     status: Mapped[str] = mapped_column(String(20), nullable=False, default="PENDING", index=True)  # PENDING, APPROVED, REJECTED
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
 
     # Relationships
-    user: Mapped["User"] = relationship("User", back_populates="device_approvals")
+    user: Mapped[User] = relationship("User", back_populates="device_approvals")

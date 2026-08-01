@@ -12,11 +12,11 @@ Follows clean architecture:
 - NO XP or gamification calculations
 """
 
-from dataclasses import dataclass
-from enum import Enum
 import json
 import logging
-from typing import Optional
+from dataclasses import dataclass
+from enum import Enum
+
 from pydantic import ValidationError
 
 from app.pipeline.schemas import GeminiVisionResponseSchema, VerificationResult
@@ -42,7 +42,7 @@ class DecisionResult:
     activity_detected: str
     environmental_impact: str
     feedback: str
-    rejection_reason: Optional[str]
+    rejection_reason: str | None
     is_stock_photo: bool = False
     is_screen_photo: bool = False
     is_blurry: bool = False

@@ -143,7 +143,7 @@ class GeminiVerifier(BaseVisionVerifier):
                     is_blurry=validated_data.authenticity_flags.is_blurry,
                 )
 
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 logger.warning("Gemini API call timed out after %.1fs (Attempt %d)", self.request_timeout, attempt + 1)
                 if attempt == self.max_retries - 1:
                     return VerificationResult(

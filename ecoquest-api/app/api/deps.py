@@ -6,7 +6,6 @@ FastAPI dependency injection for database sessions and current user.
 """
 
 import uuid
-from typing import Optional
 
 from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -24,11 +23,11 @@ security_scheme = HTTPBearer(auto_error=False)
 
 async def get_current_user(
     request: Request,
-    credentials: Optional[HTTPAuthorizationCredentials] = Depends(security_scheme),
+    credentials: HTTPAuthorizationCredentials | None = Depends(security_scheme),
     db: AsyncSession = Depends(get_db),
 ) -> User:
     """Dependency that extracts and validates the current user from HttpOnly Cookie or Bearer header."""
-    token: Optional[str] = None
+    token: str | None = None
 
     # 1. Check HttpOnly cookie
     token = request.cookies.get("access_token")

@@ -4,14 +4,13 @@ Creates and configures the FastAPI application with all middleware,
 exception handlers, rate limiting, and route registrations.
 """
 
-from contextlib import asynccontextmanager
 from collections.abc import AsyncGenerator
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
-from slowapi.util import get_remote_address
 
 from app.api.v1.auth import router as auth_router
 from app.api.v1.router import api_v1_router

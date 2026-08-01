@@ -7,12 +7,11 @@ JWT creation/verification using RS256 and Argon2id password hashing.
 
 import os
 import uuid
-from datetime import datetime, timedelta, timezone
-from typing import Optional
+from datetime import UTC, datetime, timedelta
 
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
-from jose import JWTError, jwt
+from jose import jwt
 from passlib.context import CryptContext
 
 from app.config import settings
@@ -20,8 +19,8 @@ from app.config import settings
 # Argon2id password hashing as primary, bcrypt for legacy compatibility
 pwd_context = CryptContext(schemes=["argon2", "bcrypt"], deprecated="auto")
 
-_cached_private_key_pem: Optional[str] = None
-_cached_public_key_pem: Optional[str] = None
+_cached_private_key_pem: str | None = None
+_cached_public_key_pem: str | None = None
 
 
 def get_rsa_keys() -> tuple[str, str]:
@@ -40,9 +39,9 @@ def get_rsa_keys() -> tuple[str, str]:
     # 2. Check key file paths
     if settings.RSA_PRIVATE_KEY_PATH and settings.RSA_PUBLIC_KEY_PATH:
         if os.path.exists(settings.RSA_PRIVATE_KEY_PATH) and os.path.exists(settings.RSA_PUBLIC_KEY_PATH):
-            with open(settings.RSA_PRIVATE_KEY_PATH, "r", encoding="utf-8") as f:
+            with open(settings.RSA_PRIVATE_KEY_PATH, encoding="utf-8") as f:
                 _cached_private_key_pem = f.read()
-            with open(settings.RSA_PUBLIC_KEY_PATH, "r", encoding="utf-8") as f:
+            with open(settings.RSA_PUBLIC_KEY_PATH, encoding="utf-8") as f:
                 _cached_public_key_pem = f.read()
             return _cached_private_key_pem, _cached_public_key_pem
 
@@ -74,14 +73,14 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 def create_access_token(
     data: dict,
-    expires_delta: Optional[timedelta] = None,
+    expires_delta: timedelta | None = None,
     role: str = "USER",
 ) -> str:
     """Create an RS256 JWT access token with required claims (sub, role, iat, exp, jti)."""
     private_key_pem, _ = get_rsa_keys()
     to_encode = data.copy()
 
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     expire = now + (
         expires_delta or timedelta(minutes=settings.JWT_ACCESS_TOKEN_EXPIRE_MINUTES)
     )
@@ -105,14 +104,14 @@ def create_access_token(
 
 def create_refresh_token(
     data: dict,
-    expires_delta: Optional[timedelta] = None,
+    expires_delta: timedelta | None = None,
     role: str = "USER",
 ) -> str:
     """Create an RS256 JWT refresh token."""
     private_key_pem, _ = get_rsa_keys()
     to_encode = data.copy()
 
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     expire = now + (
         expires_delta or timedelta(days=settings.JWT_REFRESH_TOKEN_EXPIRE_DAYS)
     )

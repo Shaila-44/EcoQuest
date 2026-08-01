@@ -6,13 +6,13 @@ Collects all v1 route modules into a single router.
 from fastapi import APIRouter
 
 from app.api.v1.auth import router as auth_router
-from app.api.v1.users import router as users_router
 from app.api.v1.challenges import router as challenges_router
-from app.api.v1.submissions import router as submissions_router
-from app.api.v1.reviews import router as reviews_router
-from app.api.v1.leaderboard import router as leaderboard_router
 from app.api.v1.gamification import router as gamification_router
 from app.api.v1.health import router as health_router
+from app.api.v1.leaderboard import router as leaderboard_router
+from app.api.v1.reviews import router as reviews_router
+from app.api.v1.submissions import router as submissions_router
+from app.api.v1.users import router as users_router
 
 api_v1_router = APIRouter()
 

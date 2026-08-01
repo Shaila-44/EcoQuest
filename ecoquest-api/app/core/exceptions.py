@@ -5,7 +5,6 @@ from __future__ import annotations
 Structured exception hierarchy for consistent error handling.
 """
 
-from typing import Optional
 
 
 class EcoQuestError(Exception):
@@ -16,7 +15,7 @@ class EcoQuestError(Exception):
         message: str,
         code: str,
         status_code: int = 500,
-        details: Optional[dict] = None,
+        details: dict | None = None,
     ):
         self.message = message
         self.code = code

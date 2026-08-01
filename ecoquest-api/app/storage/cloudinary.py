@@ -4,10 +4,11 @@ from __future__ import annotations
 
 import logging
 import time
-from typing import Optional
+
 import cloudinary
 import cloudinary.uploader
 import cloudinary.utils
+
 from app.storage.base import StorageBackend
 
 logger = logging.getLogger(__name__)
@@ -32,7 +33,7 @@ class CloudinaryStorage(StorageBackend):
         self,
         folder: str,
         public_id: str,
-        allowed_formats: Optional[list[str]] = None,
+        allowed_formats: list[str] | None = None,
         max_bytes: int = 10485760,
     ) -> dict:
 

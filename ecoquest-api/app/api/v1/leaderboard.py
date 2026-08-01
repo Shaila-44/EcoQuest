@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import uuid
 from typing import Optional
+
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -12,7 +13,6 @@ from app.db.session import get_db
 from app.models.user import User
 from app.schemas.leaderboard import LeaderboardRead
 from app.services.leaderboard_service import LeaderboardService
-
 
 router = APIRouter()
 
@@ -44,7 +44,7 @@ async def get_school_leaderboard(
 async def get_my_rank(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-) -> Optional[LeaderboardRead]:
+) -> LeaderboardRead | None:
     """Get the current user's rank."""
     service = LeaderboardService(db)
     entry = await service.get_user_rank(current_user.user_id)

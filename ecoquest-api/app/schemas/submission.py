@@ -4,10 +4,8 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime
-from typing import Optional
 
 from pydantic import BaseModel
-
 
 from app.models.enums import SubmissionStatus
 
@@ -17,10 +15,10 @@ class SubmissionCreate(BaseModel):
 
     challenge_id: uuid.UUID
     title: str
-    description: Optional[str] = None
+    description: str | None = None
     image_url: str
-    latitude: Optional[float] = None
-    longitude: Optional[float] = None
+    latitude: float | None = None
+    longitude: float | None = None
 
 
 class SubmissionRead(BaseModel):
@@ -30,10 +28,10 @@ class SubmissionRead(BaseModel):
     user_id: uuid.UUID
     challenge_id: uuid.UUID
     title: str
-    description: Optional[str] = None
+    description: str | None = None
     image_url: str
-    latitude: Optional[float] = None
-    longitude: Optional[float] = None
+    latitude: float | None = None
+    longitude: float | None = None
     status: SubmissionStatus
     points_earned: int
     submitted_at: datetime

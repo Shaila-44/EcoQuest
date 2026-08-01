@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime
-from typing import Optional
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -29,7 +29,7 @@ class ChallengeRepository(BaseRepository[Challenge]):
         result = await self.session.execute(stmt)
         return list(result.scalars().all())
 
-    async def get_daily_challenge(self, school_id: uuid.UUID) -> Optional[Challenge]:
+    async def get_daily_challenge(self, school_id: uuid.UUID) -> Challenge | None:
 
         """Fetch the daily challenge for a school (assuming 'daily' category)."""
         now = datetime.now()

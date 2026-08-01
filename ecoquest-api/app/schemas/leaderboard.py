@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime
-from typing import Optional
 
 from pydantic import BaseModel
 
@@ -14,8 +13,8 @@ class LeaderboardRead(BaseModel):
 
     user_id: uuid.UUID
     total_points: int
-    global_rank: Optional[int] = None
-    category_rank: Optional[int] = None
+    global_rank: int | None = None
+    category_rank: int | None = None
     updated_at: datetime
 
 

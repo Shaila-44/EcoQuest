@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any
 
 from pydantic import BaseModel, EmailStr, model_validator
 
@@ -29,11 +29,11 @@ class UserRead(BaseModel):
     first_name: str
     last_name: str
     role: str
-    school_id: Optional[uuid.UUID] = None
-    avatar_url: Optional[str] = None
-    grade: Optional[str] = None
+    school_id: uuid.UUID | None = None
+    avatar_url: str | None = None
+    grade: str | None = None
     is_active: bool
-    last_login_at: Optional[datetime] = None
+    last_login_at: datetime | None = None
     created_at: datetime
 
     model_config = {"from_attributes": True}
@@ -71,8 +71,8 @@ class UserRead(BaseModel):
 class UserUpdate(BaseModel):
     """Schema for updating a user profile."""
 
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
-    avatar_url: Optional[str] = None
-    grade: Optional[str] = None
+    first_name: str | None = None
+    last_name: str | None = None
+    avatar_url: str | None = None
+    grade: str | None = None
 

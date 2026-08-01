@@ -1,6 +1,7 @@
 """EcoQuest API — User Routes."""
 
 import uuid
+
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -9,7 +10,6 @@ from app.db.session import get_db
 from app.models.user import User
 from app.schemas.user import UserRead, UserUpdate
 from app.services.user_service import UserService
-
 
 router = APIRouter()
 

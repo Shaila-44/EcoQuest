@@ -1,10 +1,10 @@
 """Unit tests — Performance & Scalability (TTL Caching & Async Offloading)."""
 
-import asyncio
-import pytest
-import time
 from unittest.mock import AsyncMock, MagicMock
-from app.services.leaderboard_service import LeaderboardService, _LEADERBOARD_CACHE
+
+import pytest
+
+from app.services.leaderboard_service import _LEADERBOARD_CACHE, LeaderboardService
 
 
 @pytest.mark.asyncio

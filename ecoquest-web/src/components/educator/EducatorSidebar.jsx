@@ -52,20 +52,6 @@ export default function EducatorSidebar({ activeTab, setActiveTab, onLogout, onS
           </div>
         </div>
 
-        {/* SWITCH TO STUDENT VIEW BUTTON */}
-        <div className="px-1">
-          <button
-            onClick={onSwitchToStudent}
-            className="w-full p-2.5 rounded-2xl bg-emerald-950/80 hover:bg-emerald-900/90 border border-emerald-500/30 text-emerald-300 hover:text-white transition-all text-xs font-black flex items-center justify-between cursor-pointer group shadow-sm"
-          >
-            <span className="flex items-center gap-2">
-              <Users className="w-4 h-4 text-emerald-400" />
-              <span>Student View</span>
-            </span>
-            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-          </button>
-        </div>
-
         {/* MAIN NAVIGATION LIST */}
         <nav className="space-y-1.5 pt-2">
           <div className="text-[10px] font-black text-emerald-400/70 uppercase tracking-widest px-3 mb-2">

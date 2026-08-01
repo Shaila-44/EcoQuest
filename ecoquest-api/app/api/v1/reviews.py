@@ -1,10 +1,9 @@
 """EcoQuest API — Review Routes."""
 
 import uuid
+
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from app.api.deps import get_current_user
 
 from app.core.permissions import require_role
 from app.db.session import get_db

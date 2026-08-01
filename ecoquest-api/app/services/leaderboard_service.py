@@ -2,17 +2,19 @@ from __future__ import annotations
 
 """EcoQuest API — Leaderboard Service.
 
-Handles leaderboard queries and score aggregation updates.
+Handles leaderboard queries and score aggregation updates with TTL caching.
 """
 
+import time
 import uuid
-from typing import Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.leaderboard import LeaderboardEntry
+from app.models.leaderboard import Leaderboard
 from app.repositories.leaderboard_repo import LeaderboardRepository
 
+_LEADERBOARD_CACHE: dict[str, tuple[float, list[Leaderboard]]] = {}
+_CACHE_TTL_SECONDS = 10.0
 
 
 class LeaderboardService:
@@ -25,15 +27,24 @@ class LeaderboardService:
     async def get_overall_leaderboard(
         self,
         limit: int = 50,
-    ) -> list[LeaderboardEntry]:
-        """Fetch the overall top student leaderboard."""
-        return await self.leaderboard_repo.get_global(limit)
+    ) -> list[Leaderboard]:
+        """Fetch the overall top student leaderboard with TTL caching."""
+        cache_key = f"global_{limit}"
+        now = time.time()
+        if cache_key in _LEADERBOARD_CACHE:
+            ts, cached_data = _LEADERBOARD_CACHE[cache_key]
+            if now - ts < _CACHE_TTL_SECONDS:
+                return cached_data
+
+        ranks = await self.leaderboard_repo.list_top_ranks(limit)
+        _LEADERBOARD_CACHE[cache_key] = (now, ranks)
+        return ranks
 
     async def get_school_leaderboard(
         self,
         school_id: uuid.UUID,
         limit: int = 50,
-    ) -> list[LeaderboardEntry]:
+    ) -> list[Leaderboard]:
         """Fetch the leaderboard for a specific school."""
         return await self.leaderboard_repo.get_by_school(
             school_id,
@@ -43,7 +54,7 @@ class LeaderboardService:
     async def get_user_rank(
         self,
         user_id: uuid.UUID,
-    ) -> LeaderboardEntry | None:
+    ) -> Leaderboard | None:
         """Get the leaderboard entry for a user."""
         return await self.leaderboard_repo.get_rank_for_user(user_id)
 
@@ -53,7 +64,8 @@ class LeaderboardService:
         school_id: uuid.UUID,
         points_awarded: int,
     ) -> None:
-        """Increment a user's leaderboard points."""
+        """Increment a user's leaderboard points and invalidate cache."""
+        _LEADERBOARD_CACHE.clear()
         entry = await self.leaderboard_repo.get_rank_for_user(user_id)
 
         if entry:
@@ -63,7 +75,7 @@ class LeaderboardService:
                 {"total_points": entry.total_points},
             )
         else:
-            new_entry = LeaderboardEntry(
+            new_entry = Leaderboard(
                 user_id=user_id,
                 school_id=school_id,
                 total_points=points_awarded,

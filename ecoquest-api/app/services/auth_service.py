@@ -6,11 +6,10 @@ Handles authentication business logic: registration, login,
 token creation, token refresh, logout, session management,
 device approvals, and password changes.
 """
-import logging
-from typing import Optional
 import hashlib
+import logging
 import uuid
-from typing import Optional
+
 from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -91,7 +90,7 @@ class AuthService:
         data: LoginRequest,
         device_id: str = "default-device",
         device_name: str = "Browser Session",
-        ip_address: Optional[str] = None,
+        ip_address: str | None = None,
     ) -> LoginResponseEnvelope:
         """Authenticate user credentials, enforce one-device policy, and manage sessions."""
         email_clean = data.email.lower().strip()
@@ -210,7 +209,7 @@ class AuthService:
             token_type="bearer",
         )
 
-    async def logout(self, user_id: uuid.UUID, refresh_token_str: Optional[str] = None) -> None:
+    async def logout(self, user_id: uuid.UUID, refresh_token_str: str | None = None) -> None:
         """Revoke user refresh token session in PostgreSQL."""
         if refresh_token_str:
             db_session = await self.session_repo.get_session_by_token_hash(refresh_token_str)

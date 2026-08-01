@@ -1,5 +1,6 @@
 import enum
 
+
 class RoleName(str, enum.Enum):
     STUDENT = "Student"
     TEACHER = "Teacher"

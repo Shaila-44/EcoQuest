@@ -150,14 +150,6 @@ export default function EducatorTopNav({ onOpenCreateQuest, onSwitchToStudent, o
 
               <div className="space-y-1">
                 <button
-                  onClick={onSwitchToStudent}
-                  className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-emerald-200 hover:bg-emerald-900/60 hover:text-white transition-colors cursor-pointer"
-                >
-                  <Users className="w-4 h-4 text-emerald-400" />
-                  <span>Switch to Student View</span>
-                </button>
-
-                <button
                   onClick={() => {
                     setShowProfileMenu(false);
                     onLogout();

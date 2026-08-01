@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import uuid
-from typing import Optional
 
 from fastapi import APIRouter, Depends, Header, Request, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -10,7 +9,6 @@ from app.api.deps import get_current_user
 from app.config import settings
 from app.core.limiter import limiter
 from app.db.session import get_db
-
 from app.models.user import User
 from app.schemas.auth import LoginRequest, RefreshRequest, RegisterRequest, TokenResponse
 from app.schemas.common import MessageResponse
@@ -55,7 +53,7 @@ async def register(
     service = AuthService(db)
     user = await service.register(data)
 
-    
+
     # Generate access token & set cookie
     login_data = LoginRequest(email=data.email, password=data.password)
     login_env = await service.login(login_data)
@@ -72,8 +70,8 @@ async def login(
     request: Request,
     data: LoginRequest,
     response: Response,
-    x_device_id: Optional[str] = Header(default="default-device", alias="X-Device-ID"),
-    x_device_name: Optional[str] = Header(default="Browser Session", alias="X-Device-Name"),
+    x_device_id: str | None = Header(default="default-device", alias="X-Device-ID"),
+    x_device_name: str | None = Header(default="Browser Session", alias="X-Device-Name"),
     db: AsyncSession = Depends(get_db),
 ) -> LoginResponseEnvelope:
     """Authenticate credentials, enforce one-device session policy, set HttpOnly cookie on success."""
@@ -92,9 +90,9 @@ async def login(
 
 @router.post("/refresh", response_model=TokenResponse)
 async def refresh_token(
-    data: Optional[RefreshRequest] = None,
+    data: RefreshRequest | None = None,
     response: Response = None,
-    x_refresh_token: Optional[str] = Header(default=None, alias="X-Refresh-Token"),
+    x_refresh_token: str | None = Header(default=None, alias="X-Refresh-Token"),
     db: AsyncSession = Depends(get_db),
 ) -> TokenResponse:
     """Exchange a refresh token for a new access token using Refresh Token Rotation."""
@@ -115,8 +113,8 @@ async def refresh_token(
 @router.post("/logout", response_model=MessageResponse)
 async def logout(
     response: Response,
-    data: Optional[RefreshRequest] = None,
-    current_user: Optional[User] = Depends(get_current_user),
+    data: RefreshRequest | None = None,
+    current_user: User | None = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> MessageResponse:
     """Clear HttpOnly authentication cookie and revoke DB session."""
