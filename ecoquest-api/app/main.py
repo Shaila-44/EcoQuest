@@ -13,8 +13,9 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 
-from app.config import settings
+from app.api.v1.auth import router as auth_router
 from app.api.v1.router import api_v1_router
+from app.config import settings
 from app.core.exception_handlers import register_exception_handlers
 from app.core.middleware import RequestIdMiddleware
 
@@ -56,8 +57,10 @@ def create_app() -> FastAPI:
 
     # --- Routers ---
     application.include_router(api_v1_router, prefix="/api/v1")
+    application.include_router(auth_router, prefix="/auth", tags=["Auth"])
 
     return application
+
 
 
 app = create_app()

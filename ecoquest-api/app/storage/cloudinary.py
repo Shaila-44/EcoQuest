@@ -1,6 +1,9 @@
+from __future__ import annotations
+
 """EcoQuest API — Cloudinary Storage Implementation."""
 
 import time
+from typing import Optional
 import cloudinary
 import cloudinary.uploader
 import cloudinary.utils
@@ -26,9 +29,10 @@ class CloudinaryStorage(StorageBackend):
         self,
         folder: str,
         public_id: str,
-        allowed_formats: list[str] | None = None,
+        allowed_formats: Optional[list[str]] = None,
         max_bytes: int = 10485760,
     ) -> dict:
+
         """Generate a Cloudinary signed upload URL parameters."""
         timestamp = int(time.time())
         params_to_sign = {

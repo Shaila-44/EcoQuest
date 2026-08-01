@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """EcoQuest API — Production Gemini Vision Client.
 
 Connects strictly to Google Gemini Vision API to verify eco-activity image submissions.
@@ -11,8 +13,10 @@ import abc
 import asyncio
 import json
 import logging
+from typing import Optional
 
 import google.generativeai as genai
+
 from google.generativeai.types import GenerationConfig
 
 from app.pipeline.prompts import SYSTEM_AUDITOR_INSTRUCTION, build_verification_prompt

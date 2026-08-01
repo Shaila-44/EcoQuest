@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """EcoQuest API — Production AI Pipeline Orchestrator.
 
 Coordinates image acquisition, format/size validation, pre-processing,
@@ -6,6 +8,7 @@ Gemini Vision client execution, and VerificationService decision evaluation.
 
 import io
 import logging
+from typing import Optional
 import httpx
 from PIL import Image
 
@@ -32,8 +35,8 @@ class PipelineOrchestrator:
 
     def __init__(
         self,
-        verifier: BaseVisionVerifier | None = None,
-        verification_service: VerificationService | None = None,
+        verifier: Optional[BaseVisionVerifier] = None,
+        verification_service: Optional[VerificationService] = None,
     ):
         self.verifier = verifier or GeminiVerifier(api_key="")
         self.verification_service = verification_service or VerificationService()
@@ -43,10 +46,11 @@ class PipelineOrchestrator:
         image_url: str,
         challenge_title: str,
         challenge_description: str,
-        verification_prompt: str | None = None,
-        user_description: str | None = None,
+        verification_prompt: Optional[str] = None,
+        user_description: Optional[str] = None,
         user_trust_score: float = 100.0,
     ) -> PipelineResult:
+
         """Execute the AI verification pipeline with production-grade error resilience."""
         logger.info(
             "Executing AI Pipeline for challenge '%s' (url=%s, trust_score=%.1f)",

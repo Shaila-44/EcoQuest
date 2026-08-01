@@ -1,7 +1,11 @@
+from __future__ import annotations
+
 """EcoQuest API — Prompt Templates & Builder for Gemini Vision.
 
 Provides system instructions, XML tag boundary framing, and dynamic prompt assembly.
 """
+
+from typing import Optional
 
 SYSTEM_AUDITOR_INSTRUCTION = """
 You are a strict, impartial environmental activity auditor for EcoQuest, an AI-powered education platform.
@@ -21,9 +25,10 @@ CRITICAL INSTRUCTIONS:
 def build_verification_prompt(
     challenge_title: str,
     challenge_description: str,
-    verification_prompt: str | None = None,
-    user_description: str | None = None,
+    verification_prompt: Optional[str] = None,
+    user_description: Optional[str] = None,
 ) -> str:
+
     """Build a structured verification prompt for Gemini Vision."""
     prompt_parts = [
         f"CHALLENGE TITLE: {challenge_title}",

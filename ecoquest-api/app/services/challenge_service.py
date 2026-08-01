@@ -1,10 +1,12 @@
+from __future__ import annotations
+
 """EcoQuest API — Challenge Service.
 
 Handles challenge CRUD and daily challenge selection.
 """
 
 import uuid
-
+from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.exceptions import NotFoundError
@@ -12,6 +14,7 @@ from app.models.challenge import Challenge
 from app.models.user import User
 from app.repositories.challenge_repo import ChallengeRepository
 from app.schemas.challenge import ChallengeCreate, ChallengeUpdate
+
 
 
 class ChallengeService:

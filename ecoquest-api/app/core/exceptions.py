@@ -1,7 +1,11 @@
+from __future__ import annotations
+
 """EcoQuest API — Custom Exception Classes.
 
 Structured exception hierarchy for consistent error handling.
 """
+
+from typing import Optional
 
 
 class EcoQuestError(Exception):
@@ -12,13 +16,14 @@ class EcoQuestError(Exception):
         message: str,
         code: str,
         status_code: int = 500,
-        details: dict | None = None,
+        details: Optional[dict] = None,
     ):
         self.message = message
         self.code = code
         self.status_code = status_code
         self.details = details or {}
         super().__init__(self.message)
+
 
 
 class ValidationError(EcoQuestError):

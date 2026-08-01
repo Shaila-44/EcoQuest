@@ -1,11 +1,14 @@
+from __future__ import annotations
+
 """EcoQuest API — Role-Based Access Control.
 
 Permission-based RBAC system. Endpoints check permissions, not roles.
 """
 
 from enum import Enum
+from typing import Callable, Any
 
-from fastapi import HTTPException, status
+from fastapi import Depends, HTTPException, status
 
 from app.models.enums import RoleName
 
@@ -73,3 +76,25 @@ def require_permission(role: RoleName, permission: Permission) -> None:
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Insufficient permissions",
         )
+
+
+def require_role(*allowed_roles: str) -> Callable[..., Any]:
+    """FastAPI dependency for checking if user role matches one of allowed_roles."""
+    from app.api.deps import get_current_user
+    from app.models.user import User
+
+    async def role_checker(current_user: User = Depends(get_current_user)) -> User:
+        user_role_str = "student"
+        if hasattr(current_user, "role") and current_user.role:
+            r_val = getattr(current_user.role, "role_name", None)
+            user_role_str = r_val.value if hasattr(r_val, "value") else str(r_val)
+
+        if user_role_str.lower() not in [r.lower() for r in allowed_roles]:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Insufficient permissions",
+            )
+        return current_user
+
+    return role_checker
+

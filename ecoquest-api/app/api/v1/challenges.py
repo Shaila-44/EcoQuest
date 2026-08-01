@@ -1,6 +1,9 @@
+from __future__ import annotations
+
 """EcoQuest API — Challenge Routes."""
 
 import uuid
+from typing import Optional
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -40,11 +43,12 @@ async def list_challenges(
     ]
 
 
-@router.get("/daily", response_model=ChallengeRead | None)
+@router.get("/daily", response_model=Optional[ChallengeRead])
 async def get_daily_challenge(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
+
     """Get today's challenge for the current user."""
     service = ChallengeService(db)
     c = await service.get_daily_challenge(school_id=current_user.school_id)

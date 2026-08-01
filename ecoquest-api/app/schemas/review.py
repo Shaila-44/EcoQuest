@@ -1,7 +1,10 @@
+from __future__ import annotations
+
 """EcoQuest API — Review Schemas."""
 
 import uuid
 from datetime import datetime
+from typing import Optional
 
 from pydantic import BaseModel
 
@@ -11,8 +14,8 @@ class ReviewCreate(BaseModel):
 
     submission_id: uuid.UUID
     decision: str  # 'approved', 'rejected', 'needs_resubmission'
-    comment: str | None = None
-    points_override: int | None = None
+    comment: Optional[str] = None
+    points_override: Optional[int] = None
 
 
 class ReviewRead(BaseModel):
@@ -22,9 +25,10 @@ class ReviewRead(BaseModel):
     submission_id: uuid.UUID
     reviewer_id: uuid.UUID
     decision: str
-    comment: str | None = None
-    points_override: int | None = None
+    comment: Optional[str] = None
+    points_override: Optional[int] = None
     reviewed_at: datetime
+
     created_at: datetime
 
     model_config = {"from_attributes": True}

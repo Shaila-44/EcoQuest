@@ -1,10 +1,12 @@
+from __future__ import annotations
+
 """EcoQuest API — User Schemas."""
 
 import uuid
 from datetime import datetime
+from typing import Any, Optional
 
-from pydantic import BaseModel, EmailStr
-
+from pydantic import BaseModel, EmailStr, model_validator
 
 from app.models.enums import UserStatus
 
@@ -22,22 +24,55 @@ class UserCreate(BaseModel):
 class UserRead(BaseModel):
     """Schema for reading a user (public response)."""
 
-    user_id: uuid.UUID
-    school_id: uuid.UUID
-    role_id: uuid.UUID
-    name: str
-    # Do not expose encrypted emails or hashes directly in public read unless strictly needed
-    profile_image: str | None = None
-    status: UserStatus
-    trust_score: float
+    id: uuid.UUID
+    email: EmailStr
+    first_name: str
+    last_name: str
+    role: str
+    school_id: Optional[uuid.UUID] = None
+    avatar_url: Optional[str] = None
+    grade: Optional[str] = None
+    is_active: bool
+    last_login_at: Optional[datetime] = None
     created_at: datetime
-    updated_at: datetime | None = None
 
     model_config = {"from_attributes": True}
+
+    @model_validator(mode="before")
+    @classmethod
+    def extract_fields_from_orm(cls, data: Any) -> Any:
+        if hasattr(data, "user_id"):
+            role_str = "student"
+            if hasattr(data, "role") and data.role is not None:
+                r_val = getattr(data.role, "role_name", None)
+                role_str = r_val.value if hasattr(r_val, "value") else str(r_val)
+
+            name = getattr(data, "name", "")
+            parts = name.split(" ", 1)
+            first_name = parts[0]
+            last_name = parts[1] if len(parts) > 1 else ""
+
+            return {
+                "id": data.user_id,
+                "email": getattr(data, "email_encrypted", getattr(data, "email", "")),
+                "first_name": first_name,
+                "last_name": last_name,
+                "role": role_str,
+                "school_id": getattr(data, "school_id", None),
+                "avatar_url": getattr(data, "profile_image", None),
+                "grade": None,
+                "is_active": data.status == UserStatus.ACTIVE if hasattr(data, "status") else True,
+                "last_login_at": None,
+                "created_at": getattr(data, "created_at", datetime.now()),
+            }
+        return data
 
 
 class UserUpdate(BaseModel):
     """Schema for updating a user profile."""
 
-    name: str | None = None
-    profile_image: str | None = None
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    avatar_url: Optional[str] = None
+    grade: Optional[str] = None
+

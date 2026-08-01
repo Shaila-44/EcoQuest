@@ -1,14 +1,17 @@
+from __future__ import annotations
+
 """EcoQuest API — Leaderboard Service.
 
 Handles leaderboard queries and score aggregation updates.
 """
 
 import uuid
-
+from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.leaderboard import LeaderboardEntry
 from app.repositories.leaderboard_repo import LeaderboardRepository
+
 
 
 class LeaderboardService:

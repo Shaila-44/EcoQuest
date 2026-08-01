@@ -1,7 +1,10 @@
+from __future__ import annotations
+
 """EcoQuest API — Submission Schemas."""
 
 import uuid
 from datetime import datetime
+from typing import Optional
 
 from pydantic import BaseModel
 
@@ -14,10 +17,10 @@ class SubmissionCreate(BaseModel):
 
     challenge_id: uuid.UUID
     title: str
-    description: str | None = None
+    description: Optional[str] = None
     image_url: str
-    latitude: float | None = None
-    longitude: float | None = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
 
 
 class SubmissionRead(BaseModel):
@@ -27,12 +30,13 @@ class SubmissionRead(BaseModel):
     user_id: uuid.UUID
     challenge_id: uuid.UUID
     title: str
-    description: str | None = None
+    description: Optional[str] = None
     image_url: str
-    latitude: float | None = None
-    longitude: float | None = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
     status: SubmissionStatus
     points_earned: int
     submitted_at: datetime
+
 
     model_config = {"from_attributes": True}
