@@ -1,0 +1,56 @@
+version: "3.9"
+
+services:
+  api:
+    build:
+      context: ./ecoquest-api
+      dockerfile: Dockerfile
+    container_name: ecoquest-api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./ecoquest-api/.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      # Use curl to hit the healthcheck endpoint; fail on non-200
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - ecoquest-network
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: ecoquest-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    env_file:
+      - ./ecoquest-api/.env
+    # POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB come from env_file above.
+    # Do NOT also hardcode them here — a duplicate `environment:` block takes
+    # precedence over env_file per-service and previously caused the Postgres
+    # container's actual credentials to silently diverge from what the api
+    # container's DATABASE_URL (built from the same .env) expected.
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - ecoquest-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ecoquest"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+
+
+volumes:
+  pgdata:
+
+networks:
+  ecoquest-network:
+    driver: bridge
